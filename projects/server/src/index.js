@@ -69,6 +69,6 @@ app.listen(PORT, (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {
-    console.log(`APP RUNNING at ${PORT} ✅`);
+    console.log(`☁  Nginapp Server is Running at http://localhost:${PORT}`);
   }
 });
