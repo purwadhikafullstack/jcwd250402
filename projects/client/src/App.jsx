@@ -20,6 +20,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         {message}
       </header>
+      <span className="font-secondary">TEST FONT</span>
     </div>
   );
 }
