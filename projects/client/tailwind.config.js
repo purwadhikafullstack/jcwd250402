@@ -4,10 +4,13 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
     "node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
   ],
+  daisyui: {
+    themes: [],
+  },
   theme: {
     colors: {
-      primary: "#0256EE",
-      secondary: "#EE0255",
+      primary: "#EE0255",
+      secondary: "#0256EE",
       tertiary: "#9B02EE",
       accent: "",
     },
