@@ -8,21 +8,23 @@ module.exports = {
     themes: [],
   },
   theme: {
-    colors: {
-      primary: "#EE0255",
-      secondary: "#0256EE",
-      tertiary: "#9B02EE",
-      accent: "",
-    },
-    fontFamily: {
-      primary: "Ubuntu",
-      secondary: "MD Sans",
-    },
-    screens: {
-      sm: "640px",
-      md: "768px",
-      lg: "1024px",
-      xl: "1280px",
+    extend: {
+      colors: {
+        primary: "#0256EE",
+        secondary: "#0256EE",
+        tertiary: "#9B02EE",
+        accent: "",
+      },
+      fontFamily: {
+        primary: "Ubuntu",
+        secondary: "MD Sans",
+      },
+      screens: {
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+      },
     },
   },
   plugins: [require("daisyui"), require("flowbite/plugin")],

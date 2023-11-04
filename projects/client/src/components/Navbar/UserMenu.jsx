@@ -2,8 +2,10 @@ import { useState, useCallback } from "react";
 import Avatar from "../Avatar";
 import MenuItem from "./MenuItem";
 import { AiOutlineMenu } from "react-icons/ai";
+import useLoginModal from "../hooks/useLoginModal.js";
 
 const UserMenu = () => {
+  const loginModal = useLoginModal();
   const [showMenu, setShowMenu] = useState(false);
 
   const toggleMenu = useCallback(() => {
@@ -33,7 +35,7 @@ const UserMenu = () => {
         <div className="absolute rounded-xl shadow-md w-[40vw] md:w-3/4 overflow-hidden right-0 top-12 text-sm bg-white">
           <div className="flex flex-col cursor-pointer">
             <>
-              <MenuItem onClick={() => {}} label="Login" />
+              <MenuItem onClick={loginModal.onOpen} label="Login" />
               <MenuItem onClick={() => {}} label="Register" />
             </>
           </div>
