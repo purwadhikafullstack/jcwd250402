@@ -1,6 +1,7 @@
 import Search from "./Navbar/Search";
 import UserMenu from "./Navbar/UserMenu";
 import logo from "../asset/Logo.svg";
+import Categories from "./Categories";
 
 const Navbar = () => {
   return (
@@ -16,6 +17,7 @@ const Navbar = () => {
           <UserMenu />
         </div>
       </div>
+      <Categories />
     </div>
   );
 };
