@@ -6,15 +6,13 @@ exports.registerValidationRules = [
     .withMessage("Fullname must be at least 5 chars long"),
   body("email").isEmail().withMessage("Please provide a valid email address"),
   body("password")
-    .notEmpty()
-    .isStrongPassword({
-      minLength: 5,
-      minUppercase: 1,
-      minNumbers: 1,
-    })
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 chars long")
+    .matches(/^[a-zA-Z0-9\s_!@#$%^&*()-+=|\\{}:;/,.?"]*$/)
     .withMessage(
-      "Password must be at least 5 chars long, contain at least 1 number, and 1 uppercase letter"
+      "Password must contain at least one letter, number, or special character"
     ),
+
   body("phoneNumber")
     .isMobilePhone("id-ID")
     .withMessage("Please provide a valid phone number"),
