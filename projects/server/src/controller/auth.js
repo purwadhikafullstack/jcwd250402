@@ -5,12 +5,19 @@ const { Op } = require("sequelize");
 const hbs = require("handlebars");
 const fs = require("fs");
 const mailer = require("../lib/nodemailer");
+const crypto = require("crypto");
 
 const JWT_SECRET_KEY = "ini_JWT_loh";
 
 // untuk nodemaoler masih belum gue pasang
 exports.handleRegister = async (req, res) => {
-  const { fullname, email, password, phoneNumber } = req.body;
+  const {
+    fullname,
+    email,
+    password,
+    phoneNumber,
+    // role
+  } = req.body;
 
   const existingUser = await User.findOne({
     where: {
@@ -34,9 +41,17 @@ exports.handleRegister = async (req, res) => {
       email,
       password: hashPassword,
       phoneNumber,
+      // role: role === "user",
     });
 
-    res.json({
+    // verify email by sending to email
+    // const token = crypto.randomBytes(20).toString("hex");
+    // const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    // const resetTokenExpiry = Date.now() + 60 * 60 * 1000;
+
+    // const template = fs.readFileSync(__dirname + "/../email-template/");
+
+    res.status(200).json({
       ok: true,
       message: "Register success",
       data: result,
