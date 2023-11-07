@@ -42,6 +42,12 @@ module.exports = {
       ktpImg: {
         type: Sequelize.STRING,
       },
+      verifyToken: {
+        type: Sequelize.STRING,
+      },
+      verifyTokenExpiry: {
+        type: Sequelize.DATE,
+      },
       resetToken: {
         type: Sequelize.STRING,
       },
