@@ -45,11 +45,32 @@ exports.handleRegister = async (req, res) => {
     });
 
     // verify email by sending to email
-    // const token = crypto.randomBytes(20).toString("hex");
-    // const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    // const resetTokenExpiry = Date.now() + 60 * 60 * 1000;
+    const token = crypto.randomBytes(20).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const resetTokenExpiry = Date.now() + 60 * 60 * 1000;
 
-    // const template = fs.readFileSync(__dirname + "/../email-template/");
+    existingUser.resetToken = tokenHash;
+    existingUser.resetTokenExpiry = resetTokenExpiry;
+    await existingUser.save();
+
+    const template = fs.readFileSync(
+      __dirname + "/../email-template/verifyEmail.html",
+      "utf8"
+    );
+    const compiledTemplate = hbs.compile(template);
+    const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
+    const emailHtml = compiledTemplate({
+      token,
+      fullname: result.fullname,
+      verifyLink,
+    });
+
+    await mailer.sendMail({
+      from: "dummybro06@gmail.com",
+      to: result.email,
+      subject: "Verify your email address to complete your registration",
+      html: emailHtml,
+    });
 
     res.status(200).json({
       ok: true,
