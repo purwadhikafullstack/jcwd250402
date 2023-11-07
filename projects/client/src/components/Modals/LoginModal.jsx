@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import yupPassword from "yup-password";
+import { toast, Toaster } from "sonner";
 
 import api from "../../api";
 import useLoginModal from "../hooks/useLoginModal";
@@ -36,6 +37,7 @@ const LoginModal = () => {
     }),
 
     onSubmit: (values) => {
+      toast.success("Login successful");
       setIsLoading(true);
       api
         .post("/auth/login")
@@ -75,15 +77,18 @@ const LoginModal = () => {
   );
 
   return (
-    <Modal
-      disabled={isLoading}
-      isOpen={loginModal.isOpen}
-      onClose={loginModal.onClose}
-      title="Login"
-      actionLabel="Continue"
-      onSubmit={onSubmit}
-      body={bodyContent}
-    />
+    <>
+      <Toaster />
+      <Modal
+        disabled={isLoading}
+        isOpen={loginModal.isOpen}
+        onClose={loginModal.onClose}
+        title="Login"
+        actionLabel="Continue"
+        onSubmit={onSubmit}
+        body={bodyContent}
+      />
+    </>
   );
 };
 

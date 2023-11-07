@@ -14,5 +14,7 @@ router.post(
   authController.handleRegister
 );
 
+router.post("/login", authController.loginHandler);
+
 module.exports = router;
 // Compare this snippet from projects/server/src/controller/auth.js:
