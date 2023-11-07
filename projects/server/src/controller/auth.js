@@ -9,7 +9,6 @@ const crypto = require("crypto");
 
 const JWT_SECRET_KEY = "ini_JWT_loh";
 
-// untuk nodemaoler masih belum gue pasang
 exports.handleRegister = async (req, res) => {
   const {
     fullname,
@@ -45,16 +44,75 @@ exports.handleRegister = async (req, res) => {
     });
 
     // verify email by sending to email
-    // const token = crypto.randomBytes(20).toString("hex");
-    // const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    // const resetTokenExpiry = Date.now() + 60 * 60 * 1000;
+    const token = crypto.randomBytes(20).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const verifyTokenExpiry = Date.now() + 60 * 60 * 1000;
 
-    // const template = fs.readFileSync(__dirname + "/../email-template/");
+    existingUser.verifyToken = tokenHash;
+    existingUser.verifyTokenExpiry = verifyTokenExpiry;
+    await existingUser.save();
+
+    const template = fs.readFileSync(
+      __dirname + "/../email-template/verifyEmail.html",
+      "utf8"
+    );
+    const compiledTemplate = hbs.compile(template);
+    const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
+    const emailHtml = compiledTemplate({
+      token,
+      fullname: result.fullname,
+      verifyLink,
+    });
+
+    await mailer.sendMail({
+      from: "dummybro06@gmail.com",
+      to: result.email,
+      subject: "Verify your email address to complete your registration",
+      html: emailHtml,
+    });
 
     res.status(200).json({
       ok: true,
       message: "Register success",
       data: result,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      ok: false,
+      message: String(err),
+    });
+  }
+};
+
+exports.handleVerifyEmail = async (req, res) => {
+  const { token } = req.query;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const user = await User.findOne({
+    where: {
+      verifyToken: hashedToken,
+      verifyTokenExpiry: {
+        [Op.gt]: Date.now(),
+      },
+    },
+  });
+
+  if (!user) {
+    return res.status(400).json({
+      ok: false,
+      message: "Token is invalid or has expired",
+    });
+  }
+
+  try {
+    user.isVerified = true;
+    user.verifyToken = null;
+    user.verifyTokenExpiry = null;
+    await user.save();
+
+    res.status(200).json({
+      ok: true,
+      message: "Email verified successfully",
     });
   } catch (err) {
     console.log(err);
