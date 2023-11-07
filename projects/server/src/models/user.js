@@ -21,6 +21,8 @@ module.exports = (sequelize, DataTypes) => {
       isVerified: DataTypes.BOOLEAN,
       role: DataTypes.ENUM("user", "tenant"),
       ktpImg: DataTypes.STRING,
+      verifyToken: DataTypes.STRING,
+      verifyTokenExpiry: DataTypes.DATE,
       resetToken: DataTypes.STRING,
       resetTokenExpiry: DataTypes.DATE,
       passwordUpdatedAt: DataTypes.DATE,

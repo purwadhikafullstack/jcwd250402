@@ -14,6 +14,8 @@ router.post(
   authController.handleRegister
 );
 
+router.get("/verify-email", authController.handleVerifyEmail);
+
 router.post("/login", authController.loginHandler);
 
 module.exports = router;
