@@ -85,3 +85,51 @@ exports.handleRegister = async (req, res) => {
     });
   }
 };
+
+exports.loginHandler = async (req, res) => {
+  const { user_identity, password } = req.body;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [{ email: user_identity }, { username: user_identity }],
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "Invalid email/username or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res
+        .status(401)
+        .json({ message: "Invalid email/username or password" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, username: user.username, isAdmin: user.isAdmin },
+      JWT_SECRET_KEY,
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    return res.json({
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
