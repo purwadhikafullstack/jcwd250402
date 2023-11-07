@@ -9,6 +9,7 @@ const crypto = require("crypto");
 
 const JWT_SECRET_KEY = "ini_JWT_loh";
 
+//* Speccifically for registering as a user role
 exports.handleRegister = async (req, res) => {
   const {
     fullname,
@@ -40,7 +41,7 @@ exports.handleRegister = async (req, res) => {
       email,
       password: hashPassword,
       phoneNumber,
-      // role: role === "user",
+      role: "user",
     });
 
     // verify email by sending to email
@@ -48,9 +49,9 @@ exports.handleRegister = async (req, res) => {
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
     const verifyTokenExpiry = Date.now() + 60 * 60 * 1000;
 
-    existingUser.verifyToken = tokenHash;
-    existingUser.verifyTokenExpiry = verifyTokenExpiry;
-    await existingUser.save();
+    result.verifyToken = tokenHash;
+    result.verifyTokenExpiry = verifyTokenExpiry;
+    await result.save();
 
     const template = fs.readFileSync(
       __dirname + "/../email-template/verifyEmail.html",
@@ -59,7 +60,6 @@ exports.handleRegister = async (req, res) => {
     const compiledTemplate = hbs.compile(template);
     const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
     const emailHtml = compiledTemplate({
-      token,
       fullname: result.fullname,
       verifyLink,
     });
