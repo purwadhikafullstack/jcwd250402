@@ -18,6 +18,16 @@ exports.registerValidationRules = [
     .withMessage("Please provide a valid phone number"),
 ];
 
+exports.newPasswordRules = [
+  body("password")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 chars long")
+    .matches(/^[a-zA-Z0-9\s_!@#$%^&*()-+=|\\{}:;/,.?"]*$/)
+    .withMessage(
+      "Password must contain at least one letter, number, or special character"
+    ),
+];
+
 exports.applyRegisterValidation = [
   (req, res, next) => {
     const result = validationResult(req);

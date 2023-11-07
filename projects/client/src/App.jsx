@@ -1,4 +1,5 @@
 import { Navbar, Footer } from "./components";
+import ResetPassword from "./pages/ResetPassword";
 import LoginModal from "./components/Modals/LoginModal";
 import TenantRegisterModal from "./components/Modals/TenantRegister";
 import { Route, Routes } from "react-router-dom";
@@ -13,7 +14,7 @@ function App() {
       <TenantRegisterModal />
       <Toaster richColors />
       <Routes>
-        <Route />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </main>
   );

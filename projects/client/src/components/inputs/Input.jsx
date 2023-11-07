@@ -22,6 +22,7 @@ const Input = ({ id, label, type, disabled, required, register, onChange }) => {
         value={value}
         onChange={handleChange}
         className="w-full p-4 pt-6 pl-4 font-light transition bg-white border-2 rounded-md outline-none peer disabled:opacity-70 disabled:cursor-not-allowed"
+        required={required}
       />
       <label
         className={`absolute text-md duration-150 transform -translate-y-3 top-5 z-10 origin-[0] left-4 

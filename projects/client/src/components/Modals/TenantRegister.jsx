@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useFormik } from "formik";
+import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import yupPassword from "yup-password";
 import { toast } from "sonner";
@@ -13,98 +13,239 @@ import Input from "../inputs/Input";
 yupPassword(Yup);
 
 const TenantRegisterModal = () => {
-  const tenantRegister = useTenantRegister();
+  const tenantRegisterModal = useTenantRegister();
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    fullname: "",
+    password: "",
+    role: "tenant",
+  });
 
-  const { register, errors, onSubmit } = useFormik({
+  const loginSchema = Yup.object({
+    user_identity: Yup.string().required("Username or Email is required"),
+    password: Yup.string().required("Password is required"),
+  });
+
+  const registerTenant = async (username, email, fullname, password, role) => {
+    try {
+      const response = await api.post("/auth/register", {
+        username,
+        email,
+        fullname,
+        password,
+        role: "tenant",
+      });
+
+      if (response.status === 200) {
+        const userData = response.data;
+        const token = userData.data.token;
+
+        localStorage.setItem("token", token);
+
+        if (userData.data.role === "tenant") {
+          window.success("Logged In as Tenant");
+        } else if (userData.data.role === "user") {
+          window.success("Logged In as User");
+        }
+      }
+    } catch (error) {
+      toast.error("Register failed. Please check your credentials.");
+      console.error("Error:", error);
+    }
+  };
+
+  const formik = useFormik({
     initialValues: {
+      username: "",
       email: "",
+      fullname: "",
       password: "",
+      role: "tenant",
     },
-    validationSchema: Yup.object({
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      password: Yup.string()
-        .password({
-          min: 8,
-          mixLowerAndNumbers: true,
-          mixLowerAndSpecial: true,
-          mixLowerAndUpper: true,
-          mixNumberAndSpecial: true,
-        })
-        .required("Password is required"),
-    }),
-
+    validationSchema: loginSchema,
     onSubmit: (values) => {
-      toast.success("Login successful");
-      setIsLoading(true);
-      api
-        .post("/auth/login")
-        .then(() => {
-          tenantRegister.onClose();
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      const { username, email, fullname, password, role } = values;
+      registerTenant(username, email, fullname, password, role);
     },
   });
 
+  const handleForgotPassword = (email) => {
+    toast.success("Reset password link sent.");
+    setIsLoading(false);
+    tenantRegisterModal.onClose();
+  };
+
+  const handleInputChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
   const bodyContent = (
     <div className="flex flex-col gap-4">
-      <Heading title="Welcome to nginapp" subtitle="Register as Host" />
-      <Input
-        id="fullName"
-        label="Full Name"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
+      <Heading
+        title="Welcome to Nginapp"
+        subtitle="Ready to host your place?"
       />
-      <span className="text-xs text-gray-500">
-        make sure it matches to your government-issued ID
-      </span>
-      <Input
-        id="email"
-        label="Email"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-      <Input
-        id="password"
-        label="Password"
-        type="password"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-      <Input
-        id="password"
-        label="Confirm Password"
-        type="password"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
+      <Formik
+        initialValues={formik.initialValues}
+        validationSchema={loginSchema}
+        onSubmit={formik.handleSubmit}
+      >
+        {() => (
+          <Form>
+            <Input
+              id="fullname"
+              name="fullname"
+              label="Full Name"
+              type="text"
+              disabled={isLoading}
+              required
+              onChange={(value) => handleInputChange("fullname", value)}
+            />
+            <Input
+              id="email"
+              name="email"
+              label="Email"
+              type="text"
+              disabled={isLoading}
+              required
+              onChange={(value) => handleInputChange("email", value)}
+            />
+            <Input
+              id="username"
+              name="username"
+              label="Username"
+              type="text"
+              disabled={isLoading}
+              required
+              onChange={(value) => handleInputChange("username", value)}
+            />
+            <Input
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              disabled={isLoading}
+              required
+              onChange={(value) => handleInputChange("password", value)}
+            />
+          </Form>
+        )}
+      </Formik>
+
+      <div>
+        <button
+          onClick={() => setIsRegistered(true)}
+          className="text-xs text-neutral-500 hover:text-black"
+        >
+          <span>Already a Host? Sign In</span>
+        </button>
+      </div>
     </div>
   );
+
+  const tenantLoginBodyContent = (
+    <div className="flex flex-col gap-4">
+      <Heading title="Welcome back" subtitle="Login to your account!" />
+      <Formik
+        initialValues={formik.initialValues}
+        validationSchema={loginSchema}
+        onSubmit={formik.handleSubmit}
+      >
+        {() => (
+          <Form>
+            <Input
+              id="user_identity"
+              name="user_identity"
+              label="Username or Email"
+              type="text"
+              disabled={isLoading}
+              required
+              onChange={(value) => handleInputChange("user_identity", value)}
+            />
+            <Input
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              disabled={isLoading}
+              required
+              onChange={(value) => handleInputChange("password", value)}
+            />
+          </Form>
+        )}
+      </Formik>
+
+      <div>
+        <button
+          onClick={() => setIsForgotPassword(true)}
+          className="text-xs text-neutral-500 hover:text-black"
+        >
+          <span>forgot password?</span>
+        </button>
+      </div>
+      <div>
+        <button
+          onClick={() => setIsRegistered(false)}
+          className="text-xs text-neutral-500 hover:text-black"
+        >
+          <span>Cancel</span>
+        </button>
+      </div>
+    </div>
+  );
+  const forgotPasswordBody = (
+    <div className="flex flex-col gap-4">
+      <Heading subtitle="Uh-oh it seems you have a problem signing-in" />
+      <Formik
+        initialValues={formik.initialValues}
+        validationSchema={loginSchema}
+        onSubmit={formik.handleSubmit && console.log(formik.values)}
+      >
+        {() => (
+          <Form>
+            <Input
+              id="email"
+              name="email"
+              label="Email"
+              type="email"
+              disabled={isLoading}
+              required
+              onChange={(value) => handleInputChange("email", value)}
+            />
+          </Form>
+        )}
+      </Formik>
+      <div>
+        <button
+          onClick={() => setIsForgotPassword(false)}
+          className="text-xs text-neutral-500 hover:text-black"
+        >
+          <span>Cancel</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  const modalBodyContents = isRegistered ? tenantLoginBodyContent : bodyContent;
+  const forgotPasswordMenu = isForgotPassword
+    ? forgotPasswordBody
+    : tenantLoginBodyContent;
 
   return (
     <Modal
       disabled={isLoading}
-      isOpen={tenantRegister.isOpen}
-      onClose={tenantRegister.onClose}
+      isOpen={tenantRegisterModal.isOpen}
+      onClose={tenantRegisterModal.onClose}
       title="Tenant Registration"
       actionLabel="Continue"
-      onSubmit={onSubmit}
-      body={bodyContent}
+      onSubmit={() => {
+        registerTenant(formData.user_identity, formData.password);
+      }}
+      body={modalBodyContents || forgotPasswordMenu}
     />
   );
 };

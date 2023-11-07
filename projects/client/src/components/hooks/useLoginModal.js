@@ -5,8 +5,6 @@ const useLoginModal = () => {
   const state = useSelector((state) => state.loginModal);
   const dispatch = useDispatch();
 
-  console.log("LoginModal state:", state);
-
   return {
     isOpen: state.isOpen,
     onOpen: () => dispatch(loginModalSlice.actions.openLoginModal()),

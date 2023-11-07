@@ -147,20 +147,19 @@ exports.loginHandler = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, username: user.username, isAdmin: user.isAdmin },
+      { id: user.id, username: user.username, role: user.role },
       JWT_SECRET_KEY,
       {
         expiresIn: "1d",
       }
     );
 
-    return res.json({
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
+    return res.status(200).json({
+      ok: true,
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
       token,
     });
   } catch (error) {
