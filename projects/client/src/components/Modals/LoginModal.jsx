@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useFormik, Formik, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import yupPassword from "yup-password";
@@ -13,6 +14,7 @@ import Input from "../inputs/Input";
 yupPassword(Yup);
 
 const LoginModal = () => {
+  const navigate = useNavigate();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
@@ -31,7 +33,6 @@ const LoginModal = () => {
   });
 
   const loginUser = async (user_identity, password) => {
-    setIsLoading(true);
     try {
       const response = await api.post("/auth/login", {
         user_identity,
@@ -46,18 +47,18 @@ const LoginModal = () => {
         if (role === "tenant") {
           toast.success("Logged In as Tenant");
           loginModal.onClose();
+          navigate("/dashboard");
           setIsLoading(false);
         } else if (role === "user") {
           toast.success("Logged In as User");
           loginModal.onClose();
+          navigate("/user");
           setIsLoading(false);
         }
-      } else {
-        toast.error("Login failed. Please check your credentials.");
       }
     } catch (error) {
       setIsLoading(false);
-      toast.error("Internal Server Error. Please Try Again Later");
+      toast.error("Invalid Username/Email or Password.");
       console.error("Error:", error);
     }
   };

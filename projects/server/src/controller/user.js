@@ -18,7 +18,7 @@ exports.forgotPassword = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         ok: false,
-        message: "Email Not Found",
+        message: "Email sent!",
       });
     }
 
@@ -41,8 +41,8 @@ exports.forgotPassword = async (req, res) => {
       }
     );
 
-    const resetUrl = `${req.protocol}://localhost:3000/auth/reset-password/${resetTokenHash}`;
-    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetUrl}\nIf you didn't forget your password, please ignore this email! \nToken only Valid for 10 Minutes`;
+    const resetUrl = `${req.protocol}://localhost:3000/reset-password/${resetTokenHash}`;
+    const message = `Forgot your password? Click this link to reset your password \n${resetUrl}\nIf you didn't make this request, please ignore this email! \nToken only Valid for 10 Minutes`;
     try {
       await mailer({
         email: user.email,
