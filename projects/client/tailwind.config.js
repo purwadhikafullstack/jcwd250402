@@ -2,7 +2,7 @@
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
-    "node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
+    "node_modules/react-daisyui/**/*.{js,jsx,ts,tsx}",
   ],
   daisyui: {
     themes: [],
@@ -27,7 +27,7 @@ module.exports = {
       },
     },
   },
-  plugins: [require("daisyui"), require("flowbite/plugin")],
+  plugins: [require("daisyui")],
 };
 
 // docs daisyui : https://daisyui.com/components/

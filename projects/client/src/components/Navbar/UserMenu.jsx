@@ -3,9 +3,11 @@ import Avatar from "../Avatar";
 import MenuItem from "./MenuItem";
 import { AiOutlineMenu } from "react-icons/ai";
 import useLoginModal from "../hooks/useLoginModal.js";
+import useTenantRegister from "../hooks/useTenantRegister.js";
 
 const UserMenu = () => {
   const loginModal = useLoginModal();
+  const tenantRegister = useTenantRegister();
   const [showMenu, setShowMenu] = useState(false);
 
   const toggleMenu = useCallback(() => {
@@ -16,7 +18,7 @@ const UserMenu = () => {
     <div className="relative">
       <div className="flex flex-row items-center gap-3">
         <div
-          onClick={() => {}}
+          onClick={tenantRegister.onOpen}
           className="hidden px-4 py-3 text-sm font-semibold transition rounded-full cursor-pointer md:block hover:bg-neutral-100"
         >
           Become a Host
