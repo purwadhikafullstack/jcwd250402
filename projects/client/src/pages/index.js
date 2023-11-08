@@ -1,5 +1,5 @@
 import Home from "./Home";
 import ResetPassword from "./ResetPassword";
-import Tenant from "./Tenant";
+import TenantLogin from "./TenantLogin";
 
-export { ResetPassword, Tenant, Home };
+export { ResetPassword, TenantLogin, Home };

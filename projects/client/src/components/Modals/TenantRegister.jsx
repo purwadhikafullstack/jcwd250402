@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import yupPassword from "yup-password";
@@ -13,10 +14,9 @@ import Input from "../inputs/Input";
 yupPassword(Yup);
 
 const TenantRegisterModal = () => {
+  const navigate = useNavigate();
   const tenantRegisterModal = useTenantRegister();
   const [isLoading, setIsLoading] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -31,6 +31,7 @@ const TenantRegisterModal = () => {
   });
 
   const registerTenant = async (username, email, fullname, password, role) => {
+    setIsLoading(true);
     try {
       const response = await api.post("/auth/register", {
         username,
@@ -41,6 +42,7 @@ const TenantRegisterModal = () => {
       });
 
       if (response.status === 200) {
+        setIsLoading(false);
         const userData = response.data;
         const token = userData.data.token;
 
@@ -53,6 +55,7 @@ const TenantRegisterModal = () => {
         }
       }
     } catch (error) {
+      setIsLoading(false);
       toast.error("Register failed. Please check your credentials.");
       console.error("Error:", error);
     }
@@ -73,12 +76,6 @@ const TenantRegisterModal = () => {
     },
   });
 
-  const handleForgotPassword = (email) => {
-    toast.success("Reset password link sent.");
-    setIsLoading(false);
-    tenantRegisterModal.onClose();
-  };
-
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
@@ -95,7 +92,7 @@ const TenantRegisterModal = () => {
         onSubmit={formik.handleSubmit}
       >
         {() => (
-          <Form>
+          <Form className="space-y-1">
             <Input
               id="fullname"
               name="fullname"
@@ -105,6 +102,9 @@ const TenantRegisterModal = () => {
               required
               onChange={(value) => handleInputChange("fullname", value)}
             />
+            <span className="text-xs text-neutral-400">
+              Make sure it matches to your government-issued ID{" "}
+            </span>
             <Input
               id="email"
               name="email"
@@ -138,7 +138,7 @@ const TenantRegisterModal = () => {
 
       <div>
         <button
-          onClick={() => setIsRegistered(true)}
+          onClick={() => navigate("/tenant-login")}
           className="text-xs text-neutral-500 hover:text-black"
         >
           <span>Already a Host? Sign In</span>
@@ -146,94 +146,6 @@ const TenantRegisterModal = () => {
       </div>
     </div>
   );
-
-  const tenantLoginBodyContent = (
-    <div className="flex flex-col gap-4">
-      <Heading title="Welcome back" subtitle="Login to your account!" />
-      <Formik
-        initialValues={formik.initialValues}
-        validationSchema={loginSchema}
-        onSubmit={formik.handleSubmit}
-      >
-        {() => (
-          <Form>
-            <Input
-              id="user_identity"
-              name="user_identity"
-              label="Username or Email"
-              type="text"
-              disabled={isLoading}
-              required
-              onChange={(value) => handleInputChange("user_identity", value)}
-            />
-            <Input
-              id="password"
-              name="password"
-              label="Password"
-              type="password"
-              disabled={isLoading}
-              required
-              onChange={(value) => handleInputChange("password", value)}
-            />
-          </Form>
-        )}
-      </Formik>
-
-      <div>
-        <button
-          onClick={() => setIsForgotPassword(true)}
-          className="text-xs text-neutral-500 hover:text-black"
-        >
-          <span>forgot password?</span>
-        </button>
-      </div>
-      <div>
-        <button
-          onClick={() => setIsRegistered(false)}
-          className="text-xs text-neutral-500 hover:text-black"
-        >
-          <span>Cancel</span>
-        </button>
-      </div>
-    </div>
-  );
-  const forgotPasswordBody = (
-    <div className="flex flex-col gap-4">
-      <Heading subtitle="Uh-oh it seems you have a problem signing-in" />
-      <Formik
-        initialValues={formik.initialValues}
-        validationSchema={loginSchema}
-        onSubmit={formik.handleSubmit && console.log(formik.values)}
-      >
-        {() => (
-          <Form>
-            <Input
-              id="email"
-              name="email"
-              label="Email"
-              type="email"
-              disabled={isLoading}
-              required
-              onChange={(value) => handleInputChange("email", value)}
-            />
-          </Form>
-        )}
-      </Formik>
-      <div>
-        <button
-          onClick={() => setIsForgotPassword(false)}
-          className="text-xs text-neutral-500 hover:text-black"
-        >
-          <span>Cancel</span>
-        </button>
-      </div>
-    </div>
-  );
-
-  const modalBodyContents = isRegistered ? tenantLoginBodyContent : bodyContent;
-  const forgotPasswordMenu = isForgotPassword
-    ? forgotPasswordBody
-    : tenantLoginBodyContent;
 
   return (
     <Modal
@@ -245,7 +157,7 @@ const TenantRegisterModal = () => {
       onSubmit={() => {
         registerTenant(formData.user_identity, formData.password);
       }}
-      body={modalBodyContents || forgotPasswordMenu}
+      body={bodyContent}
     />
   );
 };

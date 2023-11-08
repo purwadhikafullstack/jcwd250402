@@ -2,7 +2,16 @@ import { useState } from "react";
 import { BiDollar } from "react-icons/bi";
 import { useFormik, Field } from "formik";
 
-const Input = ({ id, label, type, disabled, required, register, onChange }) => {
+const Input = ({
+  id,
+  label,
+  type,
+  disabled,
+  required,
+  register,
+  onChange,
+  style,
+}) => {
   const [value, setValue] = useState(""); // State to manage the input value
 
   const handleChange = (e) => {
