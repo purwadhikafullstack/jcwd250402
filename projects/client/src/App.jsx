@@ -1,7 +1,7 @@
 import { ResetPassword, TenantLogin, Home } from "./pages";
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
-import { LoginModal, TenantRegisterModal } from "./components/Modals";
+import { LoginModal, TenantRegisterModal, UserRegisterModal } from "./components/Modals";
 
 function App() {
   return (
@@ -14,6 +14,7 @@ function App() {
       </Routes>
       <LoginModal />
       <TenantRegisterModal />
+      <UserRegisterModal />
     </main>
   );
 }

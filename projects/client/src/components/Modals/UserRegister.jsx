@@ -34,6 +34,7 @@ const UserRegisterModal = () => {
   });
 
   const registerUser = async (fullname, email, password, phoneNumber, role) => {
+    setIsLoading(true);
     try {
       const response = await api.post("/auth/register", {
         fullname,
@@ -44,6 +45,7 @@ const UserRegisterModal = () => {
       });
 
       if (response.status === 200) {
+        setIsLoading(false);
         const userData = response.data;
         const token = userData.data.token;
 
@@ -56,6 +58,7 @@ const UserRegisterModal = () => {
         }
       }
     } catch (err) {
+      setIsLoading(false);
       toast.error("Register failed. Please check your credentials.");
       console.error("Error:", err);
     }
@@ -148,7 +151,11 @@ const UserRegisterModal = () => {
     <Modal
       disabled={isLoading}
       isOpen={UserRegisterModal.isOpen}
-      onClose={UserRegisterModal.onClose}
+      onClose={() => {
+        UseLoginModal.onClose();
+        setIsRegistered(false);
+        UserRegisterModal.onClose();
+      }}
       title="User Registration"
       actionLabel={isRegistered ? "Log In" : "Sign Up"}
       onSubmit={() => {
