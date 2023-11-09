@@ -19,6 +19,9 @@ module.exports = {
         primary: "Ubuntu",
         secondary: "MD Sans",
       },
+      backgroundImage: {
+        login: "url('./asset/Login.png')",
+      },
       screens: {
         sm: "640px",
         md: "768px",
