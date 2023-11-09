@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useFormik, Formik, Form, ErrorMessage } from "formik";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import yupPassword from "yup-password";
 import { toast } from "sonner";
@@ -18,10 +18,22 @@ const LoginModal = () => {
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const location = useLocation();
+  const { openLoginModal } = location.state || {};
   const [formData, setFormData] = useState({
     user_identity: "",
     password: "",
     email: "",
+  });
+
+  const handleInputChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  useEffect(() => {
+    if (openLoginModal) {
+      loginModal.onOpen();
+    }
   });
 
   const loginSchema = Yup.object().shape({
@@ -30,6 +42,24 @@ const LoginModal = () => {
       .min(6, "Minimum characters is 6"),
     password: Yup.string().required("Password can't be empty"),
     email: Yup.string().email("Please enter a valid email address"),
+  });
+
+  const formik = useFormik({
+    onSubmit: (values) => {
+      const { user_identity, password } = values;
+      loginUser(user_identity, password);
+    },
+  });
+
+  const formikReset = useFormik({
+    initialValues: {
+      email: "",
+    },
+    validationSchema: loginSchema,
+    onSubmit: (values) => {
+      const { email } = values;
+      loginUser(email);
+    },
   });
 
   const loginUser = async (user_identity, password) => {
@@ -63,13 +93,6 @@ const LoginModal = () => {
     }
   };
 
-  const formik = useFormik({
-    onSubmit: (values) => {
-      const { user_identity, password } = values;
-      loginUser(user_identity, password);
-    },
-  });
-
   const handleForgotPassword = async (email) => {
     setIsLoading(true);
     try {
@@ -88,21 +111,6 @@ const LoginModal = () => {
     }
   };
 
-  const formikReset = useFormik({
-    initialValues: {
-      email: "",
-    },
-    validationSchema: loginSchema,
-    onSubmit: (values) => {
-      const { email } = values;
-      loginUser(email);
-    },
-  });
-
-  const handleInputChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-  };
-
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading title="Welcome back" subtitle="Login to your account!" />
@@ -115,7 +123,7 @@ const LoginModal = () => {
         onSubmit={formik.handleSubmit}
       >
         {({ errors, touched }) => (
-          <Form>
+          <Form className="space-y-4 md:space-y-6">
             <Input
               id="user_identity"
               name="user_identity"
@@ -125,9 +133,6 @@ const LoginModal = () => {
               required={true}
               onChange={(value) => handleInputChange("user_identity", value)}
             />
-            {/* {errors.user_identity ? (
-              <div className="text-red-500">{errors.user_identity}</div>
-            ) : null} */}
             <Input
               id="password"
               name="password"
@@ -137,9 +142,6 @@ const LoginModal = () => {
               required={true}
               onChange={(value) => handleInputChange("password", value)}
             />
-            {/* {errors.password ? (
-              <div className="text-red-500">{errors.password}</div>
-            ) : null} */}
           </Form>
         )}
       </Formik>

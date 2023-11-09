@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import Avatar from "../Avatar";
 import MenuItem from "./MenuItem";
 import { AiOutlineMenu } from "react-icons/ai";
@@ -7,8 +9,19 @@ import useTenantRegister from "../hooks/useTenantRegister.js";
 
 const UserMenu = () => {
   const loginModal = useLoginModal();
+  const navigate = useNavigate();
   const tenantRegister = useTenantRegister();
   const [showMenu, setShowMenu] = useState(false);
+
+  const logOutHandler = () => {
+    if (localStorage.getItem("token") === null) {
+      toast.error("You are not logged in");
+      return;
+    }
+    localStorage.removeItem("token");
+    toast.success("Successfully logged out! We'll miss you :(");
+    navigate("/");
+  };
 
   const toggleMenu = useCallback(() => {
     setShowMenu((prev) => !prev);
@@ -39,6 +52,7 @@ const UserMenu = () => {
             <>
               <MenuItem onClick={loginModal.onOpen} label="Login" />
               <MenuItem onClick={() => {}} label="Register" />
+              <MenuItem onClick={logOutHandler} label="Log Out" />
             </>
           </div>
         </div>

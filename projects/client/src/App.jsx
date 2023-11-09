@@ -1,6 +1,7 @@
-import { ResetPassword, Tenant, Home } from "./pages";
+import { ResetPassword, TenantLogin, Home } from "./pages";
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
+import { LoginModal, TenantRegisterModal } from "./components/Modals";
 
 function App() {
   return (
@@ -8,9 +9,11 @@ function App() {
       <Toaster richColors />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/tenant-login" element={<TenantLogin />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<Tenant />} />
       </Routes>
+      <LoginModal />
+      <TenantRegisterModal />
     </main>
   );
 }
