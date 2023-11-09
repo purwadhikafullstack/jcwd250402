@@ -6,11 +6,13 @@ import MenuItem from "./MenuItem";
 import { AiOutlineMenu } from "react-icons/ai";
 import useLoginModal from "../hooks/useLoginModal.js";
 import useTenantRegister from "../hooks/useTenantRegister.js";
+import useUserRegister from "../hooks/useUserRegister.js";
 
 const UserMenu = () => {
   const loginModal = useLoginModal();
   const navigate = useNavigate();
   const tenantRegister = useTenantRegister();
+  const userRegister = useUserRegister();
   const [showMenu, setShowMenu] = useState(false);
 
   const logOutHandler = () => {
@@ -51,7 +53,7 @@ const UserMenu = () => {
           <div className="flex flex-col cursor-pointer">
             <>
               <MenuItem onClick={loginModal.onOpen} label="Login" />
-              <MenuItem onClick={() => {}} label="Register" />
+              <MenuItem onClick={userRegister.onOpen} label="Register" />
               <MenuItem onClick={logOutHandler} label="Log Out" />
             </>
           </div>
