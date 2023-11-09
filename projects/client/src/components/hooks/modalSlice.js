@@ -26,4 +26,17 @@ const tenantRegisterSlice = createSlice({
   },
 });
 
-export { loginModalSlice, tenantRegisterSlice };
+const userRegisterSlice = createSlice({
+  name: "userRegister",
+  initialState: { isOpen: false },
+  reducers: {
+    openUserRegister(state) {
+      state.isOpen = true;
+    },
+    closeUserRegister(state) {
+      state.isOpen = false;
+    },
+  },
+});
+
+export { loginModalSlice, tenantRegisterSlice, userRegisterSlice };

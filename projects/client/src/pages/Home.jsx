@@ -1,5 +1,9 @@
 import { Navbar, Footer } from "../components";
-import { LoginModal, TenantRegisterModal } from "../components/Modals";
+import {
+  LoginModal,
+  TenantRegisterModal,
+  UserRegisterModal,
+} from "../components/Modals";
 
 function Home() {
   return (
@@ -7,6 +11,7 @@ function Home() {
       <Navbar />
       <LoginModal />
       <TenantRegisterModal />
+      <UserRegisterModal />
       <Footer />
     </main>
   );
