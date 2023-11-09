@@ -64,9 +64,8 @@ exports.handleRegister = async (req, res) => {
       verifyLink,
     });
 
-    await mailer.sendMail({
-      from: "dummybro06@gmail.com",
-      to: result.email,
+    await mailer({
+      email: result.email,
       subject: "Verify your email address to complete your registration",
       html: emailHtml,
     });
