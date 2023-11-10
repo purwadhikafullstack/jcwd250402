@@ -1,7 +1,16 @@
-import { ResetPassword, TenantLogin, Home } from "./pages";
-import { Route, Routes } from "react-router-dom";
+import { lazy } from "react";
 import { Toaster } from "sonner";
-import { LoginModal, TenantRegisterModal, UserRegisterModal } from "./components/Modals";
+import { Route, Routes } from "react-router-dom";
+import { TenantLogin, Home } from "./pages";
+import { TenantDashboard, UpdateProfile } from "./pages";
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const UserRegisterModal = lazy(() =>
+  import("./components/Modals/UserRegister")
+);
+const LoginModal = lazy(() => import("./components/Modals/LoginModal"));
+const TenantRegisterModal = lazy(() =>
+  import("./components/Modals/TenantRegister")
+);
 
 function App() {
   return (
@@ -9,8 +18,10 @@ function App() {
       <Toaster richColors />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/tenant-login" element={<TenantLogin />} />
+        <Route path="/tenant" element={<TenantLogin />} />
+        <Route path="/dashboard" element={<TenantDashboard />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/update-profile" element={<UpdateProfile />} />
       </Routes>
       <LoginModal />
       <TenantRegisterModal />

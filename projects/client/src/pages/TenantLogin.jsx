@@ -117,7 +117,7 @@ const Tenant = () => {
                 Welcome to
               </h1>
               <img src={logo_black} alt="" width={120} height={120} />
-              <h1 className="ml-3 text-xl font-light leading-tight tracking-tight text-gray-900 md:text-2xl">
+              <h1 className="ml-2 text-xl font-light leading-tight tracking-tight text-gray-900 md:text-2xl">
                 host
               </h1>
             </div>

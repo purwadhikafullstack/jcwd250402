@@ -69,18 +69,17 @@ const LoginModal = () => {
         password,
       });
       if (response.status === 200) {
+        toast.success("Welcome back! Successfully logged in!");
         const userData = response.data;
         const token = userData.token;
         const role = userData.role;
 
         localStorage.setItem("token", token);
         if (role === "tenant") {
-          toast.success("Logged In as Tenant");
           loginModal.onClose();
           navigate("/dashboard");
           setIsLoading(false);
         } else if (role === "user") {
-          toast.success("Logged In as User");
           loginModal.onClose();
           navigate("/user");
           setIsLoading(false);
