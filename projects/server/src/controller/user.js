@@ -1,118 +1,98 @@
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { User } = require("../models");
 const { Op } = require("sequelize");
-const hbs = require("handlebars");
-const fs = require("fs");
 const mailer = require("../lib/nodemailer");
 const crypto = require("crypto");
 
-exports.forgotPassword = async (req, res) => {
+exports.updateProfile = async (req, res) => {
+  const userId = req.user.id;
+  const { fullname, gender, phoneNumber, dateofbirth, email, username } =
+    req.body;
   try {
-    const user = await User.findOne({
-      where: {
-        email: req.body.email,
-      },
-    });
+    const user = await User.findOne({ where: { id: userId } });
 
     if (!user) {
-      return res.status(404).json({
-        ok: false,
-        message: "Email sent!",
-      });
+      return res.status(404).json({ ok: false, message: "User not found" });
     }
 
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenHash = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-    const resetTokenExpired = new Date();
-    resetTokenExpired.setTime(resetTokenExpired.getTime() + 10 * 60 * 1000);
-    await User.update(
-      {
-        resetToken: resetTokenHash,
-        resetTokenExpiry: resetTokenExpired,
-      },
-      {
-        where: {
-          email: req.body.email,
-        },
-      }
-    );
-
-    const resetUrl = `${req.protocol}://localhost:3000/reset-password/${resetTokenHash}`;
-    const message = `Forgot your password? Click this link to reset your password \n${resetUrl}\nIf you didn't make this request, please ignore this email! \nToken only Valid for 10 Minutes`;
-    try {
-      await mailer({
-        email: user.email,
-        subject: "Nginapp Password Reset Request",
-        message,
-      });
-      res.status(200).json({
-        ok: true,
-        hashedToken: resetTokenHash,
-        resetTokenExpiry: resetTokenExpired,
-      });
-    } catch (error) {
-      console.error("Error in forgotPassword:", error);
-      res.status(500).json({
-        ok: false,
-        message: "Internal Server Error",
-      });
-    }
-  } catch (error) {
-    console.error("Error in forgotPassword:", error);
-    res.status(500).json({
-      ok: false,
-      message: "Internal Server Error",
-    });
-  }
-};
-
-exports.resetPassword = async (req, res, next) => {
-  const { newPassword, confirmPassword } = req.body;
-
-  try {
-    const user = await User.findOne({
-      where: {
-        resetToken: req.params.token,
-        resetTokenExpiry: { [Op.gt]: new Date() },
-      },
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        ok: false,
-        message: "Token is invalid or has expired",
-      });
+    if (fullname) {
+      user.fullname = fullname;
     }
 
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({
-        ok: false,
-        message: "Passwords do not match",
-      });
+    if (gender) {
+      user.gender = gender;
+    }
+    if (phoneNumber) {
+      user.phoneNumber = phoneNumber;
     }
 
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(newPassword, salt);
+    if (email) {
+      user.email = email;
+    }
 
-    user.password = hashedPassword;
-    user.resetToken = null;
-    user.resetTokenExpiry = null;
+    if (username) {
+      user.username = username;
+    }
+    if (dateofbirth) {
+      user.dateofbirth = dateofbirth;
+    }
+    if (req.file) {
+      user.profilePicture = req.file.filename;
+    } else {
+      user.profilePicture = user.profilePicture;
+    }
 
     await user.save();
 
-    res.status(200).json({
+    return res.json({
       ok: true,
-      message: "Password reset successful",
+      status: 200,
+      message: "Profile Settings Successfully Updated",
+      account: {
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        username: user.username,
+        gender: user.gender,
+        phoneNumber: user.phoneNumber,
+      },
     });
   } catch (error) {
-    console.error("Error in resetPassword:", error);
-    res.status(500).json({
-      ok: false,
-      message: "Internal Server Error",
+    return res
+      .status(500)
+      .json({ ok: false, message: "Internal server error", error: error });
+  }
+};
+
+exports.getUserInfo = async (req, res) => {
+  const { id } = req.user;
+
+  try {
+    const userInfo = await User.findOne({
+      where: {
+        id: id,
+      },
+      attributes: [
+        "id",
+        "email",
+        "username",
+        "fullname",
+        "dateofbirth",
+        "gender",
+        "phoneNumber",
+        "profilePicture",
+      ],
     });
+
+    if (!userInfo) {
+      return res.status(404).json({ ok: false, message: "User not found" });
+    }
+
+    res.json({ ok: true, userInfo });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ ok: false, message: "Internal server error", error: error });
   }
 };

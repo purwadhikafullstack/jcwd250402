@@ -1,13 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import api from "../api.js";
 
-const Avatar = () => {
+const Avatar = ({ width, height }) => {
+  const [profilePicture, setProfilePicture] = useState(null); // Change to null for better handling
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await api.get(`/user/profile/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.status === 200) {
+          const { profilePicture } = response.data.userInfo;
+          setProfilePicture(profilePicture);
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+    fetchUserProfile();
+  }, [token]);
+
+  const defaultAvatar =
+    "https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif";
+
+  const profilePictureSrc = profilePicture
+    ? `http://localhost:8000/profile-picture/${profilePicture}`
+    : defaultAvatar;
+
   return (
     <img
       className="rounded-full"
-      src="https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png"
+      src={profilePictureSrc}
       alt="avatar"
-      height={30}
-      width={30}
+      height={height}
+      width={width}
     />
   );
 };
