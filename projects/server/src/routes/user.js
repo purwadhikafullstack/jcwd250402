@@ -1,14 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controller/user");
+const authMiddleware = require("../middleware/auth");
+const { multerUpload } = require("../lib/multer");
 const authValidator = require("../middleware/validation/auth");
 
-router.post("/forgot-password", userController.forgotPassword);
 router.patch(
-  "/reset-password/:token",
-  // authValidator.newPasswordRules,
-  // authValidator.applyRegisterValidation,
-  userController.resetPassword
+  "/update-profile",
+  multerUpload.single("profilePicture"),
+  authMiddleware.validateToken,
+  userController.updateProfile
+);
+
+// profile yang di GET = profile yang sedang login
+router.get(
+  "/profile",
+  authMiddleware.validateToken,
+  userController.getUserInfo
 );
 
 module.exports = router;

@@ -30,7 +30,7 @@ exports.validateToken = (req, res, next) => {
       return;
     }
 
-    req, (user = payload);
+    req.user = payload;
     next();
   } catch (err) {
     res.status(403).json({

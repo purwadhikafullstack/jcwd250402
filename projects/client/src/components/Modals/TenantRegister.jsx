@@ -138,7 +138,10 @@ const TenantRegisterModal = () => {
 
       <div>
         <button
-          onClick={() => navigate("/tenant-login")}
+          onClick={() => {
+            navigate("/tenant-login");
+            tenantRegisterModal.onClose();
+          }}
           className="text-xs text-neutral-500 hover:text-black"
         >
           <span>Already a Host? Sign In</span>

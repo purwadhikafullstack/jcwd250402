@@ -25,6 +25,7 @@ const userRouter = require("./routes/user");
 // NOTE : Add your routes here
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/profile-picture", express.static(__dirname + "/public"));
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`);

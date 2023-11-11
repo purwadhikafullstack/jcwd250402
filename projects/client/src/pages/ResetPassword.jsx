@@ -22,7 +22,7 @@ export default function ResetPassword() {
       return;
     } else {
       try {
-        const response = await api.patch(`/user/reset-password/${token}`, {
+        const response = await api.patch(`/auth/reset-password/${token}`, {
           newPassword: newPassword,
           confirmPassword: confirmPassword,
         });
@@ -44,8 +44,8 @@ export default function ResetPassword() {
   };
 
   return (
-    <section className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="flex flex-col items-center justify-center w-1/2 p-5 bg-white rounded-lg shadow-md">
+    <section className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex flex-col items-center justify-center w-1/2 bg-white border-2 rounded-lg shadow-xl p-14 ">
         <div className="">
           <img
             src={logo}
