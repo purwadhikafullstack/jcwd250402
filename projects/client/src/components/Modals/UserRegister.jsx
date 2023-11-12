@@ -10,14 +10,14 @@ import Heading from "../Heading";
 import Input from "../inputs/Input";
 import Modal from "./Modal";
 import api from "../../api";
-import LoginModal from "./LoginModal";
+import LoginModal from "./LoginModal"; // Login Component
 yupPassword(Yup);
 
 const UserRegisterModal = () => {
   const UserRegisterModal = useUserRegister();
   const UseLoginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(true);
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
@@ -30,7 +30,7 @@ const UserRegisterModal = () => {
     fullname: Yup.string().required("Fullname is required"),
     email: Yup.string().required("Email is required"),
     password: Yup.string().required("Password is required"),
-    phoneNumber: Yup.string().required("Phone Number is required"),
+    phoneNumber: Yup.string().optional(),
   });
 
   const registerUser = async (fullname, email, password, phoneNumber, role) => {
@@ -134,7 +134,7 @@ const UserRegisterModal = () => {
       <div>
         <button
           onClick={() => {
-            setIsRegistered(true);
+            setIsRegistering(false);
             UserRegisterModal.onClose();
             UseLoginModal.onOpen();
           }}
@@ -145,23 +145,25 @@ const UserRegisterModal = () => {
     </div>
   );
 
-  const modalBodyContent = isRegistered ? <LoginModal /> : bodyContent;
+  const modalBodyContent = isRegistering ? bodyContent : <LoginModal />;
 
   return (
     <Modal
       disabled={isLoading}
       isOpen={UserRegisterModal.isOpen}
+      onOpen={UserRegisterModal.onOpen}
       onClose={() => {
+        setIsRegistering(true);
         UseLoginModal.onClose();
-        setIsRegistered(false);
+        window.location.reload();
         UserRegisterModal.onClose();
       }}
       title="User Registration"
-      actionLabel={isRegistered ? "Log In" : "Sign Up"}
+      actionLabel={isRegistering ? "Sign Up" : "Log In"}
       onSubmit={() => {
-        if (isRegistered) {
+        if (!isRegistering) {
           UserRegisterModal.onClose();
-          LoginModal.onOpen();
+          UseLoginModal.onOpen();
         } else {
           registerUser(
             formData.fullname,
