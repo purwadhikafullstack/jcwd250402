@@ -77,7 +77,7 @@ const LoginModal = () => {
         localStorage.setItem("token", token);
         if (role === "tenant") {
           loginModal.onClose();
-          navigate("/dashboard");
+          navigate("/tenant/dashboard");
           setIsLoading(false);
         } else if (role === "user") {
           loginModal.onClose();

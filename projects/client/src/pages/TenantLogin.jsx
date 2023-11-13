@@ -52,8 +52,8 @@ const Tenant = () => {
           return;
         } else if (role === "tenant") {
           localStorage.setItem("token", token);
-          toast.success("Logged In as Tenant");
-          navigate("/dashboard");
+          toast.success("Log in successful! Welcome back!");
+          navigate("/tenant/dashboard");
           setIsLoading(false);
         }
       }
@@ -112,7 +112,7 @@ const Tenant = () => {
       <div className="flex flex-col items-center justify-center w-full px-6 py-8 mx-auto md:h-screen lg:py-0 z-100">
         <div className="w-full bg-white rounded-lg shadow-xl dark:border md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <div className="flex flex-row">
+            <div className="flex flex-row items-center justify-center">
               <h1 class="text-xl font-light leading-tight tracking-tight text-gray-900 md:text-2xl mr-2">
                 Welcome to
               </h1>
@@ -231,7 +231,9 @@ const Tenant = () => {
             <div className="flex items-center justify-center">
               <span className="mr-2">Don't have an account?</span>
               <button
-                onClick={tenantRegister.onOpen}
+                onClick={() => {
+                  navigate("/tenant/register");
+                }}
                 className="text-primary hover:underline"
               >
                 Sign up

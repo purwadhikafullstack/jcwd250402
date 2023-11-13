@@ -197,7 +197,7 @@ export default function UpdateProfile() {
             </label>
             <DatePicker
               id="dob"
-              name="dateofbirth" // Match with the key in initialValues
+              name="dateofbirth"
               onChange={(date) => formik.setFieldValue("dateofbirth", date)}
               onBlur={formik.handleBlur}
               selected={formik.values.dateofbirth}
@@ -239,7 +239,7 @@ export default function UpdateProfile() {
             ) : null}
           </div>
 
-          <Dropzone />
+          <Dropzone label={"profilePicture"} />
 
           <button
             type="submit"

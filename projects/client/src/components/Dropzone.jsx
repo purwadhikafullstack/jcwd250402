@@ -6,7 +6,7 @@ import api from "../api.js";
 import { RiAddFill } from "react-icons/ri";
 import { toast } from "sonner";
 
-export default function UploadProfilePicture() {
+export default function UploadProfilePicture({ label, route }) {
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -71,9 +71,7 @@ export default function UploadProfilePicture() {
 
   return (
     <>
-      <span className="block text-sm font-medium text-gray-700">
-        Profile Picture
-      </span>
+      <span className="block text-sm font-medium text-gray-700">{label}</span>
       <div
         {...getRootProps()}
         className="flex items-center justify-center bg-white"

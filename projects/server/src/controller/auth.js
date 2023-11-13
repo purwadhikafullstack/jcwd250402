@@ -134,14 +134,14 @@ exports.loginHandler = async (req, res) => {
 
     if (!user) {
       return res
-        .status(401)
+        .status(400)
         .json({ message: "Invalid email/username or password" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res
-        .status(401)
+        .status(400)
         .json({ message: "Invalid email/username or password" });
     }
 

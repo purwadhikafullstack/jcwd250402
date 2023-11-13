@@ -1,8 +1,14 @@
 import { lazy } from "react";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 import { Route, Routes } from "react-router-dom";
 import { TenantLogin, Home } from "./pages";
-import { TenantDashboard, UpdateProfile } from "./pages";
+import {
+  TenantDashboard,
+  UpdateProfile,
+  TenantRegisterPage,
+  PageNotFound,
+} from "./pages";
+import ProtectedRoute from "./utils/protectedRoute";
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UserRegisterModal = lazy(() =>
   import("./components/Modals/UserRegister")
@@ -16,16 +22,19 @@ function App() {
   return (
     <main>
       <Toaster richColors />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/tenant" element={<TenantLogin />} />
-        <Route path="/dashboard" element={<TenantDashboard />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/update-profile" element={<UpdateProfile />} />
-      </Routes>
       <LoginModal />
       <TenantRegisterModal />
       <UserRegisterModal />
+      <Routes>
+        {/* <Route element={<ProtectedRoute />}> */}
+        <Route path="/tenant/dashboard" element={<TenantDashboard />} />
+        {/* </Route> */}
+        <Route path="/" element={<Home />} />
+        <Route path="/tenant" element={<TenantLogin />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/tenant/register" element={<TenantRegisterPage />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
     </main>
   );
 }
