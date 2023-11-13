@@ -38,6 +38,7 @@ const UserMenu = () => {
   const logOutHandler = () => {
     if (!isLoggedIn) {
       toast.error("You are not logged in");
+      loginModal.onOpen();
       return;
     }
     localStorage.removeItem("token");
@@ -55,12 +56,26 @@ const UserMenu = () => {
         {isUser ||
           (!isLoggedIn && (
             <div
-              onClick={tenantRegister.onOpen}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate("/tenant");
+              }}
               className="px-4 py-3 text-sm font-semibold transition rounded-full cursor-pointer md:block hover:bg-neutral-100"
             >
               Become a Host
             </div>
           ))}
+        {isTenant && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate("/tenant/dashboard");
+            }}
+            className="px-4 py-3 text-sm font-semibold transition rounded-full cursor-pointer md:block hover:bg-neutral-100"
+          >
+            Tenant Dashboard
+          </div>
+        )}
         <div
           onClick={toggleMenu}
           className="p-4 md:py-1 md:px-2 border-[1px] border-neutral-200 flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-md transition"

@@ -139,7 +139,7 @@ const TenantRegisterModal = () => {
       <div>
         <button
           onClick={() => {
-            navigate("/tenant-login");
+            navigate("/tenant");
             tenantRegisterModal.onClose();
           }}
           className="text-xs text-neutral-500 hover:text-black"
