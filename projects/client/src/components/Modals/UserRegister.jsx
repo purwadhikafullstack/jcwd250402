@@ -4,17 +4,19 @@ import yupPassword from "yup-password";
 import { toast } from "sonner";
 import { Form, Formik, useFormik } from "formik";
 
-import useUserRegister from "../hooks/useUserRegister";
-import useLoginModal from "../hooks/useLoginModal";
+import useUserRegister from "../hooks/useUserRegister"; // Register Slice
+import useLoginModal from "../hooks/useLoginModal"; // Login Slice
 import Heading from "../Heading";
 import Input from "../inputs/Input";
 import Modal from "./Modal";
 import api from "../../api";
 import LoginModal from "./LoginModal"; // Login Component
+import { useNavigate } from "react-router-dom";
 yupPassword(Yup);
 
-const UserRegisterModal = () => {
-  const UserRegisterModal = useUserRegister();
+const UseRegisterModal = () => {
+  const navigate = useNavigate();
+  const UseRegisterModal = useUserRegister();
   const UseLoginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(true);
@@ -47,14 +49,12 @@ const UserRegisterModal = () => {
       if (response.status === 200) {
         setIsLoading(false);
         const userData = response.data;
-        const token = userData.data.token;
-
-        localStorage.setItem("token", token);
 
         if (userData.data.role === "user") {
-          window.success("Logged In as User");
-        } else if (userData.data.role === "tenant") {
-          window.success("Logged In as Tenant");
+          UseRegisterModal.onClose();
+          setIsLoading(false);
+          toast.success("You're Registered Successfully as a User");
+          navigate("/");
         }
       }
     } catch (err) {
@@ -80,6 +80,15 @@ const UserRegisterModal = () => {
 
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleRegister = () => {
+    registerUser(
+      formData.fullname,
+      formData.email,
+      formData.password,
+      formData.phoneNumber
+    );
   };
 
   const bodyContent = (
@@ -135,7 +144,7 @@ const UserRegisterModal = () => {
         <button
           onClick={() => {
             setIsRegistering(false);
-            UserRegisterModal.onClose();
+            UseRegisterModal.onClose();
             UseLoginModal.onOpen();
           }}
           className="text-xs text-neutral-500 hover:text-black">
@@ -144,39 +153,37 @@ const UserRegisterModal = () => {
       </div>
     </div>
   );
+  // const openLoginModal = UseLoginModal.onOpen();
 
   const modalBodyContent = isRegistering ? bodyContent : <LoginModal />;
 
   return (
     <Modal
       disabled={isLoading}
-      isOpen={UserRegisterModal.isOpen}
-      onOpen={UserRegisterModal.onOpen}
+      isOpen={UseRegisterModal.isOpen}
+      onOpen={UseRegisterModal.onOpen}
       onClose={() => {
         setIsRegistering(true);
         UseLoginModal.onClose();
         window.location.reload();
-        UserRegisterModal.onClose();
+        UseRegisterModal.onClose();
       }}
       title="User Registration"
-      actionLabel={isRegistering ? "Sign Up" : "Log In"}
+      actionLabel={isRegistering ? "Sign Up" : "Sign In"}
       onSubmit={() => {
-        if (!isRegistering) {
-          UserRegisterModal.onClose();
-          UseLoginModal.onOpen();
-        } else {
-          registerUser(
-            formData.fullname,
-            formData.email,
-            formData.password,
-            formData.phoneNumber,
-            formData.role
-          );
-        }
+        handleRegister();
+        navigate("/");
+        // if (!isRegistering) {
+        //   UseRegisterModal.onClose();
+        //   UseLoginModal.onOpen();
+        // } else {
+        //   handleRegister();
+        //   navigate("/");
+        // }
       }}
       body={modalBodyContent}
     />
   );
 };
 
-export default UserRegisterModal;
+export default UseRegisterModal;

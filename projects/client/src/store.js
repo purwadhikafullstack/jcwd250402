@@ -3,6 +3,7 @@ import {
   loginModalSlice,
   tenantRegisterSlice,
   userRegisterSlice,
+  verifyRegisterUserSlice
 } from "./components/hooks/modalSlice";
 
 const store = configureStore({
@@ -10,6 +11,7 @@ const store = configureStore({
     loginModal: loginModalSlice.reducer,
     tenantRegister: tenantRegisterSlice.reducer,
     userRegister: userRegisterSlice.reducer,
+    verifyRegisterUser: verifyRegisterUserSlice.reducer,
   },
 });
 

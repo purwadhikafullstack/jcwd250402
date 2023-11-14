@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { userRegisterSlice } from "./modalSlice";
+import { userRegisterSlice, verifyRegisterUserSlice } from "./modalSlice";
 
 const useUserRegister = () => {
   const state = useSelector((state) => state.userRegister);
@@ -9,6 +9,8 @@ const useUserRegister = () => {
     isOpen: state.isOpen,
     onOpen: () => dispatch(userRegisterSlice.actions.openUserRegister()),
     onClose: () => dispatch(userRegisterSlice.actions.closeUserRegister()),
+    onOpenVerifyRegisterUser: () => dispatch(verifyRegisterUserSlice.actions.openVerifyRegisterUser()),
+    onCloseVerifyRegisterUser: () => dispatch(verifyRegisterUserSlice.actions.closeVerifyRegisterUser()),
   };
 };
 
