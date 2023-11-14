@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import api from "../../api";
 import useLoginModal from "../hooks/useLoginModal";
+import useUserRegister from "../hooks/useUserRegister";
 import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../inputs/Input";
@@ -16,6 +17,7 @@ yupPassword(Yup);
 const LoginModal = () => {
   const navigate = useNavigate();
   const loginModal = useLoginModal();
+  const registerModal = useUserRegister();
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const location = useLocation();
@@ -202,6 +204,7 @@ const LoginModal = () => {
         onClose={() => {
           loginModal.onClose();
           setIsForgotPassword(false);
+          window.location.reload();
         }}
         title={isForgotPassword ? "Forgot Password" : "Login"}
         actionLabel={isForgotPassword ? "Send Reset Password Link" : "Sign In"}
