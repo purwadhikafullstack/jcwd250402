@@ -36,9 +36,12 @@ exports.updateProfile = async (req, res) => {
     if (dateofbirth) {
       user.dateofbirth = dateofbirth;
     }
+
+    // Check if a file was included in the request
     if (req.file) {
-      user.profilePicture = req.file.filename;
+      user.profilePicture = req.file.filename; // Assuming filename is the correct property
     } else {
+      // If no new file was uploaded, keep the existing profilePicture value
       user.profilePicture = user.profilePicture;
     }
 

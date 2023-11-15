@@ -1,73 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { useFormik } from "formik";
+import { useFormik, Field } from "formik";
 import * as Yup from "yup";
-import api from "../api.js";
 import { RiAddFill } from "react-icons/ri";
-import { toast } from "sonner";
 
-export default function UploadProfilePicture({ label, route }) {
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      profilePicture: null,
-    },
-    validationSchema: Yup.object({
-      profilePicture: Yup.mixed()
-        .test("fileSize", "File is too large", (value) => {
-          return value && value.size <= 1024 * 1024;
-        })
-        .test("fileType", "Invalid file type", (value) => {
-          return (
-            value &&
-            ["image/gif", "image/png", "image/jpeg"].includes(value.type)
-          );
-        }),
-    }),
-    onSubmit: async (values) => {
+export default function UploadPhoto({ label, formik, field }) {
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: async (acceptedFiles) => {
       try {
-        const token = localStorage.getItem("token");
-        const formData = new FormData();
-        formData.append("profilePicture", values.profilePicture);
-        const response = await api.patch("/user/update-profile", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.status === 200) {
-          window.location.reload();
-          toast.success("Profile picture updated!");
-        }
+        const file = acceptedFiles[0];
+        formik.setFieldValue(field, file);
+
+        const preview = URL.createObjectURL(file);
+        setPreview(preview);
       } catch (error) {
-        toast.error("Error updating profile picture:");
+        console.error("Error handling dropped file:", error);
       }
     },
   });
 
   const [preview, setPreview] = useState(null);
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (acceptedFiles) => {
-      const preview = URL.createObjectURL(acceptedFiles[0]);
-      formik.setFieldValue("profilePicture", acceptedFiles[0]);
-      setPreview(preview);
-    },
-  });
-
   useEffect(() => {
+    if (formik.values[field]) {
+      const preview = URL.createObjectURL(formik.values[field]);
+      setPreview(preview);
+    }
+
     return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
+      if (formik.values[field]) {
+        URL.revokeObjectURL(URL.createObjectURL(formik.values[field]));
       }
     };
-  }, [preview]);
-
-  // Add the following useEffect to reset the input value
-  useEffect(() => {
-    // Reset input value after handling drop event
-    formik.setFieldValue("profilePicture", null);
-  }, [preview]);
+  }, [formik.values[field]]);
 
   return (
     <>
@@ -109,17 +74,6 @@ export default function UploadProfilePicture({ label, route }) {
       {formik.errors.profilePicture && formik.touched.profilePicture && (
         <div className="text-red-500">{formik.errors.profilePicture}</div>
       )}
-      <div className="flex justify-evenly ">
-        <button
-          type="button"
-          onClick={() => {
-            formik.handleSubmit();
-          }}
-          className=" bg-primary mt-4 mb-11 text-white font-medium text-lg py-2 rounded-md hover:bg-primary/70 focus:outline-none focus:ring focus:ring-[#018947] w-[25%]"
-        >
-          Upload
-        </button>
-      </div>
     </>
   );
 }

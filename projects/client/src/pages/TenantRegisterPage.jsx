@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import moment from "moment";
-import { Dropzone } from "../components";
+import { UploadPhoto } from "../components";
 import "react-datepicker/dist/react-datepicker.css";
 import Input from "../components/inputs/Input";
-import Heading from "../components/Heading";
 import { Formik, Form } from "formik";
 import logo from "../asset/Logo-Black.svg";
 
@@ -18,6 +17,9 @@ const TenantRegisterPage = () => {
     phoneNumber: "",
     username: "",
     password: "",
+    gender: "",
+    dateOfBirth: "",
+    profilePicture: null,
   });
 
   const nextStep = () => setStep(step + 1);
@@ -31,7 +33,7 @@ const TenantRegisterPage = () => {
   };
 
   const handleNext = () => {
-    // Add any validation logic if needed
+    //tambah validasi sebelum lanjut ke step berikutnya
     nextStep();
   };
 
@@ -42,6 +44,16 @@ const TenantRegisterPage = () => {
   const handleSubmit = () => {
     // Add submit logic here
     console.log("Form submitted:", formData);
+  };
+
+  const handleFileChange = (files) => {
+    // Assuming you want to store only the first file selected
+    const profilePicture = files[0];
+
+    setFormData((prevData) => ({
+      ...prevData,
+      profilePicture,
+    }));
   };
 
   const progressPercentage = ((step - 1) / 3) * 100;
@@ -156,7 +168,7 @@ const TenantRegisterPage = () => {
                       <option value="other">Rather not say</option>
                     </select>
                   </div>
-                  <Dropzone label={"Profile Picture"} />
+                  <UploadPhoto label={"Profile Picture"} />
                 </div>
               </>
             )}
@@ -164,7 +176,7 @@ const TenantRegisterPage = () => {
             {step === 4 && (
               <>
                 <h1 className="mb-4 text-2xl">Proof of Identification </h1>
-                <Dropzone />
+                <UploadPhoto />
               </>
             )}
           </Form>

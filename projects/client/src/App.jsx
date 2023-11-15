@@ -1,13 +1,8 @@
 import { lazy } from "react";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 import { Route, Routes } from "react-router-dom";
 import { TenantLogin, Home } from "./pages";
-import {
-  TenantDashboard,
-  UpdateProfile,
-  TenantRegisterPage,
-  PageNotFound,
-} from "./pages";
+import { TenantDashboard, TenantRegisterPage, PageNotFound } from "./pages";
 import ProtectedRoute from "./utils/protectedRoute";
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UserRegisterModal = lazy(() =>
