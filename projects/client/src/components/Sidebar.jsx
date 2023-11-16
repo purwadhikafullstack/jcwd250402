@@ -1,5 +1,4 @@
 import React, { useState, createContext, useContext, useEffect } from "react";
-import Avatar from "./Avatar";
 import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
 import { RiMore2Fill } from "react-icons/ri";
 import logo from "../asset/Logo-Black.svg";
@@ -47,9 +46,6 @@ export function Sidebar({
           setProfilePicture(profilePicture);
         }
       } catch (error) {
-        setProfilePicture(
-          "ttps://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
-        );
         console.error("Error fetching user profile:", error);
       }
     };
@@ -57,7 +53,7 @@ export function Sidebar({
   }, [token]);
 
   const defaultAvatar =
-    "https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif";
+    "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
 
   const profilePictureSrc = profilePicture
     ? `http://localhost:8000/profile-picture/${profilePicture}`

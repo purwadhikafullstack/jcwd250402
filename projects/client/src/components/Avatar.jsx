@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import placeholder from "../asset/user_placeholder.svg";
 import api from "../api.js";
 
 const Avatar = ({ width, height }) => {
@@ -18,9 +19,6 @@ const Avatar = ({ width, height }) => {
           setProfilePicture(profilePicture);
         }
       } catch (error) {
-        setProfilePicture(
-          "ttps://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
-        );
         console.error("Error fetching user profile:", error);
       }
     };
@@ -28,7 +26,7 @@ const Avatar = ({ width, height }) => {
   }, [token]);
 
   const defaultAvatar =
-    "https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif";
+    "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
 
   const profilePictureSrc = profilePicture
     ? `http://localhost:8000/profile-picture/${profilePicture}`

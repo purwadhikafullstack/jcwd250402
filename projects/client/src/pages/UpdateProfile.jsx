@@ -28,6 +28,18 @@ export default function UpdateProfile() {
       ["male", "female", "other"],
       "Invalid gender selection"
     ),
+    profilePicture: Yup.mixed()
+      .notRequired()
+      .test("fileSize", "File is too large", (value) => {
+        return !value || (value && value.size <= 1024 * 1024);
+      })
+      .test("fileType", "Invalid file type", (value) => {
+        return (
+          !value ||
+          (value &&
+            ["image/gif", "image/png", "image/jpeg"].includes(value.type))
+        );
+      }),
   });
 
   const token = localStorage.getItem("token");
@@ -36,29 +48,27 @@ export default function UpdateProfile() {
 
   const onSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
+    const formattedDateOfBirth = moment(values.dateofbirth).format(
+      "DD-MM-YYYY"
+    );
     try {
-      const token = localStorage.getItem("token");
-      const formattedDateOfBirth = moment(values.dateofbirth).format(
-        "YYYY-MM-DD"
-      );
+      const formData = new FormData();
+      formData.append("username", values.username);
+      formData.append("email", values.email);
+      formData.append("fullname", values.fullname);
+      formData.append("dateofbirth", values.dateofbirth);
+      console.log(formik.values.dateofbirth);
+      if (values.profilePicture)
+        formData.append("profilePicture", values.profilePicture);
 
-      const response = await api.patch(
-        "/user/update-profile",
-        {
-          username: values.username,
-          email: values.email,
-          fullname: values.fullname,
-          password: values.newPassword,
-          gender: values.gender,
-          profilePicture: values.profilePicture,
-          dateofbirth: formattedDateOfBirth,
+      const token = localStorage.getItem("token");
+
+      const response = await api.patch("/user/update-profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      });
       if (response.status === 200) {
         toast.success("Profile settings updated!");
         resetForm();
@@ -70,7 +80,6 @@ export default function UpdateProfile() {
       toast.error("Oops Something Went Wrong, Try Again Later");
     }
   };
-
   const initialValues = {
     newPassword: "",
     confirmNewPassword: "",
@@ -116,8 +125,6 @@ export default function UpdateProfile() {
     };
     fetchUserProfile();
   }, [userId, formik.setValues, token]);
-
-  console.log(formik.values.profilePicture);
 
   return (
     <section className="flex flex-col items-center justify-center w-[70%] min-h-screen bg-white rounded-md">
@@ -208,11 +215,14 @@ export default function UpdateProfile() {
               <DatePicker
                 id="dob"
                 name="dateofbirth"
-                onChange={(date) => formik.setFieldValue("dateofbirth", date)}
+                onChange={(value) => {
+                  formik.setFieldValue("dateofbirth", value);
+                }}
                 onBlur={formik.handleBlur}
                 selected={formik.values.dateofbirth}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-400"
                 disabled={isLoading}
+                dateFormat="dd/MM/yyyy"
               />
 
               {formik.touched.birthDate && formik.errors.birthDate ? (
@@ -250,10 +260,18 @@ export default function UpdateProfile() {
             </div>
 
             <UploadPhoto
-              label={"Profile Picture"}
+              id="profilePicture"
+              name="profilePicture"
+              label="Profile Picture"
               formik={formik}
               field="profilePicture"
+              onChange={(value) => {
+                formik.setFieldValue("profilePicture", value);
+              }}
             />
+            {formik.touched.profilePicture && formik.errors.profilePicture ? (
+              <div className="text-red-600">{formik.errors.profilePicture}</div>
+            ) : null}
 
             <button
               type="submit"

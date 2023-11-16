@@ -22,7 +22,6 @@ const TenantDashboard = () => {
   };
 
   document.title = "Host Dashboard";
-  console.log(isExpanded);
   return (
     <div
       className={`flex flex-row ${
