@@ -18,6 +18,9 @@ const Avatar = ({ width, height }) => {
           setProfilePicture(profilePicture);
         }
       } catch (error) {
+        setProfilePicture(
+          "ttps://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
+        );
         console.error("Error fetching user profile:", error);
       }
     };
