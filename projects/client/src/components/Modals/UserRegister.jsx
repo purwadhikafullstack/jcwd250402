@@ -91,6 +91,12 @@ const UseRegisterModal = () => {
     );
   };
 
+  const loginButton = () => {
+    setIsRegistering(false);
+    UseRegisterModal.onClose();
+    UseLoginModal.onOpen();
+  }
+
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading title="Welcome to Nginapp" subtitle="Lets create your account" />
@@ -142,11 +148,7 @@ const UseRegisterModal = () => {
 
       <div>
         <button
-          onClick={() => {
-            setIsRegistering(false);
-            UseRegisterModal.onClose();
-            UseLoginModal.onOpen();
-          }}
+          onClick={loginButton}
           className="text-xs text-neutral-500 hover:text-black">
           <span>Have an account? Sign In</span>
         </button>
@@ -155,7 +157,7 @@ const UseRegisterModal = () => {
   );
   // const openLoginModal = UseLoginModal.onOpen();
 
-  const modalBodyContent = isRegistering ? bodyContent : <LoginModal />;
+  // const modalBodyContent = isRegistering ? bodyContent ;
 
   return (
     <Modal
@@ -165,7 +167,7 @@ const UseRegisterModal = () => {
       onClose={() => {
         setIsRegistering(true);
         UseLoginModal.onClose();
-        window.location.reload();
+        // window.location.reload();
         UseRegisterModal.onClose();
       }}
       title="User Registration"
@@ -173,15 +175,8 @@ const UseRegisterModal = () => {
       onSubmit={() => {
         handleRegister();
         navigate("/");
-        // if (!isRegistering) {
-        //   UseRegisterModal.onClose();
-        //   UseLoginModal.onOpen();
-        // } else {
-        //   handleRegister();
-        //   navigate("/");
-        // }
       }}
-      body={modalBodyContent}
+      body={bodyContent}
     />
   );
 };
