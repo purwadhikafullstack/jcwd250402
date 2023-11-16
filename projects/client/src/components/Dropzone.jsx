@@ -4,7 +4,11 @@ import { useFormik, Field } from "formik";
 import * as Yup from "yup";
 import { RiAddFill } from "react-icons/ri";
 
-export default function UploadPhoto({ label, formik, field }) {
+export default function UploadPhoto({ label, formik, field, id }) {
+  const handlePhotoChange = (event) => {
+    formik.setFieldValue(field, event.currentTarget.files[0]);
+  };
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: async (acceptedFiles) => {
       try {
@@ -61,12 +65,14 @@ export default function UploadPhoto({ label, formik, field }) {
           </div>
           <input
             {...getInputProps()}
-            id="dropzone-file"
+            id={id}
+            name={id}
+            register={useFormik}
             type="file"
-            name="profilePicture"
             className="hidden"
             accept="image/"
             multiple={false}
+            onChange={handlePhotoChange}
           />
         </label>
       </div>

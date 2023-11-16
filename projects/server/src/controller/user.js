@@ -3,46 +3,42 @@ const { User } = require("../models");
 const { Op } = require("sequelize");
 const mailer = require("../lib/nodemailer");
 const crypto = require("crypto");
+const { profile } = require("console");
 
 exports.updateProfile = async (req, res) => {
   const userId = req.user.id;
   const { fullname, gender, phoneNumber, dateofbirth, email, username } =
     req.body;
+
   try {
     const user = await User.findOne({ where: { id: userId } });
 
     if (!user) {
       return res.status(404).json({ ok: false, message: "User not found" });
     }
-
     if (fullname) {
       user.fullname = fullname;
     }
-
     if (gender) {
       user.gender = gender;
     }
     if (phoneNumber) {
       user.phoneNumber = phoneNumber;
     }
-
     if (email) {
       user.email = email;
     }
-
     if (username) {
       user.username = username;
     }
     if (dateofbirth) {
       user.dateofbirth = dateofbirth;
     }
-
-    // Check if a file was included in the request
+    console.log(dateofbirth);
     if (req.file) {
-      user.profilePicture = req.file.filename; // Assuming filename is the correct property
+      user.profilePicture = req.file.filename;
     } else {
-      // If no new file was uploaded, keep the existing profilePicture value
-      user.profilePicture = user.profilePicture;
+      user.profilePicture = user.profilePicture || null;
     }
 
     await user.save();
