@@ -204,7 +204,7 @@ const LoginModal = () => {
         onClose={() => {
           loginModal.onClose();
           setIsForgotPassword(false);
-          window.location.reload();
+          // window.location.reload();
         }}
         title={isForgotPassword ? "Forgot Password" : "Login"}
         actionLabel={isForgotPassword ? "Send Reset Password Link" : "Sign In"}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import { UploadPhoto } from "../components";
@@ -10,6 +10,7 @@ import logo from "../asset/Logo-Black.svg";
 // not yet functional
 const TenantRegisterPage = () => {
   const [step, setStep] = useState(1);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -58,6 +59,14 @@ const TenantRegisterPage = () => {
 
   const progressPercentage = ((step - 1) / 3) * 100;
 
+  useEffect(() => {
+    if (!formData.firstName) {
+      setIsDisabled(true);
+      return;
+    }
+    setIsDisabled(false);
+  }, [formData.firstName, setIsDisabled]);
+
   return (
     <div>
       <div className="flex p-0 mt-7 mx-14">
@@ -80,7 +89,7 @@ const TenantRegisterPage = () => {
                   type="text"
                   placeholder="Tell us your name"
                   value={formData.firstName}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  onChange={(e) => handleChange("firstName", e)}
                   className="w-full px-3 py-2 mb-4 border-2 rounded-md focus:outline-none focus:ring focus:ring-indigo-400"
                   required={true}
                 />
@@ -158,8 +167,7 @@ const TenantRegisterPage = () => {
                       onChange={() => {}}
                       onBlur={() => {}}
                       value={() => {}}
-                      name="gender"
-                    >
+                      name="gender">
                       <option value="" disabled selected>
                         Select
                       </option>
@@ -186,8 +194,7 @@ const TenantRegisterPage = () => {
           <div className="h-2 mb-4 bg-gray-200 rounded">
             <div
               className="w-full h-full bg-black"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
+              style={{ width: `${progressPercentage}%` }}></div>
           </div>
 
           <div>
@@ -195,15 +202,13 @@ const TenantRegisterPage = () => {
               <button
                 className="px-6 py-2 mr-2 border-2 rounded-lg cursor-not-allowed text-neutral-500"
                 disabled
-                onClick={handlePrev}
-              >
+                onClick={handlePrev}>
                 Back
               </button>
             ) : (
               <button
                 className="px-6 py-2 mr-2 border-2 rounded-lg text-neutral-500"
-                onClick={handlePrev}
-              >
+                onClick={handlePrev}>
                 Back
               </button>
             )}
@@ -214,16 +219,15 @@ const TenantRegisterPage = () => {
           <div>
             {step !== 4 ? (
               <button
-                className="px-6 py-2 text-white rounded-lg bg-primary hover:bg-primary/70 "
+                className="px-6 py-2 text-white rounded-lg bg-primary hover:bg-primary/70 disabled:bg-slate-500"
                 onClick={handleNext}
-              >
+                disabled={isDisabled}>
                 Next
               </button>
             ) : (
               <button
                 className="px-6 py-2 text-white rounded-lg bg-primary hover:bg-primary/70 "
-                onClick={handleSubmit}
-              >
+                onClick={handleSubmit}>
                 Submit
               </button>
             )}
