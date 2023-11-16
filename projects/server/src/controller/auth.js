@@ -86,10 +86,10 @@ exports.handleRegister = async (req, res) => {
 
 exports.handleVerifyEmail = async (req, res) => {
   const { token } = req.query;
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  // const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const user = await User.findOne({
     where: {
-      verifyToken: hashedToken,
+      verifyToken: token,
       verifyTokenExpiry: {
         [Op.gt]: Date.now(),
       },

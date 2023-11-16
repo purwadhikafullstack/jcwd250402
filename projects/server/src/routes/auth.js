@@ -31,7 +31,7 @@ router.patch(
   authController.changePassword
 );
 
-router.get("/verify-email", authController.handleVerifyEmail);
+router.post("/verify-email", authController.handleVerifyEmail);
 
 router.post("/login", authController.loginHandler);
 
