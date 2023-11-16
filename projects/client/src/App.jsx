@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { TenantLogin, Home } from "./pages";
 import { TenantDashboard, TenantRegisterPage, PageNotFound } from "./pages";
 import ProtectedRoute from "./utils/protectedRoute";
+import AuthModal from "./components/Modals/AuthModal";
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UserRegisterModal = lazy(() =>
   import("./components/Modals/UserRegister")
@@ -17,9 +18,8 @@ function App() {
   return (
     <main>
       <Toaster richColors />
-      <LoginModal />
       <TenantRegisterModal />
-      <UserRegisterModal />
+      <AuthModal/>
       <Routes>
         {/* <Route element={<ProtectedRoute />}> */}
         <Route path="/tenant/dashboard" element={<TenantDashboard />} />

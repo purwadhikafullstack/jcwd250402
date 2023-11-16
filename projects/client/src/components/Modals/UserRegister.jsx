@@ -157,7 +157,7 @@ const UseRegisterModal = () => {
   );
   // const openLoginModal = UseLoginModal.onOpen();
 
-  const modalBodyContent = isRegistering ? bodyContent : <LoginModal />;
+  // const modalBodyContent = isRegistering ? bodyContent ;
 
   return (
     <Modal
@@ -167,7 +167,7 @@ const UseRegisterModal = () => {
       onClose={() => {
         setIsRegistering(true);
         UseLoginModal.onClose();
-        window.location.reload();
+        // window.location.reload();
         UseRegisterModal.onClose();
       }}
       title="User Registration"
@@ -175,15 +175,8 @@ const UseRegisterModal = () => {
       onSubmit={() => {
         handleRegister();
         navigate("/");
-        // if (!isRegistering) {
-        //   UseRegisterModal.onClose();
-        //   UseLoginModal.onOpen();
-        // } else {
-        //   handleRegister();
-        //   navigate("/");
-        // }
       }}
-      body={modalBodyContent}
+      body={bodyContent}
     />
   );
 };
