@@ -70,22 +70,30 @@ exports.handleRegister = async (req, res) => {
       html: emailHtml,
     });
 
+    const data = {
+      result,
+      token: result.verifyToken,
+    }
+
     res.status(200).json({
       ok: true,
       message: "Register success",
-      data: result,
+      data,
     });
   } catch (err) {
     console.log(err);
     return res.status(500).json({
       ok: false,
+      data,
       message: String(err),
     });
   }
 };
 
 exports.handleVerifyEmail = async (req, res) => {
-  const { token } = req.query;
+  // bring token from exports.handleRegister
+  const { token } = req.body;
+  // const { token } = req.query;
   // const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const user = await User.findOne({
     where: {
@@ -156,11 +164,15 @@ exports.loginHandler = async (req, res) => {
       }
     );
 
-    return res.status(200).json({
-      ok: true,
+    const data = {
       id: user.id,
       role: user.role,
       token,
+    }
+
+    return res.status(200).json({
+      ok: true,
+      data,
     });
   } catch (error) {
     console.error(error);
