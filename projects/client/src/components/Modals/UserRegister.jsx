@@ -91,6 +91,12 @@ const UseRegisterModal = () => {
     );
   };
 
+  const loginButton = () => {
+    setIsRegistering(false);
+    UseRegisterModal.onClose();
+    UseLoginModal.onOpen();
+  }
+
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading title="Welcome to Nginapp" subtitle="Lets create your account" />
@@ -142,11 +148,7 @@ const UseRegisterModal = () => {
 
       <div>
         <button
-          onClick={() => {
-            setIsRegistering(false);
-            UseRegisterModal.onClose();
-            UseLoginModal.onOpen();
-          }}
+          onClick={loginButton}
           className="text-xs text-neutral-500 hover:text-black">
           <span>Have an account? Sign In</span>
         </button>
