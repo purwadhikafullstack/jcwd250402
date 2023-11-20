@@ -5,6 +5,7 @@ import TenantDashboard from "./TenantDashboard";
 import UpdateProfile from "./UpdateProfile";
 import TenantRegisterPage from "./TenantRegisterPage";
 import PageNotFound from "./PageNotFound";
+import CreateProperty from "./CreateProperty";
 
 export {
   ResetPassword,
@@ -14,4 +15,5 @@ export {
   UpdateProfile,
   TenantRegisterPage,
   PageNotFound,
+  CreateProperty,
 };

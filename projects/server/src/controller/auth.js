@@ -73,7 +73,7 @@ exports.handleRegister = async (req, res) => {
     const data = {
       result,
       token: result.verifyToken,
-    }
+    };
 
     res.status(200).json({
       ok: true,
@@ -164,15 +164,11 @@ exports.loginHandler = async (req, res) => {
       }
     );
 
-    const data = {
+    return res.status(200).json({
+      ok: true,
       id: user.id,
       role: user.role,
       token,
-    }
-
-    return res.status(200).json({
-      ok: true,
-      data,
     });
   } catch (error) {
     console.error(error);
@@ -216,13 +212,24 @@ exports.forgotPassword = async (req, res) => {
       }
     );
 
+    const template = fs.readFileSync(
+      __dirname + "/../email-template/forgotPassword.html",
+      "utf8"
+    );
+
+    // const message = `Forgot your password? Click this link to reset your password \n${resetUrl}\nIf you didn't make this request, please ignore this email! \nToken only Valid for 10 Minutes`;
+    const compiledTemplate = hbs.compile(template);
     const resetUrl = `${req.protocol}://localhost:3000/reset-password/${resetTokenHash}`;
-    const message = `Forgot your password? Click this link to reset your password \n${resetUrl}\nIf you didn't make this request, please ignore this email! \nToken only Valid for 10 Minutes`;
+    const emailHtml = compiledTemplate({
+      fullname: user.fullname,
+      resetUrl,
+    });
+
     try {
       await mailer({
         email: user.email,
         subject: "Nginapp Password Reset Request",
-        message,
+        html: emailHtml,
       });
       res.status(200).json({
         ok: true,

@@ -8,7 +8,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Facility.belongsToMany(models.Property, {
+        through: "PropertyFacility",
+        foreignKey: "facilityId",
+      });
     }
   }
   Facility.init(
@@ -22,6 +25,8 @@ module.exports = (sequelize, DataTypes) => {
       tv: DataTypes.BOOLEAN,
       washer: DataTypes.BOOLEAN,
       wifi: DataTypes.BOOLEAN,
+      allowPets: DataTypes.BOOLEAN,
+      allowSmoking: DataTypes.BOOLEAN,
     },
     {
       sequelize,

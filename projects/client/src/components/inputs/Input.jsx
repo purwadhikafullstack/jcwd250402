@@ -10,7 +10,7 @@ const Input = ({
   required,
   register,
   onChange,
-  className,
+  style,
   placeholder,
 }) => {
   const [value, setValue] = useState(""); // State to manage the input value
@@ -31,7 +31,7 @@ const Input = ({
         type={type}
         value={value}
         onChange={handleChange}
-        className={`w-full p-4 pt-6 pl-4 font-light transition bg-white border-2 rounded-md outline-none peer disabled:opacity-70 disabled:cursor-not-allowed ${className}`}
+        className={`w-full p-4 pt-6 pl-4 font-light transition bg-white border-2 rounded-md outline-none peer disabled:opacity-70 disabled:cursor-not-allowed ${style}`}
         required={required}
       />
       <label

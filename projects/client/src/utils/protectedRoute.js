@@ -1,18 +1,31 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const PrivateRoutes = () => {
-  // Assume your authentication state includes a token and role information
-  const auth = { token: true, role: "tenant" };
+const ProtectedTenantRoute = ({ children }) => {
+  const navigate = useNavigate();
+  const isTenant = useSelector((state) => state.auth.isTenant);
 
-  // Check if the user is authenticated and has the 'admin' role
-  if (auth.token && auth.role === "tenant") {
-    return <Outlet />;
-  } else {
-    // Redirect to the home page if not authenticated or not an admin
-    return <Navigate to="/" />;
-  }
+  useEffect(() => {
+    if (!isTenant) {
+      navigate("/");
+    }
+  }, [isTenant, navigate]);
+
+  return isTenant ? children : null;
 };
 
-export default PrivateRoutes;
+const ProtectedRoute = ({ children }) => {
+  const navigate = useNavigate();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
-//diemin aja blom fungsi
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
+
+  return isLoggedIn ? children : null;
+};
+
+export { ProtectedRoute, ProtectedTenantRoute };

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import api from "../api.js";
 import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import { jwtDecode } from "jwt-decode";
@@ -7,8 +6,8 @@ import { toast } from "sonner";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
-import ChangePassword from "../components/ChangePassword.jsx";
-import { UploadPhoto } from "../components/";
+import api from "../api.js";
+import { UploadPhoto, ChangePassword } from "../components/";
 
 export default function UpdateProfile() {
   document.title = "Update Profile";
@@ -48,9 +47,6 @@ export default function UpdateProfile() {
 
   const onSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
-    const formattedDateOfBirth = moment(values.dateofbirth).format(
-      "DD-MM-YYYY"
-    );
     try {
       const formData = new FormData();
       formData.append("username", values.username);
@@ -69,15 +65,24 @@ export default function UpdateProfile() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response.status);
       if (response.status === 200) {
-        toast.success("Profile settings updated!");
-        resetForm();
-        setIsLoading(false);
-        window.location.reload();
+        toast.info("Profile settings updated!", {
+          duration: 700,
+          onAutoClose: () => {
+            resetForm();
+            setIsLoading(false);
+            window.location.reload();
+          },
+        });
       }
     } catch (error) {
       setIsLoading(false);
-      toast.error("Oops Something Went Wrong, Try Again Later");
+      if (error?.response?.status === 400) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Oops, Something went wrong. Please try again later.");
+      }
     }
   };
   const initialValues = {

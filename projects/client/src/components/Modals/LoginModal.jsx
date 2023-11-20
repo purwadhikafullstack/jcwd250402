@@ -7,17 +7,18 @@ import { toast } from "sonner";
 
 import api from "../../api";
 import useLoginModal from "../hooks/useLoginModal";
-import useUserRegister from "../hooks/useUserRegister";
 import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../inputs/Input";
+import { useDispatch } from "react-redux";
+import { login, isTenant } from "../slice/authSlices";
 
 yupPassword(Yup);
 
 const LoginModal = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const loginModal = useLoginModal();
-  const registerModal = useUserRegister();
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const location = useLocation();
@@ -71,15 +72,17 @@ const LoginModal = () => {
         password,
       });
       if (response.status === 200) {
-        toast.success("Welcome back! Successfully logged in!");
+        toast.info("Welcome back! Successfully logged in!");
         const userData = response.data;
         const token = userData.token;
         const role = userData.role;
 
-        localStorage.setItem("token", token);
+        dispatch(login({ token: token }));
+
         if (role === "tenant") {
           loginModal.onClose();
           navigate("/tenant/dashboard");
+          dispatch(isTenant());
           setIsLoading(false);
         } else if (role === "user") {
           loginModal.onClose();
@@ -97,7 +100,7 @@ const LoginModal = () => {
   const handleForgotPassword = async (email) => {
     setIsLoading(true);
     try {
-      const response = await api.post("/user/forgot-password", {
+      const response = await api.post("/auth/forgot-password", {
         email,
       });
       if (response.status === 200) {
