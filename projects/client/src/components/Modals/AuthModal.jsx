@@ -1,8 +1,8 @@
 import React from "react";
-import RegisterModal from "./UserRegister";
 import useUserRegister from "../hooks/useUserRegister";
 import useLoginModal from "../hooks/useLoginModal";
 import LoginModal from "./LoginModal";
+import RegisterModal from "./UserRegister";
 
 const AuthModal = () => {
   const userRegister = useUserRegister();

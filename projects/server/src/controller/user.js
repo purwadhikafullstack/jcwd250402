@@ -28,7 +28,17 @@ exports.updateProfile = async (req, res) => {
     if (email) {
       user.email = email;
     }
+
     if (username) {
+      const existingUsername = await User.findOne({ where: { username } });
+
+      if (existingUsername && existingUsername.username !== user.username) {
+        return res.status(400).json({
+          ok: false,
+          message: "Username already exists",
+        });
+      }
+
       user.username = username;
     }
     if (dateofbirth) {

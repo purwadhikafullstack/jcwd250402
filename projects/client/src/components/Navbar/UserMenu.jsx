@@ -8,8 +8,11 @@ import { AiOutlineMenu } from "react-icons/ai";
 import useLoginModal from "../hooks/useLoginModal.js";
 import useTenantRegister from "../hooks/useTenantRegister.js";
 import useUserRegister from "../hooks/useUserRegister.js";
+import { logout, isTenantLogout } from "../slice/authSlices.js";
+import { useDispatch } from "react-redux";
 
 const UserMenu = () => {
+  const dispatch = useDispatch();
   const loginModal = useLoginModal();
   const navigate = useNavigate();
   const tenantRegister = useTenantRegister();
@@ -20,7 +23,7 @@ const UserMenu = () => {
   const [isUser, setIsUser] = useState(false);
 
   useEffect(() => {
-    const userIsLoggedIn = localStorage.getItem("token") !== null;
+    const userIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     setIsLoggedIn(userIsLoggedIn);
     if (userIsLoggedIn) {
       const token = localStorage.getItem("token");
@@ -41,7 +44,7 @@ const UserMenu = () => {
       loginModal.onOpen();
       return;
     }
-    localStorage.removeItem("token");
+    dispatch(logout());
     toast.success("Successfully logged out! We'll miss you :(");
     window.location.reload();
   };
@@ -95,7 +98,12 @@ const UserMenu = () => {
                 <MenuItem onClick={userRegister.onOpen} label="Register" />
               </>
             )}
-            {isLoggedIn && <MenuItem onClick={logOutHandler} label="Log Out" />}
+            {isLoggedIn && (
+              <>
+                <MenuItem onClick={logOutHandler} label="Log Out" />
+                <MenuItem onClick={logOutHandler} label="Edit Profile" />
+              </>
+            )}
           </div>
         </div>
       )}

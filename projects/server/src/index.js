@@ -21,10 +21,12 @@ app.use(express.json());
 
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
+const propertyRouter = require("./routes/property");
 // ===========================
 // NOTE : Add your routes here
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/property", propertyRouter);
 app.use("/profile-picture", express.static(__dirname + "/public"));
 
 app.get("/api", (req, res) => {

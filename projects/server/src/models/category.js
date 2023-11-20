@@ -8,12 +8,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Category.belongsToMany(models.Property, {
+        through: "PropertyCategory",
+        foreignKey: "categoryId",
+      });
     }
   }
   Category.init(
     {
-      location: DataTypes.STRING,
+      category: DataTypes.STRING,
+      description: DataTypes.STRING,
     },
     {
       sequelize,
