@@ -250,8 +250,7 @@ exports.loginHandler = async (req, res) => {
       }
     );
 
-    return res.status(200).json({
-      ok: true,
+    const data = {
       id: user.id,
       role: user.role,
       token,
@@ -303,24 +302,13 @@ exports.forgotPassword = async (req, res) => {
       }
     );
 
-    const template = fs.readFileSync(
-      __dirname + "/../email-template/forgotPassword.html",
-      "utf8"
-    );
-
-    // const message = `Forgot your password? Click this link to reset your password \n${resetUrl}\nIf you didn't make this request, please ignore this email! \nToken only Valid for 10 Minutes`;
-    const compiledTemplate = hbs.compile(template);
     const resetUrl = `${req.protocol}://localhost:3000/reset-password/${resetTokenHash}`;
-    const emailHtml = compiledTemplate({
-      fullname: user.fullname,
-      resetUrl,
-    });
-
+    const message = `Forgot your password? Click this link to reset your password \n${resetUrl}\nIf you didn't make this request, please ignore this email! \nToken only Valid for 10 Minutes`;
     try {
       await mailer({
         email: user.email,
         subject: "Nginapp Password Reset Request",
-        html: emailHtml,
+        message,
       });
       res.status(200).json({
         ok: true,
