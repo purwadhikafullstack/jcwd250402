@@ -14,20 +14,76 @@ module.exports = (sequelize, DataTypes) => {
       });
       Property.belongsTo(models.User, {
         foreignKey: "userId",
-        as: "tenant",
       });
-      // Property.belongsTo(models.PropertyAmenity, {
-      //   foreignKey: "amenityId",
-      //   as: "amenity",
-      // });
+      Property.hasMany(models.PropertyCategory, {
+        foreignKey: "propertyId",
+      });
+      Property.hasMany(models.PropertyFacility, {
+        foreignKey: "propertyId",
+      });
+      Property.hasMany(models.Review, {
+        foreignKey: "propertyId",
+      });
+      Property.hasMany(models.Rooms, {
+        foreignKey: "propertyId",
+      });
+      Property.hasMany(models.AvailableDate, {
+        foreignKey: "propertyId",
+      });
+      Property.hasOne(models.Location, {
+        foreignKey: "propertyId",
+      });
+      Property.hasOne(models.Booking, {
+        foreignKey: "propertyId",
+      });
     }
   }
   Property.init(
     {
-      name: DataTypes.STRING,
-      description: DataTypes.STRING,
-      roomCount: DataTypes.INTEGER,
-      maxGuestCount: DataTypes.INTEGER,
+      propertyName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      roomCount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      bedCount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      maxGuestCount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      bathroomCount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      rating: {
+        type: DataTypes.INTEGER,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      coverImage: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      isActive: DataTypes.BOOLEAN,
     },
     {
       sequelize,

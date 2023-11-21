@@ -3,6 +3,8 @@ import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
 import { RiMore2Fill } from "react-icons/ri";
 import logo from "../asset/Logo-Black.svg";
 import api from "../api";
+import { useDispatch } from "react-redux";
+import { isTenantLogout, logout } from "./slice/authSlices";
 
 const SidebarContext = createContext();
 
@@ -12,6 +14,7 @@ export function Sidebar({
   isExpanded,
   toggleSidebar,
 }) {
+  const dispatch = useDispatch();
   const [fullName, setFullname] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
@@ -19,7 +22,7 @@ export function Sidebar({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const logoutHandler = () => {
-    localStorage.removeItem("token");
+    dispatch(logout());
 
     document.cookie.split(";").forEach(function (c) {
       document.cookie = c

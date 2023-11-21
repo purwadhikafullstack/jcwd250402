@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import UpdateProfile from "./UpdateProfile";
+import PropertiesDashboard from "./PropertiesDashboard";
 import { Dashboard } from "../components";
 import { Sidebar, SidebarItem } from "../components";
-import UpdateProfile from "./UpdateProfile";
 import { GoGraph } from "react-icons/go";
 import { RxDashboard } from "react-icons/rx";
 import { PiWarehouseDuotone } from "react-icons/pi";
@@ -85,6 +86,7 @@ const TenantDashboard = () => {
       >
         {activeMenuItem === "editProfile" ? <UpdateProfile /> : null}
         {activeMenuItem === "Dashboard" ? <Dashboard /> : null}
+        {activeMenuItem === "Properties" ? <PropertiesDashboard /> : null}
       </div>
     </div>
   );

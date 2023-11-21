@@ -3,11 +3,14 @@ import {
   loginModalSlice,
   tenantRegisterSlice,
   userRegisterSlice,
-  verifyRegisterUserSlice
+  verifyRegisterUserSlice,
 } from "./components/hooks/modalSlice";
+
+import authSlice from "./components/slice/authSlices";
 
 const store = configureStore({
   reducer: {
+    auth: authSlice,
     loginModal: loginModalSlice.reducer,
     tenantRegister: tenantRegisterSlice.reducer,
     userRegister: userRegisterSlice.reducer,
