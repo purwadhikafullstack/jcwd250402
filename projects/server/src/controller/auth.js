@@ -73,7 +73,93 @@ exports.handleRegister = async (req, res) => {
     const data = {
       result,
       token: result.verifyToken,
-    }
+    };
+
+    res.status(200).json({
+      ok: true,
+      message: "Register success",
+      data,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      ok: false,
+      data,
+      message: String(err),
+    });
+  }
+};
+
+//* Speccifically for registering as a tenant role
+exports.tenantRegister = async (req, res) => {
+  const {
+    fullname,
+    username,
+    email,
+    password,
+    phoneNumber,
+    gender,
+    dateofbirth,
+  } = req.body;
+
+  const existingUser = await User.findOne({
+    where: {
+      [Op.or]: [{ email }],
+    },
+  });
+
+  if (existingUser) {
+    return res.status(400).json({
+      ok: false,
+      message: "Email already registered",
+    });
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const result = await User.create({
+      fullname,
+      username,
+      email,
+      password: hashPassword,
+      phoneNumber,
+      gender,
+      dateofbirth,
+      role: "tenant",
+    });
+
+    // verify email by sending to email
+    const token = crypto.randomBytes(20).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const verifyTokenExpiry = Date.now() + 60 * 60 * 1000;
+
+    result.verifyToken = tokenHash;
+    result.verifyTokenExpiry = verifyTokenExpiry;
+    await result.save();
+
+    const template = fs.readFileSync(
+      __dirname + "/../email-template/verifyEmail.html",
+      "utf8"
+    );
+    const compiledTemplate = hbs.compile(template);
+    const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
+    const emailHtml = compiledTemplate({
+      fullname: result.fullname,
+      verifyLink,
+    });
+
+    await mailer({
+      email: result.email,
+      subject: "Verify your email address to complete your registration",
+      html: emailHtml,
+    });
+
+    const data = {
+      result,
+      token: result.verifyToken,
+    };
 
     res.status(200).json({
       ok: true,
@@ -168,7 +254,7 @@ exports.loginHandler = async (req, res) => {
       id: user.id,
       role: user.role,
       token,
-    }
+    };
 
     return res.status(200).json({
       ok: true,
