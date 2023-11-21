@@ -21,13 +21,10 @@ module.exports = (sequelize, DataTypes) => {
   User.init(
     {
       fullname: { type: DataTypes.STRING, allowNull: false },
-      gender: {
-        type: DataTypes.ENUM("male", "female", "other"),
-        allowNull: false,
-      },
-      dateofbirth: { type: DataTypes.DATE, allowNull: false },
-      username: { type: DataTypes.STRING, allowNull: false },
-      email: { type: DataTypes.STRING, allowNull: false },
+      gender: DataTypes.ENUM("male", "female", "other"),
+      dateofbirth: { type: DataTypes.DATE },
+      username: { type: DataTypes.STRING },
+      email: { type: DataTypes.STRING },
       password: { type: DataTypes.STRING, allowNull: false },
       phoneNumber: { type: DataTypes.STRING, allowNull: false },
       profilePicture: DataTypes.STRING,

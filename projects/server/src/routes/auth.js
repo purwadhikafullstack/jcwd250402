@@ -16,8 +16,8 @@ router.post(
 
 router.post(
   "/tenant-register",
-  authValidator.tenantRegisterRules,
-  authValidator.applyRegisterValidation,
+  // authValidator.tenantRegisterRules,
+  // authValidator.applyRegisterValidation,
   authController.tenantRegister
 );
 

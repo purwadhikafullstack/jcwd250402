@@ -32,7 +32,7 @@ const UseRegisterModal = () => {
     fullname: Yup.string().required("Fullname is required"),
     email: Yup.string().required("Email is required"),
     password: Yup.string().required("Password is required"),
-    phoneNumber: Yup.string().optional(),
+    phoneNumber: Yup.string().required("phoneNumber is required"),
   });
 
   const registerUser = async (fullname, email, password, phoneNumber, role) => {

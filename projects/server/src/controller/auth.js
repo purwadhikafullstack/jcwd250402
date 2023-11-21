@@ -84,7 +84,6 @@ exports.handleRegister = async (req, res) => {
     console.log(err);
     return res.status(500).json({
       ok: false,
-      data,
       message: String(err),
     });
   }
@@ -98,7 +97,7 @@ exports.tenantRegister = async (req, res) => {
     email,
     password,
     phoneNumber,
-    gender,
+    // gender,
     dateofbirth,
   } = req.body;
 
@@ -125,7 +124,7 @@ exports.tenantRegister = async (req, res) => {
       email,
       password: hashPassword,
       phoneNumber,
-      gender,
+      // gender,
       dateofbirth,
       role: "tenant",
     });
@@ -170,7 +169,6 @@ exports.tenantRegister = async (req, res) => {
     console.log(err);
     return res.status(500).json({
       ok: false,
-      data,
       message: String(err),
     });
   }
