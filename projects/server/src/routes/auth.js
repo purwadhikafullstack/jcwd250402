@@ -14,6 +14,13 @@ router.post(
   authController.handleRegister
 );
 
+router.post(
+  "/tenant-register",
+  authValidator.tenantRegisterRules,
+  authValidator.applyRegisterValidation,
+  authController.tenantRegister
+);
+
 router.post("/forgot-password", authController.forgotPassword);
 
 router.patch(
@@ -26,12 +33,12 @@ router.patch(
 router.patch(
   "/change-password",
   authMiddleware.validateToken,
-  // authValidator.newPasswordRules,
-  // authValidator.applyRegisterValidation,
+  authValidator.newPasswordRules,
+  authValidator.applyRegisterValidation,
   authController.changePassword
 );
 
-router.post("/verify-email", authController.handleVerifyEmail);
+router.post("/verify-account", authController.handleVerifyEmail);
 
 router.post("/login", authController.loginHandler);
 

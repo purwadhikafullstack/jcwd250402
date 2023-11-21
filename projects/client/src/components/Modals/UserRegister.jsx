@@ -48,14 +48,9 @@ const UseRegisterModal = () => {
 
       if (response.status === 200) {
         setIsLoading(false);
-        const userData = response.data;
-
-        if (userData.data.role === "user") {
-          UseRegisterModal.onClose();
-          setIsLoading(false);
-          toast.success("You're Registered Successfully as a User");
-          navigate("/");
-        }
+        toast.success("You're Registered Successfully as a User");
+        UseRegisterModal.onClose();
+        navigate("/");
       }
     } catch (err) {
       setIsLoading(false);
@@ -95,7 +90,12 @@ const UseRegisterModal = () => {
     setIsRegistering(false);
     UseRegisterModal.onClose();
     UseLoginModal.onOpen();
-  }
+  };
+
+  const submitAction = () => {
+    handleRegister();
+    navigate("/");
+  };
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -146,11 +146,19 @@ const UseRegisterModal = () => {
         )}
       </Formik>
 
-      <div>
+      <div className="flex flex-col items-start">
         <button
           onClick={loginButton}
           className="text-xs text-neutral-500 hover:text-black">
           <span>Have an account? Sign In</span>
+        </button>
+        <button
+          onClick={() => {
+            navigate("/tenant/register");
+            UseRegisterModal.onClose();
+          }}
+          className="text-xs text-neutral-500 hover:text-black">
+          <span>Become a Host? Sign Up here</span>
         </button>
       </div>
     </div>
@@ -172,10 +180,7 @@ const UseRegisterModal = () => {
       }}
       title="User Registration"
       actionLabel={isRegistering ? "Sign Up" : "Sign In"}
-      onSubmit={() => {
-        handleRegister();
-        navigate("/");
-      }}
+      onSubmit={submitAction}
       body={bodyContent}
     />
   );

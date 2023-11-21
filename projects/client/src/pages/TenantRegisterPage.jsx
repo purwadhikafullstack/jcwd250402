@@ -12,14 +12,13 @@ const TenantRegisterPage = () => {
   const [step, setStep] = useState(1);
   const [isDisabled, setIsDisabled] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullname: "",
     email: "",
     phoneNumber: "",
     username: "",
     password: "",
     gender: "",
-    dateOfBirth: "",
+    dateofbirth: "",
     profilePicture: null,
   });
 
@@ -60,12 +59,12 @@ const TenantRegisterPage = () => {
   const progressPercentage = ((step - 1) / 3) * 100;
 
   useEffect(() => {
-    if (!formData.firstName) {
+    if (!formData.fullname) {
       setIsDisabled(true);
       return;
     }
     setIsDisabled(false);
-  }, [formData.firstName, setIsDisabled]);
+  }, [formData.fullname, setIsDisabled]);
 
   return (
     <div>
@@ -88,8 +87,8 @@ const TenantRegisterPage = () => {
                   id="name"
                   type="text"
                   placeholder="Tell us your name"
-                  value={formData.firstName}
-                  onChange={(e) => handleChange("firstName", e)}
+                  value={formData.fullname}
+                  onChange={(e) => handleChange("fullname", e)}
                   className="w-full px-3 py-2 mb-4 border-2 rounded-md focus:outline-none focus:ring focus:ring-indigo-400"
                   required={true}
                 />
