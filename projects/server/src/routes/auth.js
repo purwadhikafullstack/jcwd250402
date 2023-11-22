@@ -40,6 +40,8 @@ router.patch(
 
 router.post("/verify-account", authController.handleVerifyEmail);
 
+router.post("/resend-verify-account", authController.resendVerificationEmail);
+
 router.post("/login", authController.loginHandler);
 
 module.exports = router;
