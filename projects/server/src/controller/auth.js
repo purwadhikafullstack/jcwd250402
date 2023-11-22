@@ -178,6 +178,7 @@ exports.handleVerifyEmail = async (req, res) => {
   // bring token from exports.handleRegister
   const { token } = req.body;
   // const { token } = req.query;
+  console.log(token);
   // const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   try {
     const user = await User.findOne({
@@ -189,7 +190,7 @@ exports.handleVerifyEmail = async (req, res) => {
         isVerified: false,
       },
     });
-
+    console.log(user);
     if (!user) {
       return res.status(400).json({
         ok: false,
@@ -261,7 +262,10 @@ exports.resendVerificationEmail = async (req, res) => {
     await user.save();
 
     // Send the new verification email
-    const template = fs.readFileSync(__dirname + "/../email-template/verifyEmail.html", "utf8");
+    const template = fs.readFileSync(
+      __dirname + "/../email-template/verifyEmail.html",
+      "utf8"
+    );
     const compiledTemplate = hbs.compile(template);
     const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
     const emailHtml = compiledTemplate({
@@ -271,7 +275,8 @@ exports.resendVerificationEmail = async (req, res) => {
 
     await mailer({
       email: user.email,
-      subject: "Resend: Verify your email address to complete your registration",
+      subject:
+        "Resend: Verify your email address to complete your registration",
       html: emailHtml,
     });
 
