@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { Toaster } from "sonner";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useHistory } from "react-router-dom";
 import { TenantLogin, Home } from "./pages";
 import {
   TenantDashboard,
@@ -10,6 +10,7 @@ import {
 } from "./pages";
 import { ProtectedRoute, ProtectedTenantRoute } from "./utils/protectedRoute";
 import AuthModal from "./components/Modals/AuthModal";
+import VerifyUserPage from "./pages/VerifyUserPage";
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const TenantRegisterModal = lazy(() =>
   import("./components/Modals/TenantRegister")
@@ -34,6 +35,7 @@ function App() {
           path="/tenant/dashboard/create-property"
           element={<CreateProperty />}
         />
+        <Route path="/verify-email" element={<VerifyUserPage />} />
       </Routes>
     </main>
   );

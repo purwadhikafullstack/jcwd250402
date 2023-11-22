@@ -178,24 +178,26 @@ exports.handleVerifyEmail = async (req, res) => {
   // bring token from exports.handleRegister
   const { token } = req.body;
   // const { token } = req.query;
+  console.log(token);
   // const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-  const user = await User.findOne({
-    where: {
-      verifyToken: token,
-      verifyTokenExpiry: {
-        [Op.gt]: Date.now(),
-      },
-    },
-  });
-
-  if (!user) {
-    return res.status(400).json({
-      ok: false,
-      message: "Token is invalid or has expired",
-    });
-  }
-
   try {
+    const user = await User.findOne({
+      where: {
+        verifyToken: token,
+        verifyTokenExpiry: {
+          [Op.gt]: Date.now(),
+        },
+        isVerified: false,
+      },
+    });
+    console.log(user);
+    if (!user) {
+      return res.status(400).json({
+        ok: false,
+        message: "Token is invalid or has expired",
+      });
+    }
+
     user.isVerified = true;
     user.verifyToken = null;
     user.verifyTokenExpiry = null;
@@ -209,7 +211,84 @@ exports.handleVerifyEmail = async (req, res) => {
     console.log(err);
     return res.status(500).json({
       ok: false,
-      message: String(err),
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.resendVerificationEmail = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        ok: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if the user has reached the resend limit
+    const today = new Date();
+    const attemptsToday = await User.count({
+      where: {
+        email,
+        verifyTokenExpiry: {
+          [Op.gt]: today.setHours(0, 0, 0, 0), // Count attempts within today
+        },
+      },
+    });
+
+    const MAX_RESEND_LIMIT = 5;
+    if (attemptsToday >= MAX_RESEND_LIMIT) {
+      return res.status(400).json({
+        ok: false,
+        message: "Exceeded maximum resend attempts for today",
+      });
+    }
+
+    // Generate and update new verification token
+    const token = crypto.randomBytes(20).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const verifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // One day expiration
+
+    // Update user's token and expiry
+    user.verifyToken = tokenHash;
+    user.verifyTokenExpiry = verifyTokenExpiry;
+    await user.save();
+
+    // Send the new verification email
+    const template = fs.readFileSync(
+      __dirname + "/../email-template/verifyEmail.html",
+      "utf8"
+    );
+    const compiledTemplate = hbs.compile(template);
+    const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
+    const emailHtml = compiledTemplate({
+      fullname: user.fullname,
+      verifyLink,
+    });
+
+    await mailer({
+      email: user.email,
+      subject:
+        "Resend: Verify your email address to complete your registration",
+      html: emailHtml,
+    });
+
+    res.status(200).json({
+      ok: true,
+      message: "Resent verification email successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      ok: false,
+      message: "Internal Server Error",
     });
   }
 };
