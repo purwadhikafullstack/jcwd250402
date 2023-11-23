@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const ProtectedTenantRoute = ({ children }) => {
   const navigate = useNavigate();
   const isTenant = useSelector((state) => state.auth.isTenant);
-
+  console.log(isTenant);
   useEffect(() => {
     if (!isTenant) {
       navigate("/");
@@ -17,7 +17,7 @@ const ProtectedTenantRoute = ({ children }) => {
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn === true);
 
   useEffect(() => {
     if (!isLoggedIn) {

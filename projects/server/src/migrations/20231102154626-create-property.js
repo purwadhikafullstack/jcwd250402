@@ -28,6 +28,9 @@ module.exports = {
       bedCount: {
         type: Sequelize.INTEGER,
       },
+      bedroomCount: {
+        type: Sequelize.INTEGER,
+      },
       maxGuestCount: {
         type: Sequelize.INTEGER,
       },

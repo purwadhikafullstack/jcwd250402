@@ -23,7 +23,7 @@ function App() {
       <TenantRegisterModal />
       <AuthModal />
       <Routes>
-        {/* <Route element={<ProtectedTenantRoute />}> */}
+        {/* <Route path="/tenant/dashboard" element={<ProtectedTenantRoute />}> */}
         <Route path="/tenant/dashboard" element={<TenantDashboard />} />
         {/* </Route> */}
         <Route path="/" element={<Home />} />

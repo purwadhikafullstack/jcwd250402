@@ -10,11 +10,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       PropertyImage.belongsTo(models.Property, {
         foreignKey: "propertyId",
+        as: "property",
       });
     }
   }
   PropertyImage.init(
     {
+      propertyId: DataTypes.INTEGER,
       image: DataTypes.STRING,
     },
     {

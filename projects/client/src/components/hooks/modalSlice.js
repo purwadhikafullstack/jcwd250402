@@ -42,14 +42,19 @@ const userRegisterSlice = createSlice({
 const verifyRegisterUserSlice = createSlice({
   name: "verifyRegisterUser",
   initialState: { isOpen: false },
-  reducers:{
-    openVerifyRegisterUser(state){
+  reducers: {
+    openVerifyRegisterUser(state) {
       state.isOpen = true;
     },
-    closeVerifyRegisterUser(state){
+    closeVerifyRegisterUser(state) {
       state.isOpen = false;
-    }
-  }
-})
+    },
+  },
+});
 
-export { loginModalSlice, tenantRegisterSlice, userRegisterSlice, verifyRegisterUserSlice };
+export {
+  loginModalSlice,
+  tenantRegisterSlice,
+  userRegisterSlice,
+  verifyRegisterUserSlice,
+};

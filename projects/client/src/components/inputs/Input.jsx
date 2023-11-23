@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BiDollar } from "react-icons/bi";
 import { useFormik, Field } from "formik";
+import classNames from "classnames";
 
 const Input = ({
   id,
@@ -10,7 +11,7 @@ const Input = ({
   required,
   register,
   onChange,
-  style,
+  className,
   placeholder,
 }) => {
   const [value, setValue] = useState(""); // State to manage the input value
@@ -20,6 +21,8 @@ const Input = ({
     setValue(newValue);
     onChange(newValue);
   };
+
+  const styleClass = classNames("tailwindcss", className);
   return (
     <div className="relative w-full">
       <Field
@@ -31,7 +34,7 @@ const Input = ({
         type={type}
         value={value}
         onChange={handleChange}
-        className={`w-full p-4 pt-6 pl-4 font-light transition bg-white border-2 rounded-md outline-none peer disabled:opacity-70 disabled:cursor-not-allowed ${style}`}
+        className={`w-full p-4 pt-6 pl-4 font-light transition bg-white border-2 rounded-md outline-none peer disabled:opacity-70 disabled:cursor-not-allowed ${styleClass}`}
         required={required}
       />
       <label
