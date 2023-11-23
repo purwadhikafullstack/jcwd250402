@@ -9,11 +9,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      category: {
+      propertyType: {
+        type: Sequelize.ENUM("house", "apartment", "villa", "hotel", "room"),
+      },
+      district: {
         type: Sequelize.STRING,
       },
-      description: {
+      city: {
         type: Sequelize.STRING,
+      },
+      province: {
+        type: Sequelize.STRING,
+      },
+      streetAddress: {
+        type: Sequelize.STRING,
+      },
+      postalCode: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,

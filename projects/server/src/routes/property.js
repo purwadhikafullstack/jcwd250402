@@ -11,4 +11,6 @@ router.post(
   propertyController.createProperty
 );
 
+router.get("/", propertyController.getAllProperties);
+
 module.exports = router;

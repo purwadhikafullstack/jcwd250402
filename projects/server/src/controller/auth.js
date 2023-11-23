@@ -327,15 +327,11 @@ exports.loginHandler = async (req, res) => {
       }
     );
 
-    const data = {
+    return res.status(200).json({
+      ok: true,
       id: user.id,
       role: user.role,
       token,
-    };
-
-    return res.status(200).json({
-      ok: true,
-      data,
     });
   } catch (error) {
     console.error(error);

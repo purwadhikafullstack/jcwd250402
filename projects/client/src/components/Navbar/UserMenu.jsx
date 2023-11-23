@@ -29,7 +29,6 @@ const UserMenu = () => {
       const token = localStorage.getItem("token");
       const decodedToken = jwtDecode(token);
       const userRole = decodedToken.role;
-      console.log(userRole);
       if (userRole === "tenant") {
         setIsTenant(true);
       } else if (userRole === "user") {

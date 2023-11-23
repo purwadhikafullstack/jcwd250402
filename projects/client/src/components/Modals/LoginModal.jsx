@@ -78,11 +78,11 @@ const LoginModal = () => {
         const role = userData.role;
 
         dispatch(login({ token: token }));
-
+        console.log();
         if (role === "tenant") {
           loginModal.onClose();
           navigate("/tenant/dashboard");
-          dispatch(isTenant());
+          dispatch(isTenant({ isTenant: true }));
           setIsLoading(false);
         } else if (role === "user") {
           loginModal.onClose();
@@ -127,7 +127,7 @@ const LoginModal = () => {
         onSubmit={formik.handleSubmit}
       >
         {({ errors, touched }) => (
-          <Form className="space-y-4 md:space-y-6">
+          <Form className="space-y-4 md:space-y-2">
             <Input
               id="user_identity"
               name="user_identity"

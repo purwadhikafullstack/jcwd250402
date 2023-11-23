@@ -8,17 +8,23 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      Property.belongsTo(models.User, {
+        foreignKey: "userId",
+      });
       Property.hasMany(models.PropertyImage, {
         foreignKey: "propertyId",
         as: "propertyImages",
       });
-      Property.belongsTo(models.User, {
-        foreignKey: "userId",
-      });
-      Property.hasMany(models.PropertyCategory, {
+      Property.belongsToMany(models.Category, {
+        through: "PropertyCategory",
         foreignKey: "propertyId",
+        as: "Categories",
       });
-      Property.hasMany(models.PropertyFacility, {
+      Property.hasMany(models.PropertyRules, {
+        foreignKey: "propertyId",
+        as: "PropertyRules",
+      });
+      Property.hasMany(models.Amenity, {
         foreignKey: "propertyId",
       });
       Property.hasMany(models.Review, {
@@ -28,9 +34,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "propertyId",
       });
       Property.hasMany(models.AvailableDate, {
-        foreignKey: "propertyId",
-      });
-      Property.hasOne(models.Location, {
         foreignKey: "propertyId",
       });
       Property.hasOne(models.Booking, {
@@ -48,11 +51,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      roomCount: {
+      bedCount: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      bedCount: {
+      bedroomCount: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -66,10 +69,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       price: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      address: {
-        type: DataTypes.STRING,
         allowNull: false,
       },
       rating: {
