@@ -185,9 +185,9 @@ exports.handleVerifyEmail = async (req, res) => {
       where: {
         verifyToken: token,
         verifyTokenExpiry: {
-          [Op.gt]: Date.now(),
+          [Op.gt]: new Date(),
         },
-        isVerified: false,
+        isVerified: null,
       },
     });
     console.log(user);
