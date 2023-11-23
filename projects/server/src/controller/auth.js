@@ -6,7 +6,7 @@ const hbs = require("handlebars");
 const fs = require("fs");
 const mailer = require("../lib/nodemailer");
 const crypto = require("crypto");
-
+const { addHours } = require("date-fns");
 const JWT_SECRET_KEY = "ini_JWT_loh";
 
 //* Speccifically for registering as a user role
@@ -47,7 +47,7 @@ exports.handleRegister = async (req, res) => {
     // verify email by sending to email
     const token = crypto.randomBytes(20).toString("hex");
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    const verifyTokenExpiry = Date.now() + 60 * 60 * 1000;
+    const verifyTokenExpiry = addHours(new Date(), 1);
 
     result.verifyToken = tokenHash;
     result.verifyTokenExpiry = verifyTokenExpiry;
@@ -229,6 +229,12 @@ exports.resendVerificationEmail = async (req, res) => {
       return res.status(404).json({
         ok: false,
         message: "User not found",
+      });
+    }
+    if (user.isVerified) {
+      return res.status(403).json({
+        ok: false,
+        message: "Account already verified",
       });
     }
 
