@@ -1,29 +1,40 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api";
-import { useHistory } from "react-router-dom";
+import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
 
 function VerifyUserPage() {
+  let [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { verificationToken } = useParams(); // Get the verification token from the URL params
   // const history = useHistory();
   const [verificationStatus, setVerificationStatus] = useState("verifying");
   const [userEmail, setUserEmail] = useState("");
 
   const handleVerification = async () => {
     try {
+      const token = searchParams.get("token"); // Get the verification token from the URL params
+      // window.alert(token);
+      // alert(token);
       const response = await api.post("/auth/verify-account", {
-        token: verificationToken,
+        token: token,
       });
 
+      const data = await response.data;
+
       if (response.status === 200) {
+        toast.success("Your Account is Verified");
         setVerificationStatus("verified");
+        navigate("/");
         // Optionally, redirect the user to a success page or login page
-        // history.push('/login'); // Redirect to login after successful verification
+        // history.push('/'); // Redirect to login after successful verification
       } else {
+        toast.error("Error: ", data.message);
         setVerificationStatus("failed");
+        navigate("/");
       }
     } catch (error) {
+      toast.error("Error: ", error);
       console.error("Error verifying account:", error);
       setVerificationStatus("failed");
     }
@@ -49,11 +60,11 @@ function VerifyUserPage() {
     }
   };
 
-  useEffect(() => {
-    // Automatically verify account on page load (optional)
-    handleVerification();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array ensures the effect runs once
+  // useEffect(() => {
+  //   // Automatically verify account on page load (optional)
+  //   handleVerification();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []); // Empty dependency array ensures the effect runs once
 
   let message;
   switch (verificationStatus) {
