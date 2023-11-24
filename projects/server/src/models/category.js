@@ -11,13 +11,24 @@ module.exports = (sequelize, DataTypes) => {
       Category.belongsToMany(models.Property, {
         through: "PropertyCategory",
         foreignKey: "categoryId",
+        as: "Categories",
       });
     }
   }
   Category.init(
     {
-      category: DataTypes.STRING,
-      description: DataTypes.STRING,
+      propertyType: DataTypes.ENUM(
+        "house",
+        "apartment",
+        "villa",
+        "hotel",
+        "room"
+      ),
+      district: { type: DataTypes.STRING, allowNull: false },
+      city: { type: DataTypes.STRING, allowNull: false },
+      province: { type: DataTypes.STRING, allowNull: false },
+      streetAddress: { type: DataTypes.STRING, allowNull: false },
+      postalCode: { type: DataTypes.INTEGER, allowNull: false },
     },
     {
       sequelize,

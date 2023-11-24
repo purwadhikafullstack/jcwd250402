@@ -7,7 +7,7 @@ const PropertiesDashboard = () => {
       <div className="flex justify-between mb-8">
         <h1 className="mb-4 text-3xl font-normal">Properties</h1>
         <Link
-          to="/add-property"
+          to="/tenant/dashboard/create-property"
           className="px-5 py-2 mt-4 font-bold text-white rounded-lg bg-primary hover:bg-primary/70"
         >
           Add Property
