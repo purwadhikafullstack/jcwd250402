@@ -99,6 +99,7 @@ exports.tenantRegister = async (req, res) => {
     phoneNumber,
     // gender,
     dateofbirth,
+    // ktpImg,
   } = req.body;
 
   const existingUser = await User.findOne({
@@ -126,6 +127,7 @@ exports.tenantRegister = async (req, res) => {
       phoneNumber,
       // gender,
       dateofbirth,
+      // ktpImg,
       role: "tenant",
     });
 
