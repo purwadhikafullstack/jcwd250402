@@ -4,7 +4,7 @@ import { PiBuildingsBold, PiWarehouseDuotone } from "react-icons/pi";
 import { GiSpookyHouse } from "react-icons/gi";
 import { MdApartment, MdOutlineBedroomParent } from "react-icons/md";
 
-const CreatePropertyType = ({ value, setValue }) => {
+const CreatePropertyType = ({ value, setValue, disabled }) => {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const activeHandler = (index, propertyType) => {
@@ -53,6 +53,7 @@ const CreatePropertyType = ({ value, setValue }) => {
           <div
             key={index}
             onClick={() => activeHandler(index, type.value)}
+            disabled={disabled}
             className={`p-9 border-2 md:p-9 border-black rounded-lg cursor-pointer items-center justify-center ${
               activeIndex === index
                 ? "border-primary bg-primary bg-opacity-[0.15]"

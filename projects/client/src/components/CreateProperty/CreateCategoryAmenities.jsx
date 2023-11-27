@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaBath, FaRegSnowflake } from "react-icons/fa";
 import {
   PiBroom,
@@ -10,24 +10,37 @@ import { LuUtensils, LuWaves } from "react-icons/lu";
 import { BiSolidDryer } from "react-icons/bi";
 import { IoWaterOutline, IoWifiOutline } from "react-icons/io5";
 
-const CreatePropertyCount = ({
+const CreatePropertyAmenities = ({
   count,
   onChange,
   onUpdateFormData,
   disabled,
+  onAmenitiesChange,
 }) => {
   const [selectedValues, setSelectedValues] = useState([]);
+  const prevSelectedValues = useRef([]);
 
   const activeHandler = (value) => {
-    const isSelected = selectedValues.includes(value);
-    if (isSelected) {
-      setSelectedValues((prevSelectedValues) =>
-        prevSelectedValues.filter((val) => val !== value)
-      );
-    } else {
-      setSelectedValues((prevSelectedValues) => [...prevSelectedValues, value]);
-    }
+    setSelectedValues((prevSelectedValues) => {
+      const isSelected = prevSelectedValues.includes(value);
+
+      if (isSelected) {
+        // If the value is already selected, remove it
+        return prevSelectedValues.filter((val) => val !== value);
+      } else {
+        // If the value is not selected, add it to the array
+        return [...prevSelectedValues, value];
+      }
+    });
   };
+
+  useEffect(() => {
+    // Use useEffect to handle side effects (calling onAmenitiesChange)
+    if (selectedValues !== prevSelectedValues.current) {
+      onAmenitiesChange(selectedValues);
+      prevSelectedValues.current = selectedValues;
+    }
+  }, [selectedValues, onAmenitiesChange]);
 
   return (
     <div className="">
@@ -95,6 +108,7 @@ const CreatePropertyCount = ({
           ].map((amenity, index) => (
             <div
               key={index}
+              disabled={disabled}
               onClick={() => {
                 activeHandler(amenity.value);
               }}
@@ -114,4 +128,4 @@ const CreatePropertyCount = ({
   );
 };
 
-export default CreatePropertyCount;
+export default CreatePropertyAmenities;

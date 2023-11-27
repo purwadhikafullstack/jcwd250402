@@ -44,7 +44,6 @@ exports.updateProfile = async (req, res) => {
     if (dateofbirth) {
       user.dateofbirth = dateofbirth;
     }
-    console.log(dateofbirth);
     if (req.file) {
       user.profilePicture = req.file.filename;
     } else {
