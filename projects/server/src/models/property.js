@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       Property.hasMany(models.PropertyImage, {
         foreignKey: "propertyId",
-        as: "propertyImages",
+        as: "PropertyImages",
       });
       Property.belongsToMany(models.Category, {
         through: "PropertyCategory",
@@ -80,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       coverImage: {
         type: DataTypes.STRING,
-        allowNull: false,
+        // allowNull: false,
       },
       isActive: DataTypes.BOOLEAN,
     },
