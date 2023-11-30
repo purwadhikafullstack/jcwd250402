@@ -4,13 +4,13 @@ import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import yupPassword from "yup-password";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 
 import api from "../../api";
 import useLoginModal from "../hooks/useLoginModal";
 import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../inputs/Input";
-import { useDispatch } from "react-redux";
 import { login, isTenant } from "../slice/authSlices";
 
 yupPassword(Yup);

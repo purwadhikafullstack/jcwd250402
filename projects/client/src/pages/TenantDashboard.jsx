@@ -9,6 +9,7 @@ import { PiWarehouseDuotone } from "react-icons/pi";
 import { BsFlag } from "react-icons/bs";
 import { AiOutlineCalendar } from "react-icons/ai";
 import { MdStarHalf } from "react-icons/md";
+import CreateProperty from "./CreateProperty";
 
 const TenantDashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -87,6 +88,7 @@ const TenantDashboard = () => {
         {activeMenuItem === "editProfile" ? <UpdateProfile /> : null}
         {activeMenuItem === "Dashboard" ? <Dashboard /> : null}
         {activeMenuItem === "Properties" ? <PropertiesDashboard /> : null}
+        {activeMenuItem === "CreateProperty" ? <CreateProperty /> : null}
       </div>
     </div>
   );
