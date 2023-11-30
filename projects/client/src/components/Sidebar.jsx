@@ -4,7 +4,7 @@ import { RiMore2Fill } from "react-icons/ri";
 import logo from "../asset/Logo-Black.svg";
 import api from "../api";
 import { useDispatch } from "react-redux";
-import { isTenantLogout, logout } from "./slice/authSlices";
+import { logout } from "./slice/authSlices";
 
 const SidebarContext = createContext();
 
@@ -61,6 +61,18 @@ export function Sidebar({
   const profilePictureSrc = profilePicture
     ? `http://localhost:8000/profile-picture/${profilePicture}`
     : defaultAvatar;
+
+  // Update isSidebarExpanded based on viewport width
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSidebarExpanded(window.innerWidth >= 640);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <aside className="h-screen">

@@ -166,7 +166,8 @@ const TenantRegisterPage = () => {
                       onChange={() => {}}
                       onBlur={() => {}}
                       value={() => {}}
-                      name="gender">
+                      name="gender"
+                    >
                       <option value="" disabled selected>
                         Select
                       </option>
@@ -175,7 +176,7 @@ const TenantRegisterPage = () => {
                       <option value="other">Rather not say</option>
                     </select>
                   </div>
-                  <UploadPhoto label={"Profile Picture"} />
+                  <UploadPhoto />
                 </div>
               </>
             )}
@@ -193,7 +194,8 @@ const TenantRegisterPage = () => {
           <div className="h-2 mb-4 bg-gray-200 rounded">
             <div
               className="w-full h-full bg-black"
-              style={{ width: `${progressPercentage}%` }}></div>
+              style={{ width: `${progressPercentage}%` }}
+            ></div>
           </div>
 
           <div>
@@ -201,13 +203,15 @@ const TenantRegisterPage = () => {
               <button
                 className="px-6 py-2 mr-2 border-2 rounded-lg cursor-not-allowed text-neutral-500"
                 disabled
-                onClick={handlePrev}>
+                onClick={handlePrev}
+              >
                 Back
               </button>
             ) : (
               <button
                 className="px-6 py-2 mr-2 border-2 rounded-lg text-neutral-500"
-                onClick={handlePrev}>
+                onClick={handlePrev}
+              >
                 Back
               </button>
             )}
@@ -220,13 +224,15 @@ const TenantRegisterPage = () => {
               <button
                 className="px-6 py-2 text-white rounded-lg bg-primary hover:bg-primary/70 disabled:bg-slate-500"
                 onClick={handleNext}
-                disabled={isDisabled}>
+                disabled={isDisabled}
+              >
                 Next
               </button>
             ) : (
               <button
                 className="px-6 py-2 text-white rounded-lg bg-primary hover:bg-primary/70 "
-                onClick={handleSubmit}>
+                onClick={handleSubmit}
+              >
                 Submit
               </button>
             )}

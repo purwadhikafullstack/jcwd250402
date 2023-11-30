@@ -28,6 +28,7 @@ app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/property", propertyRouter);
 app.use("/profile-picture", express.static(__dirname + "/public"));
+app.use("/property-asset/", express.static(__dirname + "/public"));
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`);
