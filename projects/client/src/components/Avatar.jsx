@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import placeholder from "../asset/user_placeholder.svg";
 import api from "../api.js";
 
 const Avatar = ({ width, height }) => {

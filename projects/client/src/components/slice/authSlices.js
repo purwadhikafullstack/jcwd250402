@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    token: window.localStorage.getItem("token"),
-    isLoggedIn: window.localStorage.getItem("isLoggedIn") === "true",
+    token: null,
+    isLoggedIn: JSON.parse(window.localStorage.getItem("isLoggedIn")) || false,
   },
   reducers: {
     login(state, action) {
