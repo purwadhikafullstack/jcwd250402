@@ -136,62 +136,105 @@ exports.createProperty = async (req, res) => {
 };
 
 exports.editProperty = async (req, res) => {
-  try {
-    const propertyId = req.params.id;
-    const updatedProperty = { ...req.body };
-    const images = req.files;
+  const {
+    propertyName,
+    description,
+    price,
+    bedCount,
+    bedroomCount,
+    maxGuestCount,
+    bathroomCount,
+    propertyType,
+    district,
+    city,
+    province,
+    streetAddress,
+    postalCode,
+    propertyRules,
+    propertyAmenities,
+  } = req.body;
+  const { id } = req.params;
 
-    if (!propertyId) {
-      return res.status(400).json({
+  try {
+    const existingProperty = await Property.findByPk(id);
+
+    if (!existingProperty) {
+      return res.status(404).json({
         ok: false,
-        status: 400,
-        message: "Property not found",
+        msg: "Property not found",
       });
     }
 
-    for (const [key, value] of Object.entries(updatedProperty)) {
-      if (value !== undefined) {
-        property[key] = value;
-      }
+    const images = req.files;
+
+    if (!images || images.length === 0) {
+      return res.status(400).json({
+        ok: false,
+        msg: "No images uploaded",
+      });
     }
+
+    await PropertyImage.destroy({
+      where: {
+        propertyId: existingProperty.id,
+      },
+    });
+
+    existingProperty.propertyName = propertyName;
+    existingProperty.description = description;
+    existingProperty.price = price;
+    existingProperty.bedCount = bedCount;
+    existingProperty.bedroomCount = bedroomCount;
+    existingProperty.maxGuestCount = maxGuestCount;
+    existingProperty.bathroomCount = bathroomCount;
+    existingProperty.propertyType = propertyType;
+    existingProperty.district = district;
+    existingProperty.city = city;
+    existingProperty.province = province;
+    existingProperty.streetAddress = streetAddress;
+    existingProperty.postalCode = postalCode;
+
+    await existingProperty.save();
 
     if (images && images.length > 0) {
-      // const property = await Property.findOne({ where: { id: propertyId } });
-      // await PropertyImage.destroy({ where: { propertyId: property.id } });
-      const imageObjects = images.map((image) => ({
-        image: image.filename,
-      }));
-      const coverImage = imageObjects[0].image;
+      const imageObjects = images.map((image) => {
+        return {
+          propertyId: existingProperty.id,
+          image: image.filename,
+        };
+      });
+
       const propertyImages = await PropertyImage.bulkCreate(imageObjects);
-      await Promise.all(
-        propertyImages.map((image) => image.update({ propertyId: property.id }))
-      );
-      property.coverImage = coverImage;
     }
 
-    await property.save();
+    const categories = await Category.findOne({
+      where: { propertyId: id },
+    });
+
+    await PropertyCategory.destroy({
+      where: {
+        propertyId: existingProperty.id,
+      },
+    });
+
+    await PropertyCategory.bulkCreate(
+      [{ propertyId: existingProperty.id, categoryId: categories.id }],
+      {
+        fields: ["propertyId", "categoryId"],
+      }
+    );
 
     return res.status(200).json({
       ok: true,
-      status: 200,
-      message: "Property successfully updated",
-      property: {
-        id: property.id,
-        name: property.name,
-        description: property.description,
-        price: property.price,
-        address: property.address,
-        coverImage: property.coverImage,
-        userId: property.userId,
-        Categories: property.Categories,
-      },
+      message: "Property has been updated successfully",
+      property: existingProperty,
     });
   } catch (error) {
-    console.error("Server error:", error);
+    console.error(error);
     return res.status(500).json({
       ok: false,
       status: 500,
-      message: "Internal Server Error",
+      msg: "Internal server error",
     });
   }
 };
@@ -313,9 +356,16 @@ exports.getAllProperties = async (req, res) => {
 };
 
 exports.getPropertiesByUserId = async (req, res) => {
-  const userId = req.user.id;
-
   try {
+    const userId = req.user.id;
+
+    if (!userId) {
+      return res.status(400).json({
+        ok: false,
+        status: 400,
+        message: "Please Login",
+      });
+    }
     const properties = await Property.findAll({
       where: {
         userId: userId,
@@ -479,7 +529,7 @@ exports.getPropertyById = async (req, res) => {
       return res.status(404).json({
         ok: false,
         status: 404,
-        message: "Property not found",
+        message: "Property not found 123!",
       });
     }
 
@@ -516,6 +566,12 @@ exports.getPropertyById = async (req, res) => {
         rule: rule.rule,
       })),
     };
+
+    return res.status(200).json({
+      ok: true,
+      status: 200,
+      Property: formattedProperty,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
