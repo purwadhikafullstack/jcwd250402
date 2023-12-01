@@ -97,8 +97,9 @@ exports.tenantRegister = async (req, res) => {
     email,
     password,
     phoneNumber,
-    // gender,
+    gender,
     dateofbirth,
+    // ktpImg,
   } = req.body;
 
   const existingUser = await User.findOne({
@@ -124,15 +125,16 @@ exports.tenantRegister = async (req, res) => {
       email,
       password: hashPassword,
       phoneNumber,
-      // gender,
+      gender,
       dateofbirth,
+      // ktpImg,
       role: "tenant",
     });
 
     // verify email by sending to email
     const token = crypto.randomBytes(20).toString("hex");
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    const verifyTokenExpiry = Date.now() + 60 * 60 * 1000;
+    const verifyTokenExpiry = addHours(new Date(), 1);
 
     result.verifyToken = tokenHash;
     result.verifyTokenExpiry = verifyTokenExpiry;
