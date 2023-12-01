@@ -477,7 +477,9 @@ const CreateProperty = () => {
               ) : null}
             </div>
             <button
-              className="w-full p-4 text-white rounded-md bg-primary"
+              className={`w-full p-4 text-white rounded-md bg-primary ${
+                isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+              }}`}
               type="submit"
             >
               Create new property

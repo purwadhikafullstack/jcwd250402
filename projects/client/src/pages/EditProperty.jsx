@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import api from "../api";
 import { toast } from "sonner";
 import { Formik, Form, useFormik } from "formik";
@@ -10,32 +11,56 @@ import {
 } from "../components/CreateProperty";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 
-const CreateProperty = () => {
-  document.title = "Create New Property";
+const EditProperty = () => {
   const [images] = useState([]);
   const [showRules, setShowRules] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams();
+  const [propertiesData, setPropertiesData] = useState([]);
+
+  const fetchPropertyData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.get(`/property/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.data;
+
+      if (response.status === 200) {
+        setPropertiesData(data.Property);
+      }
+    } catch (error) {
+      console.error("Error fetching properties:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchPropertyData();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
-      propertyName: "",
-      description: "",
-      price: 0,
-      bedCount: 0,
-      bedroomCount: 0,
-      maxGuestCount: 0,
-      bathroomCount: 0,
-      propertyType: "",
-      district: "",
-      city: "",
-      province: "",
-      streetAddress: "",
-      postalCode: 0,
-      propertyAmenities: [],
-      propertyRules: [],
-      images: [[]],
+      propertyName: propertiesData.name || "",
+      description: propertiesData.description || "",
+      price: propertiesData.price || 0,
+      bedCount: propertiesData.bedCount || 0,
+      bedroomCount: propertiesData.bedroomCount || 0,
+      maxGuestCount: propertiesData.maxGuestCount || 0,
+      bathroomCount: propertiesData.bathroomCount || 0,
+      propertyType: propertiesData.categories?.[0]?.propertyType || "",
+      district: propertiesData.categories?.[0]?.district || "",
+      city: propertiesData.categories?.[0]?.city || "",
+      province: propertiesData.categories?.[0]?.province || "",
+      streetAddress: propertiesData.categories?.[0]?.streetAddress || "",
+      postalCode: propertiesData.categories?.[0]?.postalCode || "",
+      propertyAmenities: propertiesData.amenities || [],
+      propertyRules: propertiesData.propertyRules || [],
+      images: propertiesData.images || [[]],
     },
 
+    enableReinitialize: true,
     onSubmit: async () => {
       setIsSubmitting(true);
       const token = localStorage.getItem("token");
@@ -67,11 +92,8 @@ const CreateProperty = () => {
       formik.values.images.forEach((image) => {
         formData.append(`images`, image);
       });
-      for (const entry of formData.entries()) {
-        console.log(`${entry[0]}: ${entry[1]}`);
-      }
       try {
-        const response = await api.post("/property/create", formData, {
+        const response = await api.patch(`/property/edit/${id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
@@ -115,15 +137,15 @@ const CreateProperty = () => {
   };
 
   const handleIncrement = (property) => {
-    console.log("Incrementing:", property, formik.values[property]);
     formik.setFieldValue(property, formik.values[property] + 1);
   };
 
   const handleDecrement = (property) => {
-    console.log("Decrementing:", property, formik.values[property]);
     formik.setFieldValue(property, Math.max(formik.values[property] - 1, 0));
   };
 
+  // console.log(propertiesData.amenities);
+  document.title = `Edit ${propertiesData.name}`;
   return (
     <div className="px-2 py-6">
       <div className="flex flex-col bg-white">
@@ -154,73 +176,121 @@ const CreateProperty = () => {
                 value={formik.values.propertyType}
                 setValue={formik.handleChange}
                 disabled={isSubmitting}
+                selectedValue={
+                  propertiesData.categories?.[0]?.propertyType || ""
+                }
               />
             </div>
             {/* PROPERTY LOCATION */}
-            <div className="mb-4 border-b p-9">
+            <h1 className="p-4 text-2xl">Property Location</h1>
+            <div className="flex flex-col border-b-2 p-9 gap-y-3">
               <label
                 htmlFor="property_location"
-                className="text-lg font-medium"
+                className="text-xl font-medium"
               >
-                Where is your property located?
+                District
               </label>
-              <div className="flex flex-col w-full p-9 gap-x-3 gap-y-3">
-                <div className="flex flex-col md:flex-row gap-x-4 gap-y-3">
-                  <Input
-                    id="district"
-                    name="district"
-                    label="District"
-                    type="text"
-                    disabled={isSubmitting}
-                    onChange={(value) => handleInputChange("district", value)}
-                  />
-                  <Input
-                    id="city"
-                    name="city"
-                    label="City"
-                    type="text"
-                    disabled={isSubmitting}
-                    onChange={(value) => handleInputChange("city", value)}
-                  />
-                  <Input
-                    id="province"
-                    name="province"
-                    label="Province"
-                    type="text"
-                    disabled={isSubmitting}
-                    onChange={(value) => handleInputChange("province", value)}
-                  />
-                </div>
-                <div className="flex flex-col gap-x-4 w-[100%] gap-y-3 md:flex-row">
-                  <Input
-                    name="streetAddress"
-                    label="Street Address"
-                    type="text"
-                    disabled={isSubmitting}
-                    className={"md:w-[54.7vw]"}
-                    onChange={(value) =>
-                      handleInputChange("streetAddress", value)
-                    }
-                  />
-                  <Input
-                    name="postalCode"
-                    label="Postal Code"
-                    disabled={isSubmitting}
-                    className=""
-                    type="number"
-                    onChange={(value) => handleInputChange("postalCode", value)}
-                  />
-                </div>
-              </div>
-            </div>
-            {/* PROPERTY IMAGES */}
-            <div className="p-9">
-              <ImageUploader
-                images={images}
+              <input
+                name="district"
+                type="text"
+                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
+                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
+                value={formik.values.district}
+                onChange={formik.handleChange}
                 disabled={isSubmitting}
-                onUpdateFormData={handleImageUpdate}
+              />
+              <label
+                htmlFor="property_location"
+                className="text-xl font-medium"
+              >
+                City
+              </label>
+              <input
+                name="district"
+                type="text"
+                placeholder="eg. Shinjuku"
+                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
+                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
+                value={formik.values.city}
+                onChange={formik.handleChange}
+                disabled={isSubmitting}
+              />
+              <label
+                htmlFor="property_location"
+                className="text-xl font-medium"
+              >
+                Province
+              </label>
+              <input
+                name="province"
+                type="text"
+                placeholder="eg. Shinjuku"
+                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
+                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
+                value={formik.values.province}
+                onChange={formik.handleChange}
+                disabled={isSubmitting}
+              />
+              <label
+                htmlFor="property_location"
+                className="text-xl font-medium"
+              >
+                Street Address
+              </label>
+              <input
+                name="province"
+                type="text"
+                placeholder="eg. Shinjuku"
+                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
+                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
+                value={formik.values.streetAddress}
+                onChange={formik.handleChange}
+                disabled={isSubmitting}
+              />
+              <label
+                htmlFor="property_location"
+                className="text-xl font-medium"
+              >
+                Postal Code
+              </label>
+              <input
+                name="province"
+                type="text"
+                placeholder="eg. Shinjuku"
+                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
+                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
+                value={formik.values.postalCode}
+                onChange={formik.handleChange}
+                disabled={isSubmitting}
               />
             </div>
+            {/* PROPERTY IMAGES */}
+            <label htmlFor="property_images" className="text-lg font-medium">
+              Upload your property images
+            </label>
+            <div className="flex flex-row items-center justify-center border-b-2">
+              <div className="flex flex-row items-center justify-center overflow-x-scroll gap-x-2">
+                {propertiesData.propertyImages &&
+                  propertiesData.propertyImages.map((imageObj, index) => (
+                    <div
+                      key={index}
+                      className="col-span-5 row-span-1 bg-gray-200 md:col-span-3 md:row-span-2 lg:col-span-3 lg:row-span-2 xl:col-span-3 xl:row-span-2 2xl:col-span-3 2xl:row-span-2 "
+                    >
+                      <img
+                        src={`http://localhost:8000/property-asset/${imageObj.image}`}
+                        alt={`Property ${index + 1}`}
+                        className="object-fill w-64 h-64"
+                      />
+                    </div>
+                  ))}
+                <ImageUploader
+                  images={images}
+                  disabled={isSubmitting}
+                  onUpdateFormData={handleImageUpdate}
+                />
+              </div>
+            </div>
+            <div className="p-9"></div>
             {/* PROPERTY COUNT */}
             <div className="p-9">
               <h1 className="mb-2 text-lg font-medium">
@@ -313,21 +383,7 @@ const CreateProperty = () => {
                 disabled={isSubmitting}
                 onUpdateFormData={handleInputChange}
                 onAmenitiesChange={handleAmenitiesChange}
-              />
-            </div>
-            {/* PROPERTY DESCRIPTION */}
-            <div className="flex flex-col border-b-2 p-9">
-              <label htmlFor="DESCRIPTION" className="text-lg font-medium">
-                Tell us more about your property
-              </label>
-              <textarea
-                name="description"
-                id="description"
-                cols="30"
-                rows="3"
-                disabled={isSubmitting}
-                value={formik.values.description}
-                onChange={formik.handleChange}
+                selectedAmenities={propertiesData.amenities || []}
               />
             </div>
             {/* PROPERTY RULES */}
@@ -341,56 +397,62 @@ const CreateProperty = () => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    setShowRules(true);
                     const newItem = e.target.value.trim();
                     if (newItem) {
+                      const newIndex = formik.values.propertyRules.length;
                       formik.setFieldValue("propertyRules", [
                         ...formik.values.propertyRules,
-                        newItem,
+                        { id: newIndex, rule: newItem },
                       ]);
                       e.target.value = "";
                     }
                   }
                 }}
               />
-              {showRules && (
-                <div className="p-3 mt-3 border-2 rounded-md border-neutral-500">
-                  <ul className="pl-6 mt-2 list-disc">
-                    {formik.values.propertyRules.map((rule, index) => (
-                      <li
-                        key={index}
-                        className="flex items-center justify-between"
+              <div className="p-3 mt-3 border-2 rounded-md border-neutral-500">
+                <ul className="pl-6 mt-2 list-disc">
+                  {formik.values.propertyRules.map((rule) => (
+                    <li
+                      key={rule.id}
+                      className="flex items-center justify-between"
+                    >
+                      {rule.rule}
+                      <button
+                        type="button"
+                        className="ml-2 text-red-500"
+                        onClick={() => {
+                          const updatedRules =
+                            formik.values.propertyRules.filter(
+                              (r) => r.id !== rule.id
+                            );
+                          formik.setFieldValue("propertyRules", updatedRules);
+                        }}
                       >
-                        {rule}
-                        <button
-                          type="button"
-                          className="ml-2 text-red-500"
-                          onClick={() => {
-                            const updatedRules =
-                              formik.values.propertyRules.filter(
-                                (_, i) => i !== index
-                              );
-                            formik.setFieldValue("propertyRules", updatedRules);
-                          }}
-                        >
-                          Remove
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
+
             {/* PROPERTY PRICE */}
             <div className="flex flex-col border-b-2 p-9">
-              <Input
-                disabled={isSubmitting}
-                className={"appearance-none"}
-                id="price"
+              <label
+                htmlFor="property_location"
+                className="text-xl font-medium"
+              >
+                Price /night (IDR)
+              </label>
+              <input
                 name="price"
-                label="Price /night (IDR)"
                 type="number"
-                onChange={(value) => handleInputChange("price", value)}
+                placeholder="eg. Shinjuku"
+                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
+                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
+                value={formik.values.price}
+                onChange={formik.handleChange}
+                disabled={isSubmitting}
               />
             </div>
             <button
@@ -406,4 +468,4 @@ const CreateProperty = () => {
   );
 };
 
-export default CreateProperty;
+export default EditProperty;
