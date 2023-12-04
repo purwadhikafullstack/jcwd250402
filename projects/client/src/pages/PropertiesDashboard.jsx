@@ -55,7 +55,7 @@ const PropertiesDashboard = () => {
           {propertiesData.map((property) => (
             <tr key={property.id} className="border-b">
               <td className="items-center justify-center px-4 py-2 border-gray-200">
-                <div className="flex items-center justify-center gap-x-4">
+                <div className="flex items-start justify-start ml-2 gap-x-4">
                   <img
                     className="object-fill w-10 h-10 rounded-lg"
                     src={`http://localhost:8000/property-asset/${property.coverImage}`}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
 import { toast } from "sonner";
 import { Formik, Form, useFormik } from "formik";
@@ -12,6 +12,7 @@ import {
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 
 const EditProperty = () => {
+  const navigate = useNavigate();
   const [images] = useState([]);
   const [showRules, setShowRules] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,6 +93,7 @@ const EditProperty = () => {
       formik.values.images.forEach((image) => {
         formData.append(`images`, image);
       });
+      console.log(formData.propertyRules);
       try {
         const response = await api.patch(`/property/edit/${id}`, formData, {
           headers: {
@@ -100,7 +102,8 @@ const EditProperty = () => {
           },
         });
         if (response.status === 201) {
-          toast.success("Property created successfully");
+          navigate("/properties");
+          toast.success("Property edited successfully");
           setIsSubmitting(false);
         }
       } catch (error) {
@@ -144,7 +147,7 @@ const EditProperty = () => {
     formik.setFieldValue(property, Math.max(formik.values[property] - 1, 0));
   };
 
-  // console.log(propertiesData.amenities);
+  // console.log(propertiesData.propertyRules);
   document.title = `Edit ${propertiesData.name}`;
   return (
     <div className="px-2 py-6">
@@ -459,7 +462,7 @@ const EditProperty = () => {
               className="w-full p-4 text-white rounded-md bg-primary"
               type="submit"
             >
-              Create new property
+              Update
             </button>
           </Form>
         </Formik>

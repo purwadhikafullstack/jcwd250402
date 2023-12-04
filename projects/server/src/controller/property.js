@@ -136,105 +136,150 @@ exports.createProperty = async (req, res) => {
 };
 
 exports.editProperty = async (req, res) => {
-  const {
-    propertyName,
-    description,
-    price,
-    bedCount,
-    bedroomCount,
-    maxGuestCount,
-    bathroomCount,
-    propertyType,
-    district,
-    city,
-    province,
-    streetAddress,
-    postalCode,
-    propertyRules,
-    propertyAmenities,
-  } = req.body;
-  const { id } = req.params;
-
   try {
-    const existingProperty = await Property.findByPk(id);
+    const propertyId = req.params.id;
+    const {
+      propertyName,
+      description,
+      price,
+      bedCount,
+      bedroomCount,
+      maxGuestCount,
+      bathroomCount,
+      propertyType,
+      district,
+      city,
+      province,
+      streetAddress,
+      postalCode,
+      propertyRules,
+      propertyAmenities,
+    } = req.body;
+
+    const existingProperty = await Property.findByPk(propertyId, {
+      include: [
+        {
+          model: PropertyImage,
+          as: "PropertyImages",
+          attributes: ["id", "image"],
+        },
+        {
+          model: Category,
+          as: "Categories",
+          attributes: [
+            "propertyType",
+            "district",
+            "city",
+            "province",
+            "streetAddress",
+            "postalCode",
+          ],
+          through: { attributes: [] },
+        },
+        {
+          model: PropertyRules,
+          as: "PropertyRules",
+          attributes: ["id", "rule"],
+        },
+        {
+          model: Amenity,
+          as: "Amenities",
+          attributes: ["id", "amenity"],
+        },
+      ],
+      attributes: [
+        "id",
+        "propertyName",
+        "description",
+        "price",
+        "bedCount",
+        "bedroomCount",
+        "maxGuestCount",
+        "bathroomCount",
+        "coverImage",
+        "userId",
+        "isActive",
+      ],
+    });
 
     if (!existingProperty) {
       return res.status(404).json({
         ok: false,
-        msg: "Property not found",
+        status: 404,
+        message: "Property not found",
       });
     }
 
-    const images = req.files;
-
-    if (!images || images.length === 0) {
-      return res.status(400).json({
-        ok: false,
-        msg: "No images uploaded",
-      });
-    }
-
-    await PropertyImage.destroy({
-      where: {
-        propertyId: existingProperty.id,
-      },
-    });
-
-    existingProperty.propertyName = propertyName;
-    existingProperty.description = description;
-    existingProperty.price = price;
-    existingProperty.bedCount = bedCount;
-    existingProperty.bedroomCount = bedroomCount;
-    existingProperty.maxGuestCount = maxGuestCount;
-    existingProperty.bathroomCount = bathroomCount;
-    existingProperty.propertyType = propertyType;
-    existingProperty.district = district;
-    existingProperty.city = city;
-    existingProperty.province = province;
-    existingProperty.streetAddress = streetAddress;
-    existingProperty.postalCode = postalCode;
+    existingProperty.propertyName =
+      propertyName || existingProperty.propertyName;
+    existingProperty.description = description || existingProperty.description;
+    existingProperty.price = price || existingProperty.price;
+    existingProperty.bedCount = bedCount || existingProperty.bedCount;
+    existingProperty.bedroomCount =
+      bedroomCount || existingProperty.bedroomCount;
+    existingProperty.maxGuestCount =
+      maxGuestCount || existingProperty.maxGuestCount;
+    existingProperty.bathroomCount =
+      bathroomCount || existingProperty.bathroomCount;
 
     await existingProperty.save();
 
+    const images = req.files;
     if (images && images.length > 0) {
-      const imageObjects = images.map((image) => {
-        return {
-          propertyId: existingProperty.id,
-          image: image.filename,
-        };
-      });
-
-      const propertyImages = await PropertyImage.bulkCreate(imageObjects);
+      const newImageObjects = images.map((image) => ({
+        image: image.filename,
+        propertyId,
+      }));
+      const newPropertyImages = await PropertyImage.bulkCreate(newImageObjects);
+      existingProperty.propertyImages =
+        existingProperty.propertyImages.concat(newPropertyImages);
     }
 
-    const categories = await Category.findOne({
-      where: { propertyId: id },
-    });
+    if (req.body.coverImage) {
+      existingProperty.coverImage = req.body.coverImage;
+      await existingProperty.save();
+    }
 
-    await PropertyCategory.destroy({
-      where: {
-        propertyId: existingProperty.id,
-      },
-    });
+    await PropertyRules.destroy({ where: { propertyId } });
+    if (propertyRules && propertyRules.length > 0) {
+      const newPropertyRulesObjects = propertyRules.map((rule) => ({
+        rule,
+        propertyId,
+      }));
+      await PropertyRules.bulkCreate(newPropertyRulesObjects);
+    }
 
-    await PropertyCategory.bulkCreate(
-      [{ propertyId: existingProperty.id, categoryId: categories.id }],
-      {
-        fields: ["propertyId", "categoryId"],
-      }
-    );
+    await Amenity.destroy({ where: { propertyId } });
+    if (propertyAmenities && propertyAmenities.length > 0) {
+      const newAmenityObjects = propertyAmenities.map((amenity) => ({
+        amenity,
+        propertyId,
+      }));
+      await Amenity.bulkCreate(newAmenityObjects);
+    }
 
     return res.status(200).json({
       ok: true,
-      message: "Property has been updated successfully",
-      property: existingProperty,
+      status: 200,
+      message: "Property successfully updated",
+      property: {
+        id: existingProperty.id,
+        name: existingProperty.name,
+        description: existingProperty.description,
+        price: existingProperty.price,
+        address: existingProperty.address,
+        coverImage: existingProperty.coverImage,
+        userId: existingProperty.userId,
+        propertyImages: existingProperty.propertyImages,
+        Categories: existingProperty.Categories,
+      },
     });
   } catch (error) {
-    console.error(error);
+    console.error("Server error:", error);
     return res.status(500).json({
       ok: false,
       status: 500,
-      msg: "Internal server error",
+      message: "Internal Server Error",
     });
   }
 };
