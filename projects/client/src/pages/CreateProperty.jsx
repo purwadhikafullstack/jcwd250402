@@ -10,9 +10,11 @@ import {
 } from "../components/CreateProperty";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 const CreateProperty = () => {
   document.title = "Create New Property";
+  const navigate = useNavigate();
   const [images] = useState([]);
   const [showRules, setShowRules] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,6 +103,7 @@ const CreateProperty = () => {
         if (response.status === 201) {
           toast.success("Property created successfully");
           setIsSubmitting(false);
+          navigate("/tenant/dashboard");
         }
       } catch (error) {
         setIsSubmitting(false);

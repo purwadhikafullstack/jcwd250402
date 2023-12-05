@@ -11,9 +11,9 @@ import { AiOutlineCalendar } from "react-icons/ai";
 import { MdStarHalf } from "react-icons/md";
 import CreateProperty from "./CreateProperty";
 
-const TenantDashboard = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
+const TenantDashboard = ({ activeMenu }) => {
   const [activeMenuItem, setActiveMenuItem] = useState("Dashboard");
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const handleMenuItemClick = (menuItem) => {
     setActiveMenuItem(menuItem);
