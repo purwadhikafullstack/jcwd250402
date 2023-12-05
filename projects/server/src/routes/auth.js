@@ -18,6 +18,7 @@ router.post(
   "/tenant-register",
   // authValidator.tenantRegisterRules,
   // authValidator.applyRegisterValidation,
+  multerUpload.single("file"),
   authController.tenantRegister
 );
 
