@@ -1,43 +1,39 @@
 import React from "react";
-import { TbBeach } from "react-icons/tb";
-import { GiWindmill } from "react-icons/gi";
-import { MdOutlineVilla } from "react-icons/md";
+import { BsHouseDoor } from "react-icons/bs";
+import { PiBuildingsBold, PiWarehouseDuotone } from "react-icons/pi";
+import { GiSpookyHouse } from "react-icons/gi";
+import { MdApartment, MdOutlineBedroomParent } from "react-icons/md";
 import CategoryBox from "./CategoryBox";
 
 export const categories = [
   {
-    label: "Beach",
-    icon: TbBeach,
+    label: "House",
+    icon: BsHouseDoor,
     description: "",
   },
   {
-    label: "Windmills",
-    icon: GiWindmill,
+    label: "Apartment",
+    icon: MdApartment,
     description: "",
   },
   {
-    label: "Modern",
-    icon: MdOutlineVilla,
+    label: "Guesthouse",
+    icon: PiWarehouseDuotone,
     description: "",
   },
   {
-    label: "Modern",
-    icon: MdOutlineVilla,
+    label: "Villa",
+    icon: GiSpookyHouse,
     description: "",
   },
   {
-    label: "Modern",
-    icon: MdOutlineVilla,
+    label: "Hotel",
+    icon: PiBuildingsBold,
     description: "",
   },
   {
-    label: "Modern",
-    icon: MdOutlineVilla,
-    description: "",
-  },
-  {
-    label: "Modern",
-    icon: MdOutlineVilla,
+    label: "Room",
+    icon: MdOutlineBedroomParent,
     description: "",
   },
 ];
