@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { login, isTenant } from "../components/slice/authSlices.js";
 
 import useTenantRegister from "../components/hooks/useTenantRegister.js";
 import logo from "../asset/Logo-White.svg";
@@ -11,7 +13,8 @@ import api from "../api.js";
 import Input from "../components/inputs/Input.jsx";
 
 document.title = "Nginapp Host - Login";
-const Tenant = () => {
+const TenantLogin = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
@@ -35,7 +38,7 @@ const Tenant = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const login = async (user_identity, password) => {
+  const loginHandler = async (user_identity, password) => {
     try {
       const response = await api.post("/auth/login", {
         user_identity,
@@ -46,12 +49,13 @@ const Tenant = () => {
         const token = userData.token;
         const role = userData.role;
 
+        dispatch(login({ token: token }));
         if (role === "user") {
           toast.error("Sorry this page is for tenants only.");
           navigate({ pathname: "/", state: { openLoginModal: true } });
           return;
         } else if (role === "tenant") {
-          localStorage.setItem("token", token);
+          dispatch(isTenant({ isTenant: true }));
           toast.success("Log in successful! Welcome back!");
           navigate("/tenant/dashboard");
           setIsLoading(false);
@@ -85,7 +89,7 @@ const Tenant = () => {
   const formik = useFormik({
     onSubmit: (values) => {
       const { user_identity, password } = values;
-      login(user_identity, password);
+      loginHandler(user_identity, password);
     },
   });
 
@@ -215,7 +219,7 @@ const Tenant = () => {
             ) : (
               <button
                 onClick={() => {
-                  login(formData.user_identity, formData.password);
+                  loginHandler(formData.user_identity, formData.password);
                   setIsLoading(true);
                 }}
                 className="w-full text-white bg-primary hover:bg-primary/70 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
@@ -246,4 +250,4 @@ const Tenant = () => {
   );
 };
 
-export default Tenant;
+export default TenantLogin;

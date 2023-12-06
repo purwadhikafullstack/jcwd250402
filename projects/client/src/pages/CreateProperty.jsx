@@ -139,12 +139,10 @@ const CreateProperty = () => {
   };
 
   const handleIncrement = (property) => {
-    console.log("Incrementing:", property, formik.values[property]);
     formik.setFieldValue(property, formik.values[property] + 1);
   };
 
   const handleDecrement = (property) => {
-    console.log("Decrementing:", property, formik.values[property]);
     formik.setFieldValue(property, Math.max(formik.values[property] - 1, 0));
   };
 

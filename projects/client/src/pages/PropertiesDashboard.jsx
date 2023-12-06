@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Dropdown } from "flowbite-react";
 import api from "../api";
-import { jwtDecode } from "jwt-decode";
 import usePropertyDeleteModal from "../components/hooks/usePropertyDeleteModal.js";
 
 const PropertiesDashboard = () => {

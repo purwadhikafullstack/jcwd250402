@@ -27,9 +27,9 @@ function App() {
       <AuthModal />
       <PropertyDelete />
       <Routes>
-        {/* <Route path="/tenant/dashboard" element={<ProtectedTenantRoute />}> */}
-        <Route path="/tenant/dashboard" element={<TenantDashboard />} />
-        {/* </Route> */}
+        <Route path="/tenant/dashboard" element={<ProtectedTenantRoute />}>
+          <Route index element={<TenantDashboard />} />
+        </Route>
         <Route path="/" element={<Home />} />
         <Route path="/property/:id" element={<ListingPage />} />
         <Route path="/tenant" element={<TenantLogin />} />

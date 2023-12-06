@@ -1,31 +1,18 @@
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-const ProtectedTenantRoute = ({ children }) => {
-  const navigate = useNavigate();
-  const isTenant = useSelector((state) => state.auth.isTenant);
-  console.log(isTenant);
-  useEffect(() => {
-    if (!isTenant) {
-      navigate("/");
-    }
-  }, [isTenant, navigate]);
-
-  return isTenant ? children : null;
+const ProtectedTenantRoute = () => {
+  const auth = {
+    isTenant: localStorage.getItem("isTenant"),
+    isLoggedIn: localStorage.getItem("isLoggedIn"),
+  };
+  return auth.isTenant && auth.isLoggedIn ? <Outlet /> : <Navigate to="/" />;
 };
 
-const ProtectedRoute = ({ children }) => {
-  const navigate = useNavigate();
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn === true);
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/");
-    }
-  }, [isLoggedIn, navigate]);
-
-  return isLoggedIn ? children : null;
+const ProtectedRoute = () => {
+  const auth = {
+    isLoggedIn: localStorage.getItem("isLoggedIn"),
+  };
+  return auth.isLoggedIn ? <Outlet /> : <Navigate to="/" />;
 };
 
 export { ProtectedRoute, ProtectedTenantRoute };
