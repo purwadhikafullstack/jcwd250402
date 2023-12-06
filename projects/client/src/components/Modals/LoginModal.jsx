@@ -100,7 +100,7 @@ const LoginModal = () => {
   const handleForgotPassword = async (email) => {
     setIsLoading(true);
     try {
-      const response = await api.post("/auth/forgot-password", {
+      const response = await api.post("/forgot-password", {
         email,
       });
       if (response.status === 200) {

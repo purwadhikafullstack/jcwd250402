@@ -58,7 +58,7 @@ const PropertiesDashboard = () => {
                 <div className="flex items-start justify-start ml-2 gap-x-4">
                   <img
                     className="object-fill w-10 h-10 rounded-lg"
-                    src={`http://localhost:8000/property-asset/${property.coverImage}`}
+                    src={`http://localhost:8000/api/property-asset/${property.coverImage}`}
                     alt="property"
                   />
                   {property.name}

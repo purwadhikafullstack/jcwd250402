@@ -28,7 +28,7 @@ const Avatar = ({ width, height }) => {
     "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
 
   const profilePictureSrc = profilePicture
-    ? `http://localhost:8000/profile-picture/${profilePicture}`
+    ? `http://localhost:8000/api/profile-picture/${profilePicture}`
     : defaultAvatar;
 
   return (
