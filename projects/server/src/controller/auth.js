@@ -99,6 +99,7 @@ exports.tenantRegister = async (req, res) => {
     phoneNumber,
     gender,
     dateofbirth,
+    profilePicture,
     // ktpImg,
   } = req.body;
 
@@ -127,6 +128,7 @@ exports.tenantRegister = async (req, res) => {
       phoneNumber,
       gender,
       dateofbirth,
+      profilePicture: req.file.filename,
       // ktpImg,
       role: "tenant",
     });

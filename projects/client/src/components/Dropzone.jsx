@@ -53,7 +53,7 @@ export default function UploadPhoto({ label, formik, field, id }) {
             {preview ? (
               <img
                 src={preview}
-                alt="Profile picture preview"
+                alt="Profile preview"
                 className="object-cover w-full h-40 mb-2 rounded-lg"
               />
             ) : (
