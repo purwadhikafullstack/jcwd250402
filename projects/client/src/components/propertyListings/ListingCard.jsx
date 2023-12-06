@@ -13,8 +13,6 @@ const ListingCard = ({
 }) => {
   const navigate = useNavigate();
 
-  console.log(data.coverImage);
-
   return (
     <div
       onClick={() => navigate(`/property/${data.id}`)}
@@ -31,10 +29,9 @@ const ListingCard = ({
             <FavoriteButton listingId={data.id} />
           </div>
         </div>
-        <div className="text-lg font-semibold">
-          {data.categories[0]?.district}, {data.categories[0]?.city}
-        </div>
+        <div className="text-lg font-semibold">{data.name}</div>
         <div className="font-light text-neutral-500">
+          {data.categories[0]?.district}, {data.categories[0]?.city} -{" "}
           {data.categories[0]?.propertyType
             ? data.categories[0]?.propertyType.charAt(0).toUpperCase() +
               data.categories[0]?.propertyType.slice(1)

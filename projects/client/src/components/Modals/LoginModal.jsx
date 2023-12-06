@@ -78,7 +78,6 @@ const LoginModal = () => {
         const role = userData.role;
 
         dispatch(login({ token: token }));
-        console.log();
         if (role === "tenant") {
           loginModal.onClose();
           navigate("/tenant/dashboard");
