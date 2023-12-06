@@ -5,6 +5,7 @@ const {
   PropertyRules,
   Amenity,
   PropertyCategory,
+  User,
 } = require("../models");
 
 exports.createProperty = async (req, res) => {
@@ -138,6 +139,7 @@ exports.createProperty = async (req, res) => {
 exports.editProperty = async (req, res) => {
   try {
     const propertyId = req.params.id;
+    const tenantId = req.user.id;
     const {
       propertyName,
       description,
@@ -201,6 +203,17 @@ exports.editProperty = async (req, res) => {
         "isActive",
       ],
     });
+
+    console.log("PropertyId:", existingProperty.userId);
+    console.log("tenant:", tenantId);
+
+    if (existingProperty.userId !== tenantId) {
+      return res.status(403).json({
+        ok: false,
+        status: 403,
+        message: "You are not authorized to edit this property",
+      });
+    }
 
     if (!existingProperty) {
       return res.status(404).json({
@@ -554,6 +567,20 @@ exports.getPropertyById = async (req, res) => {
           ],
           through: { attributes: [] },
         },
+        {
+          model: User,
+          as: "Tenant",
+          attributes: [
+            "id",
+            "fullname",
+            "username",
+            "email",
+            "phoneNumber",
+            "profilePicture",
+            "isVerified",
+            "createdAt",
+          ],
+        },
       ],
       attributes: [
         "id",
@@ -567,6 +594,7 @@ exports.getPropertyById = async (req, res) => {
         "coverImage",
         "userId",
         "isActive",
+        "createdAt",
       ],
     });
 
@@ -580,7 +608,6 @@ exports.getPropertyById = async (req, res) => {
 
     const formattedProperty = {
       id: property.id,
-      userId: property.userId,
       name: property.propertyName,
       description: property.description,
       bedCount: property.bedCount,
@@ -610,6 +637,17 @@ exports.getPropertyById = async (req, res) => {
         id: rule.id,
         rule: rule.rule,
       })),
+      Owner: {
+        id: property.Tenant.id,
+        fullname: property.Tenant.fullname,
+        username: property.Tenant.username,
+        email: property.Tenant.email,
+        phoneNumber: property.Tenant.phoneNumber,
+        profilePicture: property.Tenant.profilePicture,
+        isVerified: property.Tenant.isVerified,
+        memberSince: property.Tenant.createdAt,
+      },
+      CreatedAt: property.createdAt,
     };
 
     return res.status(200).json({

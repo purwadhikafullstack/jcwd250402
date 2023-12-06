@@ -30,7 +30,14 @@ const EditProperty = () => {
       const data = await response.data;
 
       if (response.status === 200) {
-        setPropertiesData(data.Property);
+        const propertyRules = data.Property.propertyRules.map(
+          (rule) => rule.rule
+        );
+
+        setPropertiesData({
+          ...data.Property,
+          propertyRules: propertyRules,
+        });
       }
     } catch (error) {
       console.error("Error fetching properties:", error.message);
@@ -67,7 +74,7 @@ const EditProperty = () => {
       const token = localStorage.getItem("token");
       const isTenant = localStorage.getItem("isTenant");
       if (isTenant === "false" || isTenant === "null") {
-        toast.error("Only tenants can create properties!");
+        toast.error("Only tenants can edit properties!");
         return;
       }
       const formData = new FormData();
@@ -101,8 +108,8 @@ const EditProperty = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (response.status === 201) {
-          navigate("/properties");
+        if (response.status === 200) {
+          navigate("/tenant/dashboard");
           toast.success("Property edited successfully");
           setIsSubmitting(false);
         }
@@ -280,7 +287,7 @@ const EditProperty = () => {
                       className="col-span-5 row-span-1 bg-gray-200 md:col-span-3 md:row-span-2 lg:col-span-3 lg:row-span-2 xl:col-span-3 xl:row-span-2 2xl:col-span-3 2xl:row-span-2 "
                     >
                       <img
-                        src={`http://localhost:8000/property-asset/${imageObj.image}`}
+                        src={`http://localhost:8000/api/property-asset/${imageObj.image}`}
                         alt={`Property ${index + 1}`}
                         className="object-fill w-64 h-64"
                       />
@@ -405,7 +412,7 @@ const EditProperty = () => {
                       const newIndex = formik.values.propertyRules.length;
                       formik.setFieldValue("propertyRules", [
                         ...formik.values.propertyRules,
-                        { id: newIndex, rule: newItem },
+                        newItem,
                       ]);
                       e.target.value = "";
                     }
@@ -414,19 +421,19 @@ const EditProperty = () => {
               />
               <div className="p-3 mt-3 border-2 rounded-md border-neutral-500">
                 <ul className="pl-6 mt-2 list-disc">
-                  {formik.values.propertyRules.map((rule) => (
+                  {formik.values.propertyRules.map((rule, index) => (
                     <li
-                      key={rule.id}
+                      key={index}
                       className="flex items-center justify-between"
                     >
-                      {rule.rule}
+                      {rule}
                       <button
                         type="button"
                         className="ml-2 text-red-500"
                         onClick={() => {
                           const updatedRules =
                             formik.values.propertyRules.filter(
-                              (r) => r.id !== rule.id
+                              (r, i) => i !== index
                             );
                           formik.setFieldValue("propertyRules", updatedRules);
                         }}
