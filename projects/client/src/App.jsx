@@ -13,6 +13,7 @@ import { ProtectedRoute, ProtectedTenantRoute } from "./utils/protectedRoute";
 import AuthModal from "./components/Modals/AuthModal";
 import VerifyUserPage from "./pages/VerifyUserPage";
 import { PropertyDelete } from "./components/Modals";
+import { ListingPage } from "./components/propertyListings";
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const TenantRegisterModal = lazy(() =>
   import("./components/Modals/TenantRegister")
@@ -30,6 +31,7 @@ function App() {
         <Route path="/tenant/dashboard" element={<TenantDashboard />} />
         {/* </Route> */}
         <Route path="/" element={<Home />} />
+        <Route path="/property/:id" element={<ListingPage />} />
         <Route path="/tenant" element={<TenantLogin />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/tenant/register" element={<TenantRegisterPage />} />
