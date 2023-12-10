@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Dropdown } from "flowbite-react";
 import api from "../api";
 import usePropertyDeleteModal from "../components/hooks/usePropertyDeleteModal.js";
+import { Menu, Button, Text, rem } from "@mantine/core";
 
 const PropertiesDashboard = () => {
   const [propertiesData, setPropertiesData] = useState([]);
@@ -65,7 +65,7 @@ const PropertiesDashboard = () => {
               </td>
               <td className="flex flex-row items-center justify-center px-4 py-2 border-gray-200">
                 {property.categories[0]
-                  ? `${property.categories[0].district}, ${property.categories[0].city}, ${property.categories[0].province}`
+                  ? `${property.categories[0].city}, ${property.categories[0].country}, `
                   : "N/A"}
               </td>
               <td className="items-center justify-center px-4 py-2 text-center border-gray-200">
@@ -79,27 +79,27 @@ const PropertiesDashboard = () => {
               </td>
               <td className="flex flex-row items-center justify-center px-4 py-2 border-gray-200">
                 <div className="">
-                  <Dropdown
-                    theme="dark"
-                    label="Manage"
-                    floatingArrow={true}
-                    dismissOnClick={true}
-                    className="text-black border-2 border-gray-200 rounded-lg"
-                    style={{ color: "black" }}
-                  >
-                    <Link to={`/edit-property/${property.id}`}>
-                      <Dropdown.Item>Edit Property</Dropdown.Item>
-                    </Link>
-                    <Dropdown.Item
-                      onClick={() => {
-                        propertyDeleteModal.setPropertyId(property.id);
-                        propertyDeleteModal.onOpen();
-                      }}
-                      className="text-red-500"
-                    >
-                      Remove Property
-                    </Dropdown.Item>
-                  </Dropdown>
+                  <Menu shadow="md" width={200} color="#0256EE" radius={""}>
+                    <Menu.Target>
+                      <Button>Manage</Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item>
+                        <Link to={`/edit-property/${property.id}`}>
+                          Edit Property
+                        </Link>
+                      </Menu.Item>
+                      <Menu.Item
+                        color="red"
+                        onClick={() => {
+                          propertyDeleteModal.setPropertyId(property.id);
+                          propertyDeleteModal.onOpen();
+                        }}
+                      >
+                        Delete Property
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
                 </div>
               </td>
             </tr>

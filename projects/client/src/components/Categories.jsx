@@ -1,9 +1,11 @@
 import React from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { BsHouseDoor } from "react-icons/bs";
 import { PiBuildingsBold, PiWarehouseDuotone } from "react-icons/pi";
 import { GiSpookyHouse } from "react-icons/gi";
 import { MdApartment, MdOutlineBedroomParent } from "react-icons/md";
 import CategoryBox from "./CategoryBox";
+import Container from "./Container";
 
 export const categories = [
   {
@@ -39,8 +41,12 @@ export const categories = [
 ];
 
 const Categories = () => {
+  const location = useLocation();
+  const params = useSearchParams();
+  const isMainPage = location.pathname === "/";
+  if (!isMainPage) return null;
   return (
-    <div className="container">
+    <Container>
       <div className="flex flex-row items-center justify-between pt-4 overflow-x-auto">
         {categories.map((category) => (
           <CategoryBox
@@ -51,7 +57,7 @@ const Categories = () => {
           />
         ))}
       </div>
-    </div>
+    </Container>
   );
 };
 

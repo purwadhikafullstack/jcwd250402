@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login, isTenant } from "../components/slice/authSlices.js";
 
 import useTenantRegister from "../components/hooks/useTenantRegister.js";
@@ -12,8 +12,12 @@ import logo_black from "../asset/Logo-Black.svg";
 import api from "../api.js";
 import Input from "../components/inputs/Input.jsx";
 
-document.title = "Nginapp Host - Login";
 const TenantLogin = () => {
+  const isTenant = useSelector((state) => state.auth.isTenant === true);
+  if (isTenant) {
+    console.log("isTenant:", isTenant);
+    <Navigate to="/tenant/dashboard" />;
+  }
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -23,8 +27,6 @@ const TenantLogin = () => {
     password: "",
     email: "",
   });
-
-  const tenantRegister = useTenantRegister();
 
   const loginSchema = Yup.object().shape({
     user_identity: Yup.string()
@@ -114,7 +116,7 @@ const TenantLogin = () => {
       </div>
 
       <div className="flex flex-col items-center justify-center w-full px-6 py-8 mx-auto md:h-screen lg:py-0 z-100">
-        <div className="w-full bg-white rounded-lg shadow-xl dark:border md:mt-0 sm:max-w-md xl:p-0">
+        <div className="w-full bg-white rounded-lg shadow-xl md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <div className="flex flex-row items-center justify-center">
               <h1 class="text-xl font-light leading-tight tracking-tight text-gray-900 md:text-2xl mr-2">
@@ -185,7 +187,7 @@ const TenantLogin = () => {
                         id="remember"
                         aria-describedby="remember"
                         type="checkbox"
-                        className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
+                        className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 "
                         required=""
                       />
                     </div>
@@ -228,9 +230,9 @@ const TenantLogin = () => {
               </button>
             )}
             <div class="flex items-center justify-center mt-4">
-              <span class="w-full border-b dark:border-gray-600 mr-10"></span>
+              <span class="w-full border-b  mr-10"></span>
               <span class="text-md text-center text-gray-500">or</span>
-              <span class="w-full border-b dark:border-gray-400 ml-10"></span>
+              <span class="w-full border-b  ml-10"></span>
             </div>
             <div className="flex items-center justify-center">
               <span className="mr-2">Don't have an account?</span>

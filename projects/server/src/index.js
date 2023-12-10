@@ -22,11 +22,13 @@ app.use(express.json());
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const propertyRouter = require("./routes/property");
+const bookingRouter = require("./routes/booking");
 // ===========================
 // NOTE : Add your routes here
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/property", propertyRouter);
+app.use("/api/booking", bookingRouter);
 app.use("/api/profile-picture", express.static(__dirname + "/public"));
 app.use("/api/property-asset/", express.static(__dirname + "/public"));
 
