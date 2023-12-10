@@ -10,11 +10,14 @@ import {
   CreatePropertyType,
 } from "../components/CreateProperty";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
+import CountrySelect from "../components/inputs/CountrySelect";
+import ProvinceSelect from "../components/inputs/ProvinceSelect";
+import CitySelect from "../components/inputs/CitySelect";
+import "react-autocomplete-input/dist/bundle.css";
 
 const EditProperty = () => {
   const navigate = useNavigate();
   const [images] = useState([]);
-  const [showRules, setShowRules] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { id } = useParams();
   const [propertiesData, setPropertiesData] = useState([]);
@@ -61,6 +64,7 @@ const EditProperty = () => {
       district: propertiesData.categories?.[0]?.district || "",
       city: propertiesData.categories?.[0]?.city || "",
       province: propertiesData.categories?.[0]?.province || "",
+      country: propertiesData.categories?.[0]?.country || "",
       streetAddress: propertiesData.categories?.[0]?.streetAddress || "",
       postalCode: propertiesData.categories?.[0]?.postalCode || "",
       propertyAmenities: propertiesData.amenities || [],
@@ -88,7 +92,8 @@ const EditProperty = () => {
       formData.append("propertyType", formik.values.propertyType);
       formData.append("district", formik.values.district);
       formData.append("city", formik.values.city);
-      formData.append("province", formik.values.province);
+      formData.append("province", formik.values.province.label);
+      formData.append("country", formik.values.country.label);
       formData.append("streetAddress", formik.values.streetAddress);
       formData.append("postalCode", formik.values.postalCode);
       formik.values.propertyAmenities.forEach((amenity, index) => {
@@ -100,7 +105,6 @@ const EditProperty = () => {
       formik.values.images.forEach((image) => {
         formData.append(`images`, image);
       });
-      console.log(formData.propertyRules);
       try {
         const response = await api.patch(`/property/edit/${id}`, formData, {
           headers: {
@@ -154,7 +158,6 @@ const EditProperty = () => {
     formik.setFieldValue(property, Math.max(formik.values[property] - 1, 0));
   };
 
-  // console.log(propertiesData.propertyRules);
   document.title = `Edit ${propertiesData.name}`;
   return (
     <div className="px-2 py-6">
@@ -198,6 +201,45 @@ const EditProperty = () => {
                 htmlFor="property_location"
                 className="text-xl font-medium"
               >
+                Country
+              </label>
+              <CountrySelect
+                value={formik.values.country}
+                onChange={(selectedCountry) =>
+                  formik.setFieldValue("country", selectedCountry)
+                }
+              />
+              <label
+                htmlFor="property_location"
+                className="text-xl font-medium"
+              >
+                Province
+              </label>
+              <ProvinceSelect
+                value={formik.values.province}
+                onChange={(selectedProvince) =>
+                  formik.setFieldValue("province", selectedProvince)
+                }
+                countryIsoCode={formik.values.country.value}
+              />
+              <label
+                htmlFor="property_location"
+                className="text-xl font-medium"
+              >
+                City
+              </label>
+              <CitySelect
+                value={formik.values.city}
+                onChange={(selectedCity) =>
+                  formik.setFieldValue("city", selectedCity)
+                }
+                countryIsoCode={formik.values.country.value}
+                provinceIsoCode={formik.values.province.value}
+              />
+              <label
+                htmlFor="property_location"
+                className="text-xl font-medium"
+              >
                 District
               </label>
               <input
@@ -206,38 +248,6 @@ const EditProperty = () => {
                 className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
                 ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
                 value={formik.values.district}
-                onChange={formik.handleChange}
-                disabled={isSubmitting}
-              />
-              <label
-                htmlFor="property_location"
-                className="text-xl font-medium"
-              >
-                City
-              </label>
-              <input
-                name="district"
-                type="text"
-                placeholder="eg. Shinjuku"
-                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
-                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
-                value={formik.values.city}
-                onChange={formik.handleChange}
-                disabled={isSubmitting}
-              />
-              <label
-                htmlFor="property_location"
-                className="text-xl font-medium"
-              >
-                Province
-              </label>
-              <input
-                name="province"
-                type="text"
-                placeholder="eg. Shinjuku"
-                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
-                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
-                value={formik.values.province}
                 onChange={formik.handleChange}
                 disabled={isSubmitting}
               />
@@ -275,21 +285,21 @@ const EditProperty = () => {
               />
             </div>
             {/* PROPERTY IMAGES */}
-            <label htmlFor="property_images" className="text-lg font-medium">
+            <label htmlFor="property_images" className="text-lg font-medium ">
               Upload your property images
             </label>
             <div className="flex flex-row items-center justify-center border-b-2">
-              <div className="flex flex-row items-center justify-center overflow-x-scroll gap-x-2">
+              <div className="flex flex-row items-center justify-center overflow-y-scroll gap-x-2">
                 {propertiesData.propertyImages &&
                   propertiesData.propertyImages.map((imageObj, index) => (
                     <div
                       key={index}
-                      className="col-span-5 row-span-1 bg-gray-200 md:col-span-3 md:row-span-2 lg:col-span-3 lg:row-span-2 xl:col-span-3 xl:row-span-2 2xl:col-span-3 2xl:row-span-2 "
+                      className="col-span-5 row-span-1 overflow-y-scroll bg-gray-200 md:col-span-3 md:row-span-2 lg:col-span-3 lg:row-span-2 xl:col-span-3 xl:row-span-2 2xl:col-span-3 2xl:row-span-2 "
                     >
                       <img
                         src={`http://localhost:8000/api/property-asset/${imageObj.image}`}
                         alt={`Property ${index + 1}`}
-                        className="object-fill w-64 h-64"
+                        className="object-cover w-full h-full "
                       />
                     </div>
                   ))}

@@ -51,7 +51,6 @@ const CreatePropertyAmenities = ({
       JSON.stringify(selectedValues) !==
       JSON.stringify(prevSelectedValues.current);
     if (hasChanged) {
-      console.log("selectedAmenities", selectedAmenities);
       onAmenitiesChange(selectedValues);
       prevSelectedValues.current = selectedValues;
     }

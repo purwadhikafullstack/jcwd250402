@@ -5,6 +5,8 @@ import * as Yup from "yup";
 import yupPassword from "yup-password";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
+import { useDisclosure } from "@mantine/hooks";
+import { LoadingOverlay, Box } from "@mantine/core";
 
 import api from "../../api";
 import useLoginModal from "../hooks/useLoginModal";
@@ -17,6 +19,7 @@ yupPassword(Yup);
 
 const LoginModal = () => {
   const dispatch = useDispatch();
+  const [visible, { toggle }] = useDisclosure(false);
   const navigate = useNavigate();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -67,39 +70,42 @@ const LoginModal = () => {
 
   const loginUser = async (user_identity, password) => {
     try {
+      setIsLoading(true);
       const response = await api.post("/auth/login", {
         user_identity,
         password,
       });
       if (response.status === 200) {
         toast.info("Welcome back! Successfully logged in!");
+        setIsLoading(false);
         const userData = response.data;
         const token = userData.token;
         const role = userData.role;
 
-        dispatch(login({ token: token }));
         if (role === "tenant") {
+          dispatch(login({ token: token, isTenant: true }));
           loginModal.onClose();
-          navigate("/tenant/dashboard");
+          navigate("/");
           dispatch(isTenant({ isTenant: true }));
-          setIsLoading(false);
         } else if (role === "user") {
+          dispatch(login({ token: token }));
           loginModal.onClose();
-          navigate("/user");
-          setIsLoading(false);
+          navigate("/");
         }
       }
     } catch (error) {
       setIsLoading(false);
       toast.error("Invalid Username/Email or Password.");
       console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleForgotPassword = async (email) => {
     setIsLoading(true);
     try {
-      const response = await api.post("/forgot-password", {
+      const response = await api.post("/auth/forgot-password", {
         email,
       });
       if (response.status === 200) {
@@ -115,82 +121,96 @@ const LoginModal = () => {
   };
 
   const bodyContent = (
-    <div className="flex flex-col gap-4">
-      <Heading title="Welcome back" subtitle="Login to your account!" />
-      <Formik
-        initialValues={{
-          user_identity: "",
-          password: "",
-        }}
-        validationSchema={loginSchema}
-        onSubmit={formik.handleSubmit}
-      >
-        {({ errors, touched }) => (
-          <Form className="space-y-4 md:space-y-2">
-            <Input
-              id="user_identity"
-              name="user_identity"
-              label="Username or Email"
-              type="text"
-              disabled={isLoading}
-              required={true}
-              onChange={(value) => handleInputChange("user_identity", value)}
-            />
-            <Input
-              id="password"
-              name="password"
-              label="Password"
-              type="password"
-              disabled={isLoading}
-              required={true}
-              onChange={(value) => handleInputChange("password", value)}
-            />
-          </Form>
-        )}
-      </Formik>
-
-      <div>
-        <button
-          onClick={() => setIsForgotPassword(true)}
-          className="text-xs text-neutral-500 hover:text-black"
+    <Box pos={"relative"}>
+      <LoadingOverlay
+        visible={visible}
+        zIndex={1000}
+        overlayProps={{ radius: "sm", blur: 2 }}
+      />
+      <div className="flex flex-col gap-4">
+        <Heading title="Welcome back" subtitle="Login to your account!" />
+        <Formik
+          initialValues={{
+            user_identity: "",
+            password: "",
+          }}
+          validationSchema={loginSchema}
+          onSubmit={formik.handleSubmit}
         >
-          <span>forgot password?</span>
-        </button>
+          {({ errors, touched }) => (
+            <Form className="space-y-4 md:space-y-2">
+              <Input
+                id="user_identity"
+                name="user_identity"
+                label="Username or Email"
+                type="text"
+                disabled={isLoading}
+                required={true}
+                onChange={(value) => handleInputChange("user_identity", value)}
+              />
+              <Input
+                id="password"
+                name="password"
+                label="Password"
+                type="password"
+                disabled={isLoading}
+                required={true}
+                onChange={(value) => handleInputChange("password", value)}
+              />
+            </Form>
+          )}
+        </Formik>
+
+        <div>
+          <button
+            onClick={() => setIsForgotPassword(true)}
+            className="text-xs text-neutral-500 hover:text-black"
+          >
+            <span>forgot password?</span>
+          </button>
+        </div>
       </div>
-    </div>
+    </Box>
   );
 
   const forgotPasswordBody = (
-    <div className="flex flex-col gap-4">
-      <Heading subtitle="Uh-oh it seems you have a problem signing-in" />
-      <Formik
-        initialValues={formikReset.initialValues}
-        validationSchema={loginSchema}
-        onSubmit={formikReset.handleSubmit}
-      >
-        {() => (
-          <Form>
-            <Input
-              id="email"
-              name="email"
-              label="Email"
-              type="email"
-              disabled={isLoading}
-              required
-              onChange={(value) => handleInputChange("email", value)}
-            />
-          </Form>
-        )}
-      </Formik>
-      <div>
-        <button
-          onClick={() => setIsForgotPassword(false)}
-          className="text-xs text-neutral-500 hover:text-black"
+    <Box pos={"relative"}>
+      <LoadingOverlay
+        visible={visible}
+        zIndex={1000}
+        overlayProps={{ radius: "sm", blur: 2 }}
+      />
+      <div className="flex flex-col gap-4">
+        <Heading subtitle="Uh-oh it seems you have a problem signing-in" />
+        <Formik
+          initialValues={formikReset.initialValues}
+          validationSchema={loginSchema}
+          onSubmit={formikReset.handleSubmit}
         >
-          <span>Cancel</span>
-        </button>
+          {() => (
+            <Form>
+              <Input
+                id="email"
+                name="email"
+                label="Email"
+                type="email"
+                disabled={isLoading}
+                required
+                onChange={(value) => handleInputChange("email", value)}
+              />
+            </Form>
+          )}
+        </Formik>
+        <div>
+          <button
+            onClick={() => setIsForgotPassword(false)}
+            className="text-xs text-neutral-500 hover:text-black"
+          >
+            <span>Cancel</span>
+          </button>
+        </div>
       </div>
-    </div>
+    </Box>
   );
 
   const modalBody = isForgotPassword ? forgotPasswordBody : bodyContent;
@@ -206,12 +226,14 @@ const LoginModal = () => {
         onClose={() => {
           loginModal.onClose();
           setIsForgotPassword(false);
-          // window.location.reload();
         }}
         title={isForgotPassword ? "Forgot Password" : "Login"}
         actionLabel={isForgotPassword ? "Send Reset Password Link" : "Sign In"}
         body={modalBody}
-        onSubmit={submitAction}
+        onSubmit={() => {
+          submitAction();
+          toggle();
+        }}
       />
     </>
   );

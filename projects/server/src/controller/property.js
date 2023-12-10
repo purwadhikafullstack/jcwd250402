@@ -19,8 +19,10 @@ exports.createProperty = async (req, res) => {
       maxGuestCount,
       bathroomCount,
       propertyType,
-      district,
+      country,
       city,
+      latitude,
+      longitude,
       province,
       streetAddress,
       postalCode,
@@ -69,9 +71,11 @@ exports.createProperty = async (req, res) => {
         Categories: [
           {
             propertyType,
-            district,
+            country,
             city,
             province,
+            longitude,
+            latitude,
             streetAddress,
             postalCode,
           },
@@ -149,7 +153,7 @@ exports.editProperty = async (req, res) => {
       maxGuestCount,
       bathroomCount,
       propertyType,
-      district,
+      country,
       city,
       province,
       streetAddress,
@@ -170,9 +174,11 @@ exports.editProperty = async (req, res) => {
           as: "Categories",
           attributes: [
             "propertyType",
-            "district",
+            "country",
             "city",
             "province",
+            "latitude",
+            "longitude",
             "streetAddress",
             "postalCode",
           ],
@@ -238,11 +244,31 @@ exports.editProperty = async (req, res) => {
     await existingProperty.save();
 
     const images = req.files;
+
     if (images && images.length > 0) {
       const newImageObjects = images.map((image) => ({
         image: image.filename,
         propertyId,
       }));
+
+      for (const newImageObject of newImageObjects) {
+        const existingImage = await PropertyImage.findOne({
+          where: {
+            propertyId: newImageObject.propertyId,
+            image: newImageObject.image,
+          },
+        });
+
+        if (existingImage) {
+          await PropertyImage.destroy({
+            where: {
+              propertyId: newImageObject.propertyId,
+              image: newImageObject.image,
+            },
+          });
+        }
+      }
+
       const newPropertyImages = await PropertyImage.bulkCreate(newImageObjects);
       existingProperty.propertyImages =
         existingProperty.propertyImages.concat(newPropertyImages);
@@ -329,9 +355,11 @@ exports.getAllProperties = async (req, res) => {
           as: "Categories",
           attributes: [
             "propertyType",
-            "district",
+            "country",
             "city",
             "province",
+            "latitude",
+            "longitude",
             "streetAddress",
             "postalCode",
           ],
@@ -377,9 +405,11 @@ exports.getAllProperties = async (req, res) => {
         categories: property.Categories.map((category) => ({
           id: category.id,
           propertyType: category.propertyType,
-          district: category.district,
+          country: category.country,
           city: category.city,
           province: category.province,
+          latitude: category.latitude,
+          longitude: category.longitude,
           streetAddress: category.streetAddress,
           postalCode: category.postalCode,
         })),
@@ -449,9 +479,11 @@ exports.getPropertiesByUserId = async (req, res) => {
           as: "Categories",
           attributes: [
             "propertyType",
-            "district",
+            "country",
             "city",
             "province",
+            "latitude",
+            "longitude",
             "streetAddress",
             "postalCode",
           ],
@@ -496,9 +528,11 @@ exports.getPropertiesByUserId = async (req, res) => {
         categories: property.Categories.map((category) => ({
           id: category.id,
           propertyType: category.propertyType,
-          district: category.district,
+          country: category.country,
           city: category.city,
           province: category.province,
+          latitude: category.latitude,
+          longitude: category.longitude,
           streetAddress: category.streetAddress,
           postalCode: category.postalCode,
         })),
@@ -559,9 +593,11 @@ exports.getPropertyById = async (req, res) => {
           as: "Categories",
           attributes: [
             "propertyType",
-            "district",
+            "country",
             "city",
             "province",
+            "latitude",
+            "longitude",
             "streetAddress",
             "postalCode",
           ],
@@ -619,9 +655,11 @@ exports.getPropertyById = async (req, res) => {
       categories: property.Categories.map((category) => ({
         id: category.id,
         propertyType: category.propertyType,
-        district: category.district,
+        country: category.country,
         city: category.city,
         province: category.province,
+        latitude: category.latitude,
+        longitude: category.longitude,
         streetAddress: category.streetAddress,
         postalCode: category.postalCode,
       })),

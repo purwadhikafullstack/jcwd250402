@@ -1,6 +1,6 @@
 import { IconType } from "react-icons";
 
-const CategoryView = ({ icon: Icon, label, description }) => {
+const LitingCategory = ({ icon: Icon, label, description }) => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-row items-center gap-4">
@@ -14,4 +14,4 @@ const CategoryView = ({ icon: Icon, label, description }) => {
   );
 };
 
-export default CategoryView;
+export default LitingCategory;

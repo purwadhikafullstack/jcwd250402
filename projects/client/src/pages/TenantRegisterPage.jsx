@@ -43,7 +43,6 @@ const TenantRegisterPage = () => {
 
   const handleSubmit = () => {
     // Add submit logic here
-    console.log("Form submitted:", formData);
   };
 
   const handleFileChange = (files) => {

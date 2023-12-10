@@ -1,13 +1,10 @@
 import React from "react";
-import { Spinner } from "flowbite-react";
+import { Loader } from "@mantine/core";
 
 const Loading = () => {
   return (
-    <div className="flex flex-row items-center justify-center">
-      <div>
-        Loading...
-        <Spinner />
-      </div>
+    <div className="flex flex-row items-center justify-center text-center">
+      <Loader color="#0256EE" />;
     </div>
   );
 };

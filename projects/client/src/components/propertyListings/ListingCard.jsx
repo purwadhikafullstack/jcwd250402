@@ -13,6 +13,16 @@ const ListingCard = ({
 }) => {
   const navigate = useNavigate();
 
+  if (!data) {
+    return (
+      <div>
+        <div className="w-full bg-gray-200 h-72 animate-pulse rounded-xl">
+          no properties
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       onClick={() => navigate(`/property/${data.id}`)}
@@ -31,7 +41,7 @@ const ListingCard = ({
         </div>
         <div className="text-lg font-semibold">{data.name}</div>
         <div className="font-light text-neutral-500">
-          {data.categories[0]?.district}, {data.categories[0]?.city} -{" "}
+          {data.categories[0]?.city}, {data.categories[0]?.country} -{" "}
           {data.categories[0]?.propertyType
             ? data.categories[0]?.propertyType.charAt(0).toUpperCase() +
               data.categories[0]?.propertyType.slice(1)

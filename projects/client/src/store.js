@@ -13,42 +13,49 @@ import authSlice from "./components/slice/authSlices";
 
 const middleware = [logger];
 
-// const persistConfig = {
-//   key: "root",
-//   timeout: 500,
-//   storage,
-// };
+const persistConfig = {
+  key: "root",
+  timeout: 500,
+  storage,
+  blacklist: [
+    "loginModal",
+    "tenantRegister",
+    "userRegister",
+    "verifyRegisterUser",
+    "propertyDelete",
+  ],
+};
 
-// const rootReducer = combineReducers({
-//   auth: authSlice,
-//   loginModal: loginModalSlice.reducer,
-//   tenantRegister: tenantRegisterSlice.reducer,
-//   userRegister: userRegisterSlice.reducer,
-//   verifyRegisterUser: verifyRegisterUserSlice.reducer,
-//   propertyDelete: propertyDeleteSlice.reducer,
-// });
+const rootReducer = combineReducers({
+  auth: authSlice,
+  loginModal: loginModalSlice.reducer,
+  tenantRegister: tenantRegisterSlice.reducer,
+  userRegister: userRegisterSlice.reducer,
+  verifyRegisterUser: verifyRegisterUserSlice.reducer,
+  propertyDelete: propertyDeleteSlice.reducer,
+});
 
-// const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-// const store = configureStore({
-//   reducer: persistedReducer,
-//   middleware,
-// });
-
-// const persistor = persistStore(store);
-
-// export { store, persistor };
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-  reducer: {
-    auth: authSlice,
-    loginModal: loginModalSlice.reducer,
-    tenantRegister: tenantRegisterSlice.reducer,
-    userRegister: userRegisterSlice.reducer,
-    verifyRegisterUser: verifyRegisterUserSlice.reducer,
-    propertyDelete: propertyDeleteSlice.reducer,
-  },
+  reducer: persistedReducer,
   middleware,
 });
 
-export { store };
+const persistor = persistStore(store);
+
+export { store, persistor };
+
+// const store = configureStore({
+//   reducer: {
+//     auth: authSlice,
+//     loginModal: loginModalSlice.reducer,
+//     tenantRegister: tenantRegisterSlice.reducer,
+//     userRegister: userRegisterSlice.reducer,
+//     verifyRegisterUser: verifyRegisterUserSlice.reducer,
+//     propertyDelete: propertyDeleteSlice.reducer,
+//   },
+//   middleware,
+// });
+
+// export { store };

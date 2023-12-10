@@ -17,12 +17,15 @@ export default async function getPropertyData(id) {
         coverImage: property.coverImage,
         categories: {
           propertyType: property.categories[0]?.propertyType,
-          district: property.categories[0]?.district,
+          country: property.categories[0]?.country,
           city: property.categories[0]?.city,
           province: property.categories[0]?.province,
+          latitude: property.categories[0]?.latitude,
+          longitude: property.categories[0]?.longitude,
           streetAddress: property.categories[0]?.streetAddress,
           postalCode: property.categories[0]?.postalCode,
         },
+        propertyAmenities: property.amenities,
         propertyImages: property.propertyImages,
         propertyRules: property.propertyRules,
         Owner: {
