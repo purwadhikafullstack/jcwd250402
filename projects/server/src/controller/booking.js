@@ -55,13 +55,51 @@ exports.getNewBooking = async (req, res) => {
     const booking = await Booking.findAll({
       include: [
         { model: Property, as: "property" },
-        { model: User, as: "renter" },
+        { model: User, as: "renter", exclude: ["password"] },
       ],
       where: {
         tenantId: tenantId,
       },
     });
     res.status(200).json({ message: "Success", booking });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.myBooking = async (req, res) => {
+  const renterId = req.user.id;
+  try {
+    const bookings = await Booking.findAll({
+      include: [
+        { model: Property, as: "property" },
+        { model: User, as: "tenant", attributes: ["id", "fullname", "email"] },
+        { model: User, as: "renter", attributes: ["id", "fullname", "email"] },
+      ],
+      where: {
+        renterId: renterId,
+      },
+    });
+
+    res.status(200).json({ message: "Success", bookings });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.deleteBooking = async (req, res) => {
+  const bookingId = req.params.id;
+  try {
+    const booking = await Booking.findByPk(bookingId);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    await booking.destroy();
+    res.status(200).json({ message: "Booking deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

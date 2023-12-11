@@ -4,7 +4,7 @@ import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { login, isTenant } from "../components/slice/authSlices.js";
+import { login, tenantLogin } from "../components/slice/authSlices.js";
 
 import useTenantRegister from "../components/hooks/useTenantRegister.js";
 import logo from "../asset/Logo-White.svg";
@@ -13,11 +13,6 @@ import api from "../api.js";
 import Input from "../components/inputs/Input.jsx";
 
 const TenantLogin = () => {
-  const isTenant = useSelector((state) => state.auth.isTenant === true);
-  if (isTenant) {
-    console.log("isTenant:", isTenant);
-    <Navigate to="/tenant/dashboard" />;
-  }
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -51,13 +46,15 @@ const TenantLogin = () => {
         const token = userData.token;
         const role = userData.role;
 
-        dispatch(login({ token: token }));
         if (role === "user") {
           toast.error("Sorry this page is for tenants only.");
-          navigate({ pathname: "/", state: { openLoginModal: true } });
+          dispatch(login({ token: token, isLoggedIn: true, isTenant: false }));
+          navigate({ pathname: "/" });
           return;
         } else if (role === "tenant") {
-          dispatch(isTenant({ isTenant: true }));
+          dispatch(
+            tenantLogin({ token: token, isLoggedIn: true, isTenant: true })
+          );
           toast.success("Log in successful! Welcome back!");
           navigate("/tenant/dashboard");
           setIsLoading(false);

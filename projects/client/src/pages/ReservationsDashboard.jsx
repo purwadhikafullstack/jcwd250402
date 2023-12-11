@@ -57,7 +57,6 @@ const PropertiesDashboard = () => {
     }).format(price);
   };
 
-  console.log(bookingData);
   return (
     <div className="">
       <div className="flex justify-between mb-8">

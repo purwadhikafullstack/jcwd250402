@@ -22,16 +22,6 @@ const ImageUploader = ({ images, onUpdateFormData, disabled }) => {
     disabled: imagesState.length >= 5 || disabled,
   });
 
-  // const handleDelete = (index) => {
-  //   setImagesState((prevImages) => {
-  //     const updatedImages = [...prevImages];
-  //     updatedImages.splice(index, 1);
-  //     return updatedImages;
-  //   });
-
-  //   onUpdateFormData(imagesState.filter((_, i) => i !== index));
-  // };
-
   const handleDelete = (index) => {
     setImagesState((prevImages) => {
       const updatedImages = [...prevImages];

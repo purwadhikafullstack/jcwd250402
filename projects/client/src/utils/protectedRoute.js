@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ProtectedTenantRoute = () => {
   const auth = {
@@ -8,11 +9,23 @@ const ProtectedTenantRoute = () => {
   return auth.isTenant && auth.isLoggedIn ? <Outlet /> : <Navigate to="/" />;
 };
 
+const RedirectRoute = () => {
+  const auth = {
+    isLoggedIn: useSelector((state) => state.auth.isLoggedIn),
+    isTenant: useSelector((state) => state.auth.isTenant),
+  };
+  if (auth.isTenant) {
+    return <Navigate to="/" />;
+  } else return <Outlet />;
+};
+
 const ProtectedRoute = () => {
   const auth = {
-    isLoggedIn: localStorage.getItem("isLoggedIn"),
+    isLoggedIn: useSelector((state) => state.auth.isLoggedIn),
+    token: useSelector((state) => state.auth.token),
   };
+
   return auth.isLoggedIn ? <Outlet /> : <Navigate to="/" />;
 };
 
-export { ProtectedRoute, ProtectedTenantRoute };
+export { ProtectedRoute, RedirectRoute, ProtectedTenantRoute };

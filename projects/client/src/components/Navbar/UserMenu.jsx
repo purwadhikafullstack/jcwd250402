@@ -37,7 +37,6 @@ const UserMenu = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data.userInfo);
         if (response.status === 200) {
           const { profilePicture, fullname } = response.data.userInfo;
           setProfilePicture(profilePicture);
@@ -113,8 +112,11 @@ const UserMenu = () => {
           </Menu.Target>
           {isLoggedIn ? (
             <Menu.Dropdown>
-              <Menu.Item leftSection={<BiCalendar size={18} />}>
-                Reservation
+              <Menu.Item
+                onClick={() => navigate("/bookings")}
+                leftSection={<BiCalendar size={18} />}
+              >
+                Bookings
               </Menu.Item>
               <Menu.Item leftSection={<MdFavorite size={18} />}>
                 Favorite

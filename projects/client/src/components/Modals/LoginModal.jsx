@@ -13,7 +13,7 @@ import useLoginModal from "../hooks/useLoginModal";
 import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../inputs/Input";
-import { login, isTenant } from "../slice/authSlices";
+import { login, tenantLogin } from "../slice/authSlices";
 
 yupPassword(Yup);
 
@@ -81,24 +81,25 @@ const LoginModal = () => {
         const userData = response.data;
         const token = userData.token;
         const role = userData.role;
+        console.log(userData);
 
         if (role === "tenant") {
-          dispatch(login({ token: token, isTenant: true }));
+          dispatch(tenantLogin({ token: token, id: userData.id }));
+          window.location.reload();
           loginModal.onClose();
-          navigate("/");
-          dispatch(isTenant({ isTenant: true }));
-        } else if (role === "user") {
-          dispatch(login({ token: token }));
+        }
+        if (role === "user") {
+          dispatch(login({ token: token, id: userData.id }));
+          window.location.reload();
           loginModal.onClose();
-          navigate("/");
         }
       }
     } catch (error) {
-      setIsLoading(false);
-      toast.error("Invalid Username/Email or Password.");
+      toast.error(error.response.data.message);
       console.error("Error:", error);
     } finally {
       setIsLoading(false);
+      navigate("/");
     }
   };
 

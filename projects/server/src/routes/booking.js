@@ -9,5 +9,16 @@ router.post(
 );
 
 router.get("/", authMiddleware.validateToken, bookingController.getNewBooking);
+router.get(
+  "/my-booking",
+  authMiddleware.validateToken,
+  bookingController.myBooking
+);
+
+router.delete(
+  "/:id",
+  authMiddleware.validateToken,
+  bookingController.deleteBooking
+);
 
 module.exports = router;

@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "propertyId",
         as: "property",
       });
+      Booking.hasOne(models.Payment, {
+        foreignKey: "bookingId",
+        as: "payment",
+      });
     }
   }
   Booking.init(

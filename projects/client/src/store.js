@@ -45,17 +45,3 @@ const store = configureStore({
 const persistor = persistStore(store);
 
 export { store, persistor };
-
-// const store = configureStore({
-//   reducer: {
-//     auth: authSlice,
-//     loginModal: loginModalSlice.reducer,
-//     tenantRegister: tenantRegisterSlice.reducer,
-//     userRegister: userRegisterSlice.reducer,
-//     verifyRegisterUser: verifyRegisterUserSlice.reducer,
-//     propertyDelete: propertyDeleteSlice.reducer,
-//   },
-//   middleware,
-// });
-
-// export { store };
