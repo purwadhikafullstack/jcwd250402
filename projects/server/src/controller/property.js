@@ -598,6 +598,16 @@ exports.getPropertyById = async (req, res) => {
           through: { attributes: [] },
         },
         {
+          model: Rooms,
+          as: "Rooms",
+          include: [
+            {
+              model: RoomImage,
+              as: "roomImages",
+            },
+          ],
+        },
+        {
           model: User,
           as: "Tenant",
           attributes: [
@@ -668,6 +678,22 @@ exports.getPropertyById = async (req, res) => {
       propertyRules: property.PropertyRules.map((rule) => ({
         id: rule.id,
         rule: rule.rule,
+      })),
+      Rooms: property.Rooms.map((room) => ({
+        id: room.id,
+        name: room.roomName,
+        description: room.description,
+        bedCount: room.bedCount,
+        bedroomCount: room.bedroomCount,
+        maxGuestCount: room.maxGuestCount,
+        bathroomCount: room.bathroomCount,
+        price: room.price,
+        propertyId: room.propertyId,
+        tenantId: room.userId,
+        roomImages: room.roomImages.map((image) => ({
+          id: image.id,
+          image: image.image,
+        })),
       })),
       Owner: {
         id: property.Tenant.id,

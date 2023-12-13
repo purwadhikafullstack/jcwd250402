@@ -7,13 +7,9 @@ import useLoginModal from "../hooks/useLoginModal";
 import { getPropertyData, ListingReservation } from "./";
 import { PropertyHeader, PropertyDetail } from "./property";
 import { Loader } from "@mantine/core";
-import { differenceInCalendarDays, eachDayOfInterval } from "date-fns";
+import { differenceInCalendarDays } from "date-fns";
 import Container from "../Container";
-import * as Yup from "yup";
-import { Formik, Form, useFormik } from "formik";
 import getBookedDates from "../../actions/getBookedDates";
-import { format, addDays } from "date-fns";
-import { useSelector } from "react-redux";
 import RoomSelect from "../rooms/RoomSelect";
 
 const initialDateRange = {
@@ -32,27 +28,12 @@ const ListingPage = () => {
   const [guestCount, setGuestCount] = useState(0);
   const [bookedDates, setBookedDates] = useState([]);
 
-  const validationSchema = Yup.object().shape({
-    startDate: Yup.date().required("Start date is required"),
-    endDate: Yup.date().required("End date is required"),
-    guestCount: Yup.number().required("Guest count is required"),
-  });
-
   const disabledDates = useMemo(() => {
     return bookedDates.map((dateString) => new Date(dateString));
   }, [bookedDates]);
 
-  const formik = useFormik({
-    initialValues: {
-      startDate: dateRange.startDate,
-      endDate: dateRange.endDate,
-      guestCount: guestCount,
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      onCreateReservation();
-    },
-  });
+  const [rentEntireProperty, setRentEntireProperty] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,9 +73,26 @@ const ListingPage = () => {
       return;
     }
 
+    let roomPrice = 0;
+
+    if (rentEntireProperty) {
+      // Logic for renting the entire property
+      roomPrice = property.price;
+    } else if (selectedRoom) {
+      // Logic for renting a specific room
+      roomPrice = selectedRoom.price;
+    }
+
+    const dayCount = differenceInCalendarDays(
+      dateRange.endDate,
+      dateRange.startDate
+    );
+    const totalPrice = dayCount * roomPrice;
+
     setLoading(true);
 
-    const requestData = {
+    // Common properties for both cases
+    const commonData = {
       startDate: dateRange.startDate.toISOString(),
       endDate: dateRange.endDate.toISOString(),
       guestCount: guestCount,
@@ -102,6 +100,19 @@ const ListingPage = () => {
       tenantId: property.Owner.id,
       propertyId: property.id,
     };
+
+    let requestData = {};
+
+    if (rentEntireProperty) {
+      // Logic for renting the entire property
+      requestData = commonData;
+    } else if (selectedRoom) {
+      // Logic for renting a specific room
+      requestData = {
+        ...commonData,
+        roomId: selectedRoom.id,
+      };
+    }
 
     try {
       const response = await api.post("/booking/new", requestData, {
@@ -123,12 +134,13 @@ const ListingPage = () => {
       setLoading(false);
     }
   }, [
-    totalPrice,
     dateRange,
     guestCount,
     property?.id,
     loginModal,
     property?.Owner?.id,
+    rentEntireProperty,
+    selectedRoom,
   ]);
 
   useEffect(() => {
@@ -151,6 +163,17 @@ const ListingPage = () => {
     }
   }, [dateRange, property]);
 
+  const handleSelection = (roomId) => {
+    if (roomId) {
+      const room = property.Rooms.find((room) => room.id === roomId);
+      setSelectedRoom(room);
+      setRentEntireProperty(false);
+    } else {
+      setSelectedRoom(null);
+      setRentEntireProperty(true);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -167,6 +190,7 @@ const ListingPage = () => {
       </div>
     );
   }
+
   return (
     <main>
       <Navbar />
@@ -200,7 +224,6 @@ const ListingPage = () => {
                 longitude={property.categories.longitude}
               />
               <div className="order-last mb-10 md:order-last md:col-span-3">
-                {/* <RoomSelect /> */}
                 <ListingReservation
                   price={property.price}
                   totalPrice={totalPrice}
@@ -212,6 +235,11 @@ const ListingPage = () => {
                   disabledDates={disabledDates}
                   guestCount={guestCount}
                   setGuestCount={setGuestCount}
+                  propertyData={property}
+                  roomData={property.Rooms}
+                  rentEntireProperty={rentEntireProperty}
+                  selectedRoom={selectedRoom}
+                  onSelectRoom={handleSelection}
                 />
               </div>
             </div>
