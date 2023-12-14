@@ -7,17 +7,20 @@ const authController = require("../controller/auth");
 const authValidator = require("../middleware/validation/auth");
 const authMiddleware = require("../middleware/auth");
 
+router.post("/login", authController.loginHandler);
+
 router.post(
   "/register",
   authValidator.registerValidationRules,
   authValidator.applyRegisterValidation,
-  authController.handleRegister
+  authController.userRegister
 );
 
 router.post(
   "/tenant-register",
-  // authValidator.tenantRegisterRules,
-  // authValidator.applyRegisterValidation,
+  authValidator.tenantRegisterRules,
+  authValidator.applyRegisterValidation,
+  multerUpload.single("file"),
   authController.tenantRegister
 );
 
@@ -25,8 +28,8 @@ router.post("/forgot-password", authController.forgotPassword);
 
 router.patch(
   "/reset-password/:token",
-  // authValidator.newPasswordRules,
-  // authValidator.applyRegisterValidation,
+  authValidator.newPasswordRules,
+  authValidator.applyRegisterValidation,
   authController.resetPassword
 );
 
@@ -41,8 +44,6 @@ router.patch(
 router.post("/verify-account", authController.handleVerifyEmail);
 
 router.post("/resend-verify-account", authController.resendVerificationEmail);
-
-router.post("/login", authController.loginHandler);
 
 module.exports = router;
 // Compare this snippet from projects/server/src/controller/auth.js:

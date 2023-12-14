@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { set } from "date-fns";
 
 const loginModalSlice = createSlice({
   name: "loginModal",
@@ -9,6 +10,38 @@ const loginModalSlice = createSlice({
     },
     closeLoginModal(state) {
       state.isOpen = false;
+    },
+  },
+});
+
+const paymentModalSlice = createSlice({
+  name: "paymentModal",
+  initialState: { isOpen: false },
+  reducers: {
+    openPaymentModal(state) {
+      state.isOpen = true;
+    },
+    closePaymentModal(state) {
+      state.isOpen = false;
+    },
+    setBookingId(state, action) {
+      state.bookingId = action.payload;
+    },
+  },
+});
+
+const proofImageModalSlice = createSlice({
+  name: "proofImageModal",
+  initialState: { isOpen: false },
+  reducers: {
+    openProofImageModal(state) {
+      state.isOpen = true;
+    },
+    closeProofImageModal(state) {
+      state.isOpen = false;
+    },
+    setImageUrl(state, action) {
+      state.imageUrl = action.payload;
     },
   },
 });
@@ -52,7 +85,55 @@ const verifyRegisterUserSlice = createSlice({
   },
 });
 
+const propertyDeleteSlice = createSlice({
+  name: "propertyDelete",
+  initialState: {
+    isOpen: false,
+    propertyId: null,
+  },
+  reducers: {
+    openPropertyDelete(state) {
+      state.isOpen = true;
+    },
+    closePropertyDelete(state) {
+      state.isOpen = false;
+      state.propertyId = null;
+    },
+    setPropertyId(state, action) {
+      state.propertyId = action.payload;
+    },
+  },
+});
+
+const roomDeleteSlice = createSlice({
+  name: "roomDelete",
+  initialState: {
+    isOpen: false,
+    roomId: null,
+    propertyId: null,
+  },
+  reducers: {
+    openRoomDelete(state) {
+      state.isOpen = true;
+    },
+    closeRoomDelete(state) {
+      state.isOpen = false;
+      state.roomId = null;
+    },
+    setRoomId(state, action) {
+      state.roomId = action.payload;
+    },
+    setPropertyId(state, action) {
+      state.propertyId = action.payload;
+    },
+  },
+});
+
 export {
+  roomDeleteSlice,
+  proofImageModalSlice,
+  paymentModalSlice,
+  propertyDeleteSlice,
   loginModalSlice,
   tenantRegisterSlice,
   userRegisterSlice,

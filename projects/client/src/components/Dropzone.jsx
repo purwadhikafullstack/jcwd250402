@@ -4,7 +4,7 @@ import { useFormik, Field } from "formik";
 import * as Yup from "yup";
 import { RiAddFill } from "react-icons/ri";
 
-export default function UploadPhoto({ label, formik, field, id }) {
+export default function Dropzone({ label, formik, field, id }) {
   const handlePhotoChange = (event) => {
     formik.setFieldValue(field, event.currentTarget.files[0]);
   };
@@ -53,13 +53,13 @@ export default function UploadPhoto({ label, formik, field, id }) {
             {preview ? (
               <img
                 src={preview}
-                alt="Profile picture preview"
+                alt="Profile preview"
                 className="object-cover w-full h-40 mb-2 rounded-lg"
               />
             ) : (
               <RiAddFill className="h-[40px] w-[40px] text-white bg-primary" />
             )}
-            <p className="mt-5 text-sm text-gray-500 dark-text-gray-400">
+            <p className="mt-5 text-sm text-gray-500">
               <span className="font-semibold text-primary">Add Image</span>
             </p>
           </div>

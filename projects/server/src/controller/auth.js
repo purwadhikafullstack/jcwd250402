@@ -10,13 +10,17 @@ const { addHours } = require("date-fns");
 const JWT_SECRET_KEY = "ini_JWT_loh";
 
 //* Speccifically for registering as a user role
-exports.handleRegister = async (req, res) => {
+exports.userRegister = async (req, res) => {
   const {
     fullname,
+    username,
     email,
     password,
     phoneNumber,
-    // role
+    gender,
+    dateofbirth,
+    profilePicture,
+    ktpImg,
   } = req.body;
 
   const existingUser = await User.findOne({
@@ -38,13 +42,17 @@ exports.handleRegister = async (req, res) => {
 
     const result = await User.create({
       fullname,
+      username,
       email,
       password: hashPassword,
       phoneNumber,
+      gender,
+      dateofbirth,
+      profilePicture: req.file.filename,
+      ktpImg,
       role: "user",
     });
 
-    // verify email by sending to email
     const token = crypto.randomBytes(20).toString("hex");
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
     const verifyTokenExpiry = addHours(new Date(), 1);
@@ -66,7 +74,7 @@ exports.handleRegister = async (req, res) => {
 
     await mailer({
       email: result.email,
-      subject: "Verify your email address to complete your registration",
+      subject: "Verify your Nginapp Account",
       html: emailHtml,
     });
 
@@ -97,8 +105,9 @@ exports.tenantRegister = async (req, res) => {
     email,
     password,
     phoneNumber,
-    // gender,
+    gender,
     dateofbirth,
+    profilePicture,
     // ktpImg,
   } = req.body;
 
@@ -125,8 +134,9 @@ exports.tenantRegister = async (req, res) => {
       email,
       password: hashPassword,
       phoneNumber,
-      // gender,
+      gender,
       dateofbirth,
+      profilePicture: req.file.filename,
       // ktpImg,
       role: "tenant",
     });
@@ -134,7 +144,7 @@ exports.tenantRegister = async (req, res) => {
     // verify email by sending to email
     const token = crypto.randomBytes(20).toString("hex");
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    const verifyTokenExpiry = Date.now() + 60 * 60 * 1000;
+    const verifyTokenExpiry = addHours(new Date(), 1);
 
     result.verifyToken = tokenHash;
     result.verifyTokenExpiry = verifyTokenExpiry;
@@ -383,13 +393,22 @@ exports.forgotPassword = async (req, res) => {
       }
     );
 
-    const resetUrl = `${req.protocol}://localhost:3000/reset-password/${resetTokenHash}`;
-    const message = `Forgot your password? Click this link to reset your password \n${resetUrl}\nIf you didn't make this request, please ignore this email! \nToken only Valid for 10 Minutes`;
+    const template = fs.readFileSync(
+      __dirname + "/../email-template/forgotPassword.html",
+      "utf8"
+    );
+    const compiledTemplate = hbs.compile(template);
+    const resetLink = `${req.protocol}://localhost:3000/reset-password/${resetTokenHash}`;
+    const emailHtml = compiledTemplate({
+      fullname: user.fullname,
+      resetLink: resetLink,
+    });
+
     try {
       await mailer({
         email: user.email,
         subject: "Nginapp Password Reset Request",
-        message,
+        html: emailHtml,
       });
       res.status(200).json({
         ok: true,

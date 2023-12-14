@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import placeholder from "../asset/user_placeholder.svg";
 import api from "../api.js";
 
 const Avatar = ({ width, height }) => {
-  const [profilePicture, setProfilePicture] = useState(null); // Change to null for better handling
+  const [profilePicture, setProfilePicture] = useState(null);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -19,22 +18,19 @@ const Avatar = ({ width, height }) => {
           setProfilePicture(profilePicture);
         }
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        console.error(error);
       }
     };
     fetchUserProfile();
   }, [token]);
 
-  const defaultAvatar =
-    "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
-
   const profilePictureSrc = profilePicture
-    ? `http://localhost:8000/profile-picture/${profilePicture}`
-    : defaultAvatar;
+    ? `http://localhost:8000/api/profile-picture/${profilePicture}`
+    : "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
 
   return (
     <img
-      className="rounded-full"
+      className="rounded-full "
       src={profilePictureSrc}
       alt="avatar"
       height={height}

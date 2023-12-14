@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Property.belongsTo(models.User, {
         foreignKey: "userId",
+        as: "Tenant",
       });
       Property.hasMany(models.PropertyImage, {
         foreignKey: "propertyId",
@@ -80,7 +81,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       coverImage: {
         type: DataTypes.STRING,
-        // allowNull: false,
+        allowNull: false,
       },
       isActive: DataTypes.BOOLEAN,
     },

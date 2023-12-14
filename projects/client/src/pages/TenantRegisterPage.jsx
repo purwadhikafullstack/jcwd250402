@@ -4,8 +4,10 @@ import moment from "moment";
 import { UploadPhoto } from "../components";
 import "react-datepicker/dist/react-datepicker.css";
 import Input from "../components/inputs/Input";
-import { Formik, Form } from "formik";
+import { toast } from "sonner";
+import { Formik, Form, useFormik } from "formik";
 import logo from "../asset/Logo-Black.svg";
+import * as Yup from "yup";
 
 // not yet functional
 const TenantRegisterPage = () => {
@@ -22,6 +24,50 @@ const TenantRegisterPage = () => {
     profilePicture: null,
   });
 
+  const validationSchema = Yup.object({
+    fullname: Yup.string().required("Full Name is required"),
+    email: Yup.string()
+      .email("Email is not valid")
+      .required("Email is required"),
+    phoneNumber: Yup.string().required("Phone Number is required"),
+    username: Yup.string().required("Username is required"),
+    password: Yup.string().required("Password is required"),
+    gender: Yup.string()
+      .required("Gender is required")
+      .oneOf(["male", "female", "other"], "Invalid gender selection"),
+    dateofbirth: Yup.date()
+      .required("Date of birth is required")
+      .test("is-adult", "You must be at least 18 years old", (value) => {
+        return (
+          moment().diff(moment(value), "years") >= 18 ||
+          toast.error("You must be at least 18 years old")
+        );
+      }),
+    profilePicture: Yup.mixed()
+      .required("Profile Picture is required")
+      .test("fileSize", "File is too large", (value) => {
+        return !value || (value && value.size <= 1024 * 1024);
+      })
+      .test("fileType", "Invalid file type", (value) => {
+        return (
+          !value ||
+          (value &&
+            ["image/gif", "image/png", "image/jpeg"].includes(value.type))
+        );
+      }),
+  });
+
+  const initialValues = {
+    fullname: "",
+    email: "",
+    phoneNumber: "",
+    username: "",
+    password: "",
+    gender: "",
+    dateofbirth: "",
+    profilePicture: null,
+  };
+
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
@@ -34,7 +80,20 @@ const TenantRegisterPage = () => {
 
   const handleNext = () => {
     //tambah validasi sebelum lanjut ke step berikutnya
+    // validationSchema
+    //   .validate(values, { abortEarly: false }) // Validate all fields, not just one
+    //   .then(() => {
+    //     // If validation passes, proceed to next step
+    //   })
     nextStep();
+    // .catch((errors) => {
+    //   // If validation fails, set errors to display
+    //   const formErrors = {};
+    //   errors.inner.forEach((error) => {
+    //     formErrors[error.path] = error.message;
+    //   });
+    //   setErrors(formErrors);
+    // });
   };
 
   const handlePrev = () => {
@@ -43,7 +102,6 @@ const TenantRegisterPage = () => {
 
   const handleSubmit = () => {
     // Add submit logic here
-    console.log("Form submitted:", formData);
   };
 
   const handleFileChange = (files) => {
@@ -55,6 +113,11 @@ const TenantRegisterPage = () => {
       profilePicture,
     }));
   };
+  const formik = useFormik({
+    initialValues: initialValues,
+    validationSchema: validationSchema,
+    // onSubmit,
+  });
 
   const progressPercentage = ((step - 1) / 3) * 100;
 
@@ -72,7 +135,11 @@ const TenantRegisterPage = () => {
         <img src={logo} alt="logo" width={220} height={220} />
       </div>
       <div className="flex flex-col items-center justify-center h-max">
-        <Formik>
+        <Formik
+          initialValues={formik.initialValues}
+          validationSchema={formik.validationSchema}
+          onSubmit={formik.handleSubmit}
+        >
           <Form className="flex flex-col h-[40vh] w-[40vw] md:mt-[120px] p-12 ">
             {step === 1 && (
               <>
@@ -166,16 +233,26 @@ const TenantRegisterPage = () => {
                       onChange={() => {}}
                       onBlur={() => {}}
                       value={() => {}}
-                      name="gender">
+                      name="gender"
+                    >
                       <option value="" disabled selected>
                         Select
                       </option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
-                      <option value="other">Rather not say</option>
+                      <option value="other">Rather not to say</option>
                     </select>
                   </div>
-                  <UploadPhoto label={"Profile Picture"} />
+                  <UploadPhoto
+                    id="profilePicture"
+                    name="profilePicture"
+                    label="Profile Picture"
+                    formik={formik}
+                    field="profilePicture"
+                    onChange={(value) => {
+                      formik.setFieldValue("profilePicture", value);
+                    }}
+                  />
                 </div>
               </>
             )}
@@ -193,7 +270,8 @@ const TenantRegisterPage = () => {
           <div className="h-2 mb-4 bg-gray-200 rounded">
             <div
               className="w-full h-full bg-black"
-              style={{ width: `${progressPercentage}%` }}></div>
+              style={{ width: `${progressPercentage}%` }}
+            ></div>
           </div>
 
           <div>
@@ -201,13 +279,15 @@ const TenantRegisterPage = () => {
               <button
                 className="px-6 py-2 mr-2 border-2 rounded-lg cursor-not-allowed text-neutral-500"
                 disabled
-                onClick={handlePrev}>
+                onClick={handlePrev}
+              >
                 Back
               </button>
             ) : (
               <button
                 className="px-6 py-2 mr-2 border-2 rounded-lg text-neutral-500"
-                onClick={handlePrev}>
+                onClick={handlePrev}
+              >
                 Back
               </button>
             )}
@@ -220,13 +300,15 @@ const TenantRegisterPage = () => {
               <button
                 className="px-6 py-2 text-white rounded-lg bg-primary hover:bg-primary/70 disabled:bg-slate-500"
                 onClick={handleNext}
-                disabled={isDisabled}>
+                disabled={isDisabled}
+              >
                 Next
               </button>
             ) : (
               <button
                 className="px-6 py-2 text-white rounded-lg bg-primary hover:bg-primary/70 "
-                onClick={handleSubmit}>
+                onClick={handleSubmit}
+              >
                 Submit
               </button>
             )}

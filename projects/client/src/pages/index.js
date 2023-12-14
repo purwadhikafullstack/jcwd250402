@@ -6,9 +6,17 @@ import UpdateProfile from "./UpdateProfile";
 import TenantRegisterPage from "./TenantRegisterPage";
 import PageNotFound from "./PageNotFound";
 import CreateProperty from "./CreateProperty";
+import EditProperty from "./EditProperty";
+import BookingsPage from "./BookingsPage";
+import ReservationsPage from "./ReservationsPage";
+import CreateRoom from "./CreateRoom";
+import FavoritePage from "./FavoritePage";
 
 export {
   ResetPassword,
+  CreateRoom,
+  BookingsPage,
+  ReservationsPage,
   TenantLogin,
   Home,
   TenantDashboard,
@@ -16,4 +24,6 @@ export {
   TenantRegisterPage,
   PageNotFound,
   CreateProperty,
+  EditProperty,
+  FavoritePage,
 };
