@@ -27,6 +27,7 @@ const ListingPage = () => {
   const [dateRange, setDateRange] = useState(initialDateRange);
   const [guestCount, setGuestCount] = useState(0);
   const [bookedDates, setBookedDates] = useState([]);
+  const [propertyName, setPropertyName] = useState("");
 
   const disabledDates = useMemo(() => {
     return bookedDates.map((dateString) => new Date(dateString));
@@ -44,6 +45,7 @@ const ListingPage = () => {
         }
         setProperty(propertyData);
         setTotalPrice(propertyData.price);
+        setPropertyName(propertyData.name);
       } catch (error) {
         toast.error(error.response.data.message);
       } finally {
@@ -143,6 +145,7 @@ const ListingPage = () => {
     selectedRoom,
   ]);
 
+  document.title = `${propertyName} - Nginapp`;
   useEffect(() => {
     if (
       dateRange.startDate &&

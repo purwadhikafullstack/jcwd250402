@@ -725,11 +725,20 @@ exports.getPropertyById = async (req, res) => {
 
 exports.deletePropertyHandler = async (req, res) => {
   const propertyId = req.params.id;
+  const tenantId = req.user.id;
   try {
     const property = await Property.findOne({
       where: { id: propertyId },
       attributes: ["id"],
     });
+
+    if (tenantId !== property.userId) {
+      return res.status(403).json({
+        ok: false,
+        status: 403,
+        message: "You are not authorized to delete this property",
+      });
+    }
 
     if (!property) {
       return res.status(404).json({
@@ -968,9 +977,6 @@ exports.deleteRoom = async (req, res) => {
         message: "Room not found",
       });
     }
-
-    console.log(room.userId);
-    console.log(tenantId);
 
     if (tenantId != room.userId) {
       return res.status(403).json({
