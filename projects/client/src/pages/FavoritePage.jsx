@@ -28,11 +28,12 @@ const FavoritePage = () => {
   if (!favoriteListings || favoriteListings.length === 0) {
     return (
       <Container>
-        <Navbar />
-        <EmptyState
-          title="No bookings were found"
-          subtitle="Looks like you haven't made any bookings yet."
-        />
+        <Navbar>
+          <EmptyState
+            title="No bookings were found"
+            subtitle="Looks like you haven't made any bookings yet."
+          />
+        </Navbar>
       </Container>
     );
   }
@@ -40,28 +41,27 @@ const FavoritePage = () => {
   document.title = "Favorites";
   return (
     <div className="flex flex-col min-h-screen">
-      <header>
-        <Navbar />
-      </header>
-      <main className="flex-1">
-        <div className="pb-20 pt-28">
-          <Container>
-            <Heading
-              title="Favorites"
-              subtitle="List of places you have favorited"
-            />
+      <Navbar>
+        <main className="flex-1">
+          <div className="pb-20 pt-28">
+            <Container>
+              <Heading
+                title="Favorites"
+                subtitle="List of places you have favorited"
+              />
 
-            <div className="grid grid-cols-1 gap-8 mt-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-              {favoriteListings.map((listing) => {
-                return <FavoriteCard key={listing.id} data={listing} />;
-              })}
-            </div>
-          </Container>
-        </div>
-      </main>
-      <footer>
-        <Footer />
-      </footer>
+              <div className="grid grid-cols-1 gap-8 mt-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                {favoriteListings.map((listing) => {
+                  return <FavoriteCard key={listing.id} data={listing} />;
+                })}
+              </div>
+            </Container>
+          </div>
+        </main>
+        <footer>
+          <Footer />
+        </footer>
+      </Navbar>
     </div>
   );
 };

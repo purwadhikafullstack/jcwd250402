@@ -15,7 +15,7 @@ import { TbLogout } from "react-icons/tb";
 import api from "../../api.js";
 import { PiCloudMoonLight } from "react-icons/pi";
 
-const UserMenu = () => {
+const UserMenu = ({ transparent, showType }) => {
   const dispatch = useDispatch();
   const loginModal = useLoginModal();
   const navigate = useNavigate();
@@ -87,7 +87,8 @@ const UserMenu = () => {
               e.stopPropagation();
               navigate("/tenant");
             }}
-            className="px-4 py-3 text-sm font-semibold transition rounded-full cursor-pointer md:block hover:bg-neutral-100"
+            className={`px-4 py-3 text-sm font-semibold transition rounded-full cursor-pointer md:block hover:bg-neutral-100/0
+            ${transparent ? "text-white" : "text-black"}`}
           >
             Become a Host
           </div>
@@ -98,17 +99,31 @@ const UserMenu = () => {
               e.stopPropagation();
               navigate("/tenant/dashboard");
             }}
-            className="px-4 py-3 text-sm font-semibold transition rounded-full cursor-pointer md:block hover:bg-neutral-100"
+            className={`px-4 py-3 text-sm font-semibold transition rounded-full cursor-pointer md:block hover:bg-neutral-100/0
+            ${transparent ? "text-white" : "text-black"}`}
           >
             Tenant Dashboard
           </div>
         )}
 
-        <Menu shadow="md" width={250} bg={"none"} p={0} withBorder>
+        <Menu
+          shadow="md"
+          width={250}
+          bg={"none"}
+          p={0}
+          radius={"md"}
+          withBorder={true}
+        >
           <Menu.Target>
-            <Button style={{ color: "black", fontSize: 24 }}>
-              <AiOutlineMenu />
-            </Button>
+            {transparent ? (
+              <Button style={{ color: "white", fontSize: 24 }}>
+                <AiOutlineMenu />
+              </Button>
+            ) : (
+              <Button style={{ color: "black", fontSize: 24 }}>
+                <AiOutlineMenu />
+              </Button>
+            )}
           </Menu.Target>
           {isLoggedIn ? (
             <Menu.Dropdown>
@@ -136,6 +151,7 @@ const UserMenu = () => {
                 <Text size={"xs"}>Profile Settings</Text>
               </Menu.Item>
               <Menu.Item
+                style={{ color: "red" }}
                 leftSection={<TbLogout size={18} />}
                 onClick={logOutHandler}
               >

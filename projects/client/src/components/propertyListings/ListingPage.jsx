@@ -196,60 +196,65 @@ const ListingPage = () => {
 
   return (
     <main>
-      <Navbar />
-      <div className="pb-20 pt-28">
-        <Container>
-          <div className="flex flex-col gap-6">
-            <PropertyHeader
-              name={property.name}
-              coverImage={property.coverImage}
-              propertyImages={property.propertyImages}
-              city={property.categories.city}
-              province={property.categories.province}
-              country={property.categories.country}
-              id={property.id}
-            />
-            <div className="grid grid-cols-1 mt-6 md:grid-cols-7 md:gap-10">
-              <PropertyDetail
-                tenantName={property.Owner.fullname}
-                tenantImg={property.Owner.profilePicture}
-                tenantVerified={property.Owner.isVerified}
-                tenantMemberSince={property.Owner.memberSince}
-                category={property.categories}
-                propertyType={property.categories.propertyType}
-                propertyAmenity={property.propertyAmenities}
-                description={property.description}
-                roomCount={property.bedroomCount}
-                bedCount={property.bedCount}
-                guestCount={property.maxGuestCount}
-                bathroomCount={property.bathroomCount}
-                latitude={property.categories.latitude}
-                longitude={property.categories.longitude}
+      <Navbar>
+        <div className="pb-20 pt-28">
+          <Container>
+            <div className="flex flex-col gap-6">
+              <PropertyHeader
+                name={`${property.categories.propertyType
+                  .charAt(0)
+                  .toUpperCase()}${property.categories.propertyType.slice(
+                  1
+                )} in ${property.categories.city}`}
+                coverImage={property.coverImage}
+                propertyImages={property.propertyImages}
+                // city={property.categories.city}
+                province={property.categories.province}
+                country={property.categories.country}
+                id={property.id}
               />
-              <div className="order-last mb-10 md:order-last md:col-span-3">
-                <ListingReservation
-                  price={property.price}
-                  totalPrice={totalPrice}
-                  onChangeDate={(value) => setDateRange(value)}
-                  dateRange={dateRange}
-                  onSubmit={onCreateReservation}
-                  disabled={loading}
-                  maxGuests={property.maxGuestCount}
-                  disabledDates={disabledDates}
-                  guestCount={guestCount}
-                  setGuestCount={setGuestCount}
-                  propertyData={property}
-                  roomData={property.Rooms}
-                  rentEntireProperty={rentEntireProperty}
-                  selectedRoom={selectedRoom}
-                  onSelectRoom={handleSelection}
+              <div className="grid grid-cols-1 mt-6 md:grid-cols-7 md:gap-10">
+                <PropertyDetail
+                  tenantName={property.Owner.fullname}
+                  tenantImg={property.Owner.profilePicture}
+                  tenantVerified={property.Owner.isVerified}
+                  tenantMemberSince={property.Owner.memberSince}
+                  category={property.categories}
+                  propertyType={property.categories.propertyType}
+                  propertyAmenity={property.propertyAmenities}
+                  description={property.description}
+                  roomCount={property.bedroomCount}
+                  bedCount={property.bedCount}
+                  guestCount={property.maxGuestCount}
+                  bathroomCount={property.bathroomCount}
+                  latitude={property.categories.latitude}
+                  longitude={property.categories.longitude}
                 />
+                <div className="order-last mb-10 md:order-last md:col-span-3">
+                  <ListingReservation
+                    price={property.price}
+                    totalPrice={totalPrice}
+                    onChangeDate={(value) => setDateRange(value)}
+                    dateRange={dateRange}
+                    onSubmit={onCreateReservation}
+                    disabled={loading}
+                    maxGuests={property.maxGuestCount}
+                    disabledDates={disabledDates}
+                    guestCount={guestCount}
+                    setGuestCount={setGuestCount}
+                    propertyData={property}
+                    roomData={property.Rooms}
+                    rentEntireProperty={rentEntireProperty}
+                    selectedRoom={selectedRoom}
+                    onSelectRoom={handleSelection}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </Container>
-      </div>
-      <Footer />
+          </Container>
+        </div>
+        <Footer />
+      </Navbar>
     </main>
   );
 };
