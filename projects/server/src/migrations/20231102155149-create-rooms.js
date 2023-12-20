@@ -19,9 +19,6 @@ module.exports = {
       roomName: {
         type: Sequelize.STRING,
       },
-      propertyId: {
-        type: Sequelize.STRING,
-      },
       userId: {
         type: Sequelize.STRING,
       },
@@ -30,6 +27,9 @@ module.exports = {
       },
       description: {
         type: Sequelize.TEXT,
+      },
+      bedCount: {
+        type: Sequelize.INTEGER,
       },
       maxGuestCount: {
         type: Sequelize.INTEGER,

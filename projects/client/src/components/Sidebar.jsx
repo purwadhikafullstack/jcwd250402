@@ -18,6 +18,7 @@ export function Sidebar({
   const [fullName, setFullname] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePictureSrc, setProfilePictureSrc] = useState(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -34,6 +35,9 @@ export function Sidebar({
 
   const token = localStorage.getItem("token");
 
+  const defaultAvatar =
+    "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -47,6 +51,7 @@ export function Sidebar({
           setFullname(fullname);
           setUserEmail(email);
           setProfilePicture(profilePicture);
+          checkProfilePicture(profilePicture);
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -55,12 +60,19 @@ export function Sidebar({
     fetchUserProfile();
   }, [token]);
 
-  const defaultAvatar =
-    "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
-
-  const profilePictureSrc = profilePicture
-    ? `http://localhost:8000/api/profile-picture/${profilePicture}`
-    : defaultAvatar;
+  const checkProfilePicture = (picture) => {
+    const imageUrl = `http://localhost:8000/api/profile-picture/${picture}`;
+    api
+      .get(imageUrl)
+      .then(() => {
+        setProfilePictureSrc(imageUrl);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 404) {
+          setProfilePictureSrc(defaultAvatar);
+        }
+      });
+  };
 
   // Update isSidebarExpanded based on viewport width
   useEffect(() => {

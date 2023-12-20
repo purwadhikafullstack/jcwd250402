@@ -5,23 +5,12 @@ import FavoriteButton from "../FavoriteButton";
 const ListingCard = ({ data }) => {
   const navigate = useNavigate();
 
-  if (!data) {
-    return (
-      <div>
-        <div className="w-full bg-gray-200 h-72 animate-pulse rounded-xl">
-          no properties
-        </div>
-      </div>
-    );
-  }
-
-  console.log(data);
   return (
     <div
       onClick={() => navigate(`/property/${data.id}`)}
       className="col-span-1 cursor-pointer group"
     >
-      <div className="flex flex-col w-full gap-2">
+      <div className="flex flex-col w-full gap-0">
         <div className="relative w-full overflow-hidden aspect-square rounded-xl">
           <img
             src={`http://localhost:8000/api/property-asset/${data.coverImage}`}

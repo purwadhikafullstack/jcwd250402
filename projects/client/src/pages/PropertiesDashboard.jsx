@@ -55,7 +55,7 @@ const PropertiesDashboard = () => {
           {propertiesData.map((property) => (
             <tr key={property.id} className="border-b hover:bg-primary/10">
               <td className="items-center justify-center py-2 border-gray-200">
-                <div className="flex items-center justify-start ml-2 gap-x-4">
+                <diva className="flex items-center justify-start ml-2 gap-x-4">
                   <img
                     className="object-fill rounded-lg w-14 h-14"
                     src={`http://localhost:8000/api/property-asset/${property.coverImage}`}
@@ -67,7 +67,7 @@ const PropertiesDashboard = () => {
                   >
                     {property.name}
                   </div>
-                </div>
+                </diva>
               </td>
               <td className="flex flex-row items-center justify-center px-4 py-2 border-gray-200">
                 {property.categories[0]

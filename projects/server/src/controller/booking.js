@@ -54,6 +54,8 @@ exports.createBooking = async (req, res) => {
     roomId,
   } = req.body;
 
+  console.log(req.body);
+
   try {
     if (
       !renterId ||
@@ -156,7 +158,11 @@ exports.myBooking = async (req, res) => {
       include: [
         { model: Property, as: "property" },
         { model: User, as: "tenant", attributes: ["id", "fullname", "email"] },
-        { model: User, as: "renter", attributes: ["id", "fullname", "email"] },
+        {
+          model: User,
+          as: "renter",
+          attributes: ["id", "fullname", "email", "phoneNumber"],
+        },
         { model: Payment, as: "payment", attributes: ["id", "paymentProof"] },
       ],
       where: {

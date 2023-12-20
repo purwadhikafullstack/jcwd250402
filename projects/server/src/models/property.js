@@ -72,6 +72,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      viewCount: {
+        type: DataTypes.INTEGER,
+      },
       rating: {
         type: DataTypes.INTEGER,
       },

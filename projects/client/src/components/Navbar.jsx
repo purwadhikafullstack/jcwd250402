@@ -4,7 +4,6 @@ import logo from "../asset/Logo.svg";
 import logoWhite from "../asset/Logo-White.svg";
 import Categories from "./Categories";
 import Container from "./Container";
-import { useLocation } from "react-router-dom";
 
 const Navbar = ({ children, transparent, showType }) => {
   return (
@@ -18,7 +17,7 @@ const Navbar = ({ children, transparent, showType }) => {
       >
         <div className="py-4">
           <Container>
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-end md:justify-between">
               <div className="hidden md:block md:pl-2">
                 <a href="/">
                   {transparent ? (

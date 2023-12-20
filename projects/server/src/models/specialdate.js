@@ -13,8 +13,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   SpecialDate.init(
     {
-      date: DataTypes.DATE,
-      isBooked: DataTypes.BOOLEAN,
+      startDate: DataTypes.DATE,
+      endDate: DataTypes.DATE,
+      propertyId: DataTypes.INTEGER,
       price: DataTypes.INTEGER,
     },
     {

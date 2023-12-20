@@ -31,7 +31,6 @@ const ListingReservation = ({
   totalPrice = priceFormatter.format(totalPrice);
 
   const handleSelection = (roomId) => {
-    // Use the onSelectRoom prop to handle the selection
     onSelectRoom(roomId);
   };
 
@@ -75,7 +74,7 @@ const ListingReservation = ({
               </div>
               <div>
                 <div className="text-lg font-semibold">{room.roomName}</div>
-                <div className="text-sm text-gray-500">{`${room.bedCount} bed ${room.bathroomCount} bathroom`}</div>
+                <div className="text-sm text-gray-500">{`${room.bedCount} bed, ${room.bathroomCount} bathroom`}</div>
               </div>
             </div>
             <div className="text-lg font-semibold">
@@ -90,7 +89,7 @@ const ListingReservation = ({
           </div>
         ))}
         <div className="flex flex-row items-center justify-between px-3 py-2 border-t">
-          <div className="flex flex-row items-center gap-3">
+          <div className="flex flex-row items-center gap-3 pt-2">
             <div className="w-12 h-12 bg-gray-200 rounded-full">
               <img
                 src={`http://localhost:8000/api/property-asset/${propertyData.coverImage}`}
@@ -99,7 +98,13 @@ const ListingReservation = ({
               />
             </div>
             <div>
-              <div className="text-lg font-semibold">Rent the Property</div>
+              {propertyData.categories.propertyType === "room" ? (
+                <>
+                  <div className="text-lg font-semibold">Rent this room</div>
+                </>
+              ) : (
+                <div className="text-lg font-semibold">Rent the Property</div>
+              )}
             </div>
           </div>
           <div className="text-lg font-semibold">{price}</div>
@@ -110,7 +115,6 @@ const ListingReservation = ({
             Select
           </button>
         </div>
-        <div></div>
       </div>
 
       <div className="bg-white rounded-xl border-[1px] border-neutral-200 overflow-hidden shadow-xl">

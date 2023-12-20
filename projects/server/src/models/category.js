@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         "house",
         "apartment",
         "villa",
+        "guesthouse",
         "hotel",
         "room"
       ),

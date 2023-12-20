@@ -59,7 +59,6 @@ export default async function getPropertyData(id) {
       };
     }
   } catch (error) {
-    toast.error(error.response.data.message);
   } finally {
   }
 }

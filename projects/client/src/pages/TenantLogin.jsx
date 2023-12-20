@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, tenantLogin } from "../components/slice/authSlices.js";
 
 import useTenantRegister from "../components/hooks/useTenantRegister.js";
+import { Button } from "../components";
 import logo from "../asset/Logo-White.svg";
 import logo_black from "../asset/Logo-Black.svg";
 import api from "../api.js";
@@ -15,6 +16,8 @@ import Input from "../components/inputs/Input.jsx";
 const TenantLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const isTenant = useSelector((state) => state.auth.isTenant);
   const [isLoading, setIsLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
   const [formData, setFormData] = useState({
@@ -146,66 +149,76 @@ const TenantLogin = () => {
               </Formik>
             ) : (
               <section>
-                <Formik
-                  initialValues={{
-                    user_identity: "",
-                    password: "",
-                  }}
-                  validationSchema={loginSchema}
-                  onSubmit={formik.handleSubmit}
-                >
-                  <Form className="space-y-4 md:space-y-4">
-                    <Input
-                      id="user_identity"
-                      name="user_identity"
-                      label="Username or Email"
-                      type="text"
-                      disabled={isLoading}
-                      required={true}
-                      onChange={(value) =>
-                        handleInputChange("user_identity", value)
-                      }
-                    />
-                    <Input
-                      id="password"
-                      name="password"
-                      label="Password"
-                      type="password"
-                      disabled={isLoading}
-                      required={true}
-                      onChange={(value) => handleInputChange("password", value)}
-                    />
-                  </Form>
-                </Formik>
-                <div class="flex items-center justify-between mt-4">
-                  <div class="flex items-start">
-                    <div class="flex items-center h-5">
-                      <input
-                        id="remember"
-                        aria-describedby="remember"
-                        type="checkbox"
-                        className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 "
-                        required=""
-                      />
+                {isLoggedIn && !isTenant ? (
+                  <>
+                    <Button label={"Become a Host"} onClick={() => {}} />
+                  </>
+                ) : (
+                  <>
+                    <Formik
+                      initialValues={{
+                        user_identity: "",
+                        password: "",
+                      }}
+                      validationSchema={loginSchema}
+                      onSubmit={formik.handleSubmit}
+                    >
+                      <Form className="space-y-4 md:space-y-4">
+                        <Input
+                          id="user_identity"
+                          name="user_identity"
+                          label="Username or Email"
+                          type="text"
+                          disabled={isLoading}
+                          required={true}
+                          onChange={(value) =>
+                            handleInputChange("user_identity", value)
+                          }
+                        />
+                        <Input
+                          id="password"
+                          name="password"
+                          label="Password"
+                          type="password"
+                          disabled={isLoading}
+                          required={true}
+                          onChange={(value) =>
+                            handleInputChange("password", value)
+                          }
+                        />
+                      </Form>
+                    </Formik>
+                    <div class="flex items-center justify-between mt-4">
+                      <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                          <input
+                            id="remember"
+                            aria-describedby="remember"
+                            type="checkbox"
+                            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 "
+                            required=""
+                          />
+                        </div>
+                        <div className="ml-3 text-sm">
+                          <label htmlFor="remember" className="text-gray-500">
+                            Remember me
+                          </label>
+                        </div>
+                      </div>
+                      <button
+                        className="text-sm font-medium text-primary-600 hover:underline hover:text-primary"
+                        onClick={() => {
+                          setIsForgot(true);
+                        }}
+                      >
+                        Forgot password?
+                      </button>
                     </div>
-                    <div className="ml-3 text-sm">
-                      <label htmlFor="remember" className="text-gray-500">
-                        Remember me
-                      </label>
-                    </div>
-                  </div>
-                  <button
-                    className="text-sm font-medium text-primary-600 hover:underline hover:text-primary"
-                    onClick={() => {
-                      setIsForgot(true);
-                    }}
-                  >
-                    Forgot password?
-                  </button>
-                </div>
+                  </>
+                )}
               </section>
             )}
-            {isForgot ? (
+            {isLoggedIn && !isTenant ? null : isForgot ? (
               <button
                 onClick={() => {
                   handleForgotPassword(formData.email);
