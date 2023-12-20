@@ -13,22 +13,27 @@ import {
   ReservationsPage,
   CreateRoom,
   FavoritePage,
+  ListingPage,
+  VerifyUserPage,
+  ResetPassword,
 } from "./pages";
+
 import {
   ProtectedRoute,
   ProtectedTenantRoute,
   RedirectRoute,
 } from "./utils/protectedRoute";
-import AuthModal from "./components/Modals/AuthModal";
-import PaymentModal from "./components/Modals/PaymentModal.jsx";
-import ProofImageModal from "./components/Modals/ProofImageModal.jsx";
-import SearchModal from "./components/Modals/SearchModal.jsx";
-import VerifyUserPage from "./pages/VerifyUserPage";
-import { ListingPage } from "./components/propertyListings";
-import PropertyDelete from "./components/Modals/PropertyDelete";
-import RoomDelete from "./components/Modals/RoomDelete";
-import ResetPassword from "./pages/ResetPassword";
-import TenantRegisterModal from "./components/Modals/TenantRegister";
+
+import {
+  AuthModal,
+  TenantRegisterModal,
+  PropertyDelete,
+  RoomDelete,
+  PaymentModal,
+  ProofImageModal,
+  SearchModal,
+  ReviewModal,
+} from "./components/Modals";
 
 function App() {
   return (
@@ -41,6 +46,7 @@ function App() {
       <ProofImageModal />
       <RoomDelete />
       <SearchModal />
+      <ReviewModal />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/property/:id" element={<ListingPage />} />

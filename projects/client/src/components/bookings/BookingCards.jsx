@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { Button } from "../";
 import { useSelector } from "react-redux";
 import usePaymentModal from "../hooks/usePaymentModal";
+import useReviewModal from "../hooks/useReviewModal";
 
 const BookingCards = ({
   bookingData,
@@ -19,6 +20,7 @@ const BookingCards = ({
   const token =
     useSelector((state) => state.auth.token) || localStorage.getItem("token");
   const paymentModal = usePaymentModal();
+  const reviewModal = useReviewModal();
 
   const onCancelBooking = async (e) => {
     e.stopPropagation();
@@ -140,6 +142,22 @@ const BookingCards = ({
                 small
                 label="Cancel Booking"
                 onClick={onCancelBooking}
+              />
+            </>
+          )}
+        </div>
+        <div className="flex flex-row gap-1">
+          {bookingData.status === "pending payment" && (
+            <>
+              <Button
+                disabled={disabled}
+                small
+                label="Review"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  reviewModal.setBookingId(bookingData.id);
+                  reviewModal.onOpen();
+                }}
               />
             </>
           )}

@@ -36,6 +36,9 @@ const reviewModalSlice = createSlice({
     closeReviewModal(state) {
       state.isOpen = false;
     },
+    setBookingId(state, action) {
+      state.bookingId = action.payload;
+    },
   },
 });
 

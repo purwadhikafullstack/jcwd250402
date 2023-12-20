@@ -239,6 +239,7 @@ const ListingPage = () => {
                     bathroomCount={property.bathroomCount}
                     latitude={property.categories.latitude}
                     longitude={property.categories.longitude}
+                    propertyId={property.id}
                   />
                   <div className="order-last mb-10 md:order-last md:col-span-3">
                     <ListingReservation

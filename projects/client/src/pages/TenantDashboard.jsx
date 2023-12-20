@@ -13,6 +13,7 @@ import { MdStarHalf } from "react-icons/md";
 import CreateProperty from "./CreateProperty";
 import ReservationDashboard from "./ReservationsDashboard";
 import RoomsDashboard from "./RoomsDashboard";
+import CalendarDashboard from "./CalendarDashboard";
 
 const TenantDashboard = ({ activeMenu }) => {
   const [activeMenuItem, setActiveMenuItem] = useState("Dashboard");
@@ -100,6 +101,7 @@ const TenantDashboard = ({ activeMenu }) => {
         {activeMenuItem === "CreateProperty" ? <CreateProperty /> : null}
         {activeMenuItem === "Reservations" ? <ReservationDashboard /> : null}
         {activeMenuItem === "Rooms" ? <RoomsDashboard /> : null}
+        {activeMenuItem === "Calendar" ? <CalendarDashboard /> : null}
       </div>
     </div>
   );

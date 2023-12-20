@@ -3,11 +3,10 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import Modal from "./Modal";
 import useSearchModal from "../hooks/useSearchModal";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Calendar, CountrySelect, Counter } from "../inputs";
 import Heading from "../Heading";
 import Map from "../Map";
-import api from "../../api";
 
 const steps = {
   Location: 0,
