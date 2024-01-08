@@ -41,21 +41,27 @@ export default function TenantRegister() {
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Confirm Password is required"),
       phoneNumber: Yup.string().required("Phone Number is required"),
-      ktpImg: Yup.string()
+      ktpImg: Yup.mixed()
         .required("Image is required")
         .test("fileSize", "File size must be 1MB or less", (value) => {
-          return value && value.size <= 1048576; // 1MB in bytes
+          if (value && value.length) {
+            return value[0].size <= 1000000; // 1MB in bytes
+          }
+          return true;
         })
         .test(
           "fileType",
           "Only JPG, JPEG, GIF, and PNG are allowed",
           (value) => {
-            return (
-              value &&
-              ["image/jpeg", "image/jpg", "image/png", "image/gif"].includes(
-                value.type
-              )
-            );
+            if (value && value.length) {
+              return [
+                "image/jpeg",
+                "image/jpg",
+                "image/png",
+                "image/gif",
+              ].includes(value[0].type);
+            }
+            return true;
           }
         ),
       dateofbirth: Yup.string().required("Date of Birth is required"),
@@ -198,16 +204,17 @@ export default function TenantRegister() {
                 ) : null}
               </div>
             </div>
+            <label htmlFor="">Government-issued ID</label>
             <div>
               <ImageUpload
                 onChange={(values) => formik.setFieldValue("ktpImg", values)}
                 value={formik.values.ktpImg}
                 disabled={isSubmitting}
               />
-              {formik.touched.ktpImg && formik.errors.ktpImg ? (
-                <div className="text-red-500">{formik.errors.ktpImg}</div>
-              ) : null}
             </div>
+            {formik.touched.ktpImg && formik.errors.ktpImg ? (
+              <div className="text-red-500">{formik.errors.ktpImg}</div>
+            ) : null}
 
             <Button
               type="submit"
