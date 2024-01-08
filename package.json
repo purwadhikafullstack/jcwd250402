@@ -21,7 +21,6 @@
     "projects/*"
   ],
   "dependencies": {
-    "react-image-lightbox": "^5.1.4",
     "react-rating-stars-component": "^2.2.0"
   }
 }
