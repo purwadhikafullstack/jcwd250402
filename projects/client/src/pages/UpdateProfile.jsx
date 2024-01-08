@@ -53,6 +53,7 @@ export default function UpdateProfile() {
       formData.append("email", values.email);
       formData.append("fullname", values.fullname);
       formData.append("dateofbirth", values.dateofbirth);
+      formData.append("gender", values.gender);
       if (values.profilePicture)
         formData.append("profilePicture", values.profilePicture);
 
@@ -76,11 +77,7 @@ export default function UpdateProfile() {
       }
     } catch (error) {
       setIsLoading(false);
-      if (error?.response?.status === 400) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Oops, Something went wrong. Please try again later.");
-      }
+      toast.error(error.response.data.message);
     }
   };
   const initialValues = {
@@ -128,6 +125,8 @@ export default function UpdateProfile() {
     };
     fetchUserProfile();
   }, [userId, formik.setValues, token]);
+
+  console.log(formik.values.gender);
 
   return (
     <section className="flex flex-col items-center justify-center w-[70%] min-h-screen bg-white rounded-md">

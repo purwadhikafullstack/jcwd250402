@@ -5,7 +5,7 @@ import {
   TenantLogin,
   Home,
   TenantDashboard,
-  TenantRegisterPage,
+  TenantRegister,
   PageNotFound,
   CreateProperty,
   EditProperty,
@@ -16,6 +16,7 @@ import {
   ListingPage,
   VerifyUserPage,
   ResetPassword,
+  EditProfile,
 } from "./pages";
 
 import {
@@ -49,15 +50,12 @@ function App() {
       <ReviewModal />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Home />} />
         <Route path="/property/:id" element={<ListingPage />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/tenant/register" element={<TenantRegisterPage />} />
+
         <Route path="/edit-property/:id" element={<EditProperty />} />
         <Route path="/verify-email" element={<VerifyUserPage />} />
-        <Route
-          path="/tenant/dashboard/:propertyId/create-room"
-          element={<CreateRoom />}
-        />
 
         {/* USER NEEDS TO BE AUTHENTICATED */}
         <Route path="/bookings" element={<ProtectedRoute />}>
@@ -70,6 +68,9 @@ function App() {
 
         <Route path="/favorites" element={<ProtectedRoute />}>
           <Route index element={<FavoritePage />} />
+        </Route>
+        <Route path="/edit-profile" element={<ProtectedRoute />}>
+          <Route index element={<EditProfile />} />
         </Route>
         {/* END OF USER NEEDS TO BE AUTHENTICATED */}
 
@@ -91,12 +92,24 @@ function App() {
         <Route path="/tenant/dashboard" element={<ProtectedTenantRoute />}>
           <Route index element={<TenantDashboard />} />
         </Route>
+
+        <Route
+          path="/tenant/dashboard/:propertyId/create-room"
+          element={<ProtectedTenantRoute />}
+        >
+          <Route index element={<CreateRoom />} />
+        </Route>
         {/* END OF PROTECTED TENANT ROUTE */}
 
         {/* IF USER IS AUTHENTICATED IT WILL REDIRECT TO '/' */}
-        <Route path="tenant" element={<RedirectRoute />}>
+        <Route path="/tenant" element={<RedirectRoute />}>
           <Route index element={<TenantLogin />} />{" "}
         </Route>
+
+        <Route path="/tenant/register" element={<RedirectRoute />}>
+          <Route index element={<TenantRegister />} />
+        </Route>
+        {/* END IF USER IS AUTHENTICATED IT WILL REDIRECT TO '/' */}
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>

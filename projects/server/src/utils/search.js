@@ -23,12 +23,23 @@ function buildWhereClause({ gestCount, search, filterBy }) {
   return where;
 }
 
-function parseSort(sort) {
-  if (sort) {
-    const [field, direction] = sort.split(":");
-    return [[field, direction]];
+function sortParse(sort) {
+  switch (sort) {
+    case "price_asc":
+      return [["price", "ASC"]];
+    case "price_desc":
+      return [["price", "DESC"]];
+    case "date_created_asc":
+      return [["createdAt", "ASC"]];
+    case "date_created_desc":
+      return [["createdAt", "DESC"]];
+    case "rating_asc":
+      return [["rating", "ASC"]];
+    case "rating_desc":
+      return [["rating", "DESC"]];
+    default:
+      return [["createdAt", "DESC"]];
   }
-  return [];
 }
 
 async function getPropertyIdsByType(propertyType) {
@@ -65,7 +76,7 @@ async function getPropertyIdsByCountry(country) {
 
 module.exports = {
   buildWhereClause,
-  parseSort,
+  sortParse,
   getPropertyIdsByType,
   getPropertyIdsByCountry,
 };

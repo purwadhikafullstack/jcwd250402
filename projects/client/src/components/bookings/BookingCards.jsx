@@ -147,7 +147,7 @@ const BookingCards = ({
           )}
         </div>
         <div className="flex flex-row gap-1">
-          {bookingData.status === "pending payment" && (
+          {bookingData.status === "confirmed" && (
             <>
               <Button
                 disabled={disabled}

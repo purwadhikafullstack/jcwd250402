@@ -1,14 +1,32 @@
 const { Review, User, Property, Booking } = require("../models");
+const { Op } = require("sequelize");
 
 exports.createReview = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { comment, rating, bookingId } = req.body;
+    const bookingId = req.params.id;
+    const { comment, rating } = req.body;
 
     const booking = await Booking.findByPk(bookingId);
     const renterId = booking.renterId;
-    const propertyId = booking.propertyId;
     const tenantId = booking.tenantId;
+    const propertyId = booking.propertyId;
+
+    const existingReview = await Review.findOne({
+      attributes: ["id"],
+      where: {
+        bookingId: bookingId,
+        renterId: renterId,
+      },
+    });
+
+    if (existingReview) {
+      return res.status(400).json({
+        ok: false,
+        status: 400,
+        message: "You have already reviewed this booking",
+      });
+    }
 
     if (userId !== renterId) {
       return res.status(401).json({
@@ -23,14 +41,6 @@ exports.createReview = async (req, res) => {
         ok: false,
         status: 401,
         message: "You are not allowed to review your own property",
-      });
-    }
-
-    if (booking.status !== "completed") {
-      return res.status(400).json({
-        ok: false,
-        status: 400,
-        message: "Booking is not completed",
       });
     }
 
@@ -51,12 +61,12 @@ exports.createReview = async (req, res) => {
     }
 
     const review = await Review.create({
-      comment,
-      rating,
-      propertyId,
-      renterId,
-      tenantId,
-      bookingId,
+      comment: comment,
+      rating: rating,
+      propertyId: propertyId,
+      bookingId: bookingId,
+      renterId: renterId,
+      tenantId: tenantId,
     });
 
     return res.status(201).json({
@@ -76,16 +86,25 @@ exports.createReview = async (req, res) => {
 };
 
 exports.getAllReviewByPropertyId = async (req, res) => {
+  const propertyId = req.params.id;
   try {
-    const propertyId = req.params.id;
     const reviews = await Review.findAll({
       where: {
         propertyId,
       },
       include: [
-        { model: User, as: "renter" },
-        { model: User, as: "tenant" },
+        {
+          model: User,
+          as: "renter",
+          attributes: ["id", "fullname", "email", "profilePicture"],
+        },
+        {
+          model: User,
+          as: "tenant",
+          attributes: ["id", "fullname", "email", "profilePicture"],
+        },
       ],
+      attributes: ["id", "comment", "rating", "createdAt"],
     });
     return res.status(200).json({
       ok: true,

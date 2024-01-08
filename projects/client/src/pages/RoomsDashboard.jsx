@@ -25,6 +25,7 @@ const PropertiesDashboard = () => {
 
     fetchData();
   }, []);
+
   const uniquePropertyNames = [
     ...new Set(propertiesData.map((property) => property.propertyName)),
   ];
@@ -56,7 +57,7 @@ const PropertiesDashboard = () => {
   return (
     <div className="ml-5">
       <div className="flex justify-between mb-8">
-        <h1 className="mb-4 ml-5 text-3xl font-normal">Rooms</h1>
+        <h1 className="mb-4 text-3xl font-normal">Rooms</h1>
       </div>
       <Select
         label="Select Property"

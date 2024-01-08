@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import usePropertyDeleteModal from "../components/hooks/usePropertyDeleteModal.js";
-import { Menu, Button, Text, rem } from "@mantine/core";
+import { Menu, Button } from "@mantine/core";
 
-const PropertiesDashboard = () => {
+const PropertiesDashboard = ({ setActiveMenuItem }) => {
   const [propertiesData, setPropertiesData] = useState([]);
   const propertyDeleteModal = usePropertyDeleteModal();
   const navigate = useNavigate();
@@ -35,12 +35,14 @@ const PropertiesDashboard = () => {
     <div className="">
       <div className="flex justify-between mb-8">
         <h1 className="mb-4 text-3xl font-normal">Properties</h1>
-        <Link
-          to="/tenant/dashboard/create-property"
+        <button
           className="px-3 py-3 font-bold text-white rounded-lg bg-primary hover:bg-primary/70"
+          onClick={() => {
+            navigate("/tenant/dashboard/create-property");
+          }}
         >
-          Add New Property
-        </Link>
+          Create Property
+        </button>
       </div>
       <table className="w-full ml-4">
         <thead>
@@ -55,7 +57,7 @@ const PropertiesDashboard = () => {
           {propertiesData.map((property) => (
             <tr key={property.id} className="border-b hover:bg-primary/10">
               <td className="items-center justify-center py-2 border-gray-200">
-                <diva className="flex items-center justify-start ml-2 gap-x-4">
+                <div className="flex items-center justify-start ml-2 gap-x-4">
                   <img
                     className="object-fill rounded-lg w-14 h-14"
                     src={`http://localhost:8000/api/property-asset/${property.coverImage}`}
@@ -67,7 +69,7 @@ const PropertiesDashboard = () => {
                   >
                     {property.name}
                   </div>
-                </diva>
+                </div>
               </td>
               <td className="flex flex-row items-center justify-center px-4 py-2 border-gray-200">
                 {property.categories[0]

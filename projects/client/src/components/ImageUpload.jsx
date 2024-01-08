@@ -1,15 +1,13 @@
 import { useState, useCallback } from "react";
 import { TbPhotoPlus, TbTrash } from "react-icons/tb";
 
-// ... (imports)
-
 const ImageUpload = ({ onChange, onDelete, value }) => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
-    onChange(file); // Pass the selected file to the onChange prop
+    onChange(file);
   };
 
   const handleDelete = () => {

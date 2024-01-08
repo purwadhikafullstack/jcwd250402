@@ -12,18 +12,18 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "propertyId",
       });
       Review.belongsTo(models.User, {
-        foreignKey: "userId",
+        foreignKey: "renterId",
         as: "renter",
       });
       Review.belongsTo(models.User, {
-        foreignKey: "userId",
+        foreignKey: "tenantId",
         as: "tenant",
       });
     }
   }
   Review.init(
     {
-      comment: DataTypes.STRING,
+      comment: DataTypes.TEXT,
       rating: { type: DataTypes.INTEGER, allowNull: false },
       propertyId: { type: DataTypes.INTEGER, allowNull: false },
       renterId: { type: DataTypes.INTEGER, allowNull: false },

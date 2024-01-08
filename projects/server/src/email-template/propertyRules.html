@@ -463,7 +463,12 @@
                   href="https://example.com"
                   class="f-fallback email-masthead_name"
                 >
-                  Nginapp
+                  <img
+                    src="./Logo-Black.svg"
+                    width="210"
+                    height="94"
+                    alt="Nginapp Logo"
+                  />
                 </a>
               </td>
             </tr>
@@ -489,12 +494,11 @@
                       <div class="f-fallback">
                         <h1>Hi {{fullname}},</h1>
                         <p>
-                          You recently requested to reset your password for your
-                          Nginapp account. Use the button below to reset it.
-                          <strong
-                            >This password reset is only valid for the next 1
-                            hours.</strong
-                          >
+                          Thank you for choosing Nginapp to accomodate your
+                          lodging needs, To provide the best experience for you
+                          and the other guests, we have some rules that you need
+                          to follow.
+                          <strong> Please read them carefully. </strong>
                         </p>
                         <!-- Action -->
                         <table
@@ -520,8 +524,24 @@
                                       href="{{verifyLink}}"
                                       class="f-fallback button button--green"
                                       target="_blank"
-                                      >Click to Verify your Account</a
+                                      >Receipt</a
                                     >
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td align="center">
+                                    <ul>
+                                      <li>{{propertyRules}}</li>
+                                      <li>
+                                        Any damage to the property will be the
+                                        responsible of the renter
+                                      </li>
+                                      <li>
+                                        If you break the law in the property,
+                                        you will be responsible for the
+                                        consequences
+                                      </li>
+                                    </ul>
                                   </td>
                                 </tr>
                               </table>
@@ -529,13 +549,9 @@
                           </tr>
                         </table>
                         <p>
-                          For security, this request was received from a
-                          {{operating_system}} device using {{browser_name}}. If
-                          you did not request a password reset, please ignore
-                          this email or <a href="#">contact support</a> if you
-                          have questions.
+                          Please note, that if you don't follow the rules, You
+                          may need to pay a fine depending on the rules.
                         </p>
-                        <p>Thanks, <br />The Nginapp team</p>
                         <!-- Sub copy -->
                       </div>
                     </td>

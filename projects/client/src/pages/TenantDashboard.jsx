@@ -1,22 +1,20 @@
 import React, { useState } from "react";
 import UpdateProfile from "./UpdateProfile";
 import PropertiesDashboard from "./PropertiesDashboard";
-import { Dashboard } from "../components";
 import { Sidebar, SidebarItem } from "../components";
 import { GoGraph } from "react-icons/go";
-import { RxDashboard } from "react-icons/rx";
 import { PiWarehouseDuotone } from "react-icons/pi";
 import { BsFlag } from "react-icons/bs";
 import { AiOutlineCalendar } from "react-icons/ai";
 import { MdOutlineBedroomParent } from "react-icons/md";
-import { MdStarHalf } from "react-icons/md";
 import CreateProperty from "./CreateProperty";
 import ReservationDashboard from "./ReservationsDashboard";
 import RoomsDashboard from "./RoomsDashboard";
 import CalendarDashboard from "./CalendarDashboard";
+import Analytics from "./AnalyticsDashboard";
 
 const TenantDashboard = ({ activeMenu }) => {
-  const [activeMenuItem, setActiveMenuItem] = useState("Dashboard");
+  const [activeMenuItem, setActiveMenuItem] = useState("Reservations");
   const [isExpanded, setIsExpanded] = useState(true);
 
   const handleMenuItemClick = (menuItem) => {
@@ -44,12 +42,12 @@ const TenantDashboard = ({ activeMenu }) => {
           isExpanded={isExpanded}
           toggleSidebar={toggleSidebar}
         >
-          <SidebarItem
+          {/* <SidebarItem
             icon={<RxDashboard size={20} className="rotate-45" />}
             text="Dashboard"
             onMenuItemClick={handleMenuItemClick}
             active={activeMenuItem === "Dashboard"}
-          />
+          /> */}
           <SidebarItem
             icon={<PiWarehouseDuotone size={20} />}
             text="Properties"
@@ -74,12 +72,12 @@ const TenantDashboard = ({ activeMenu }) => {
             onMenuItemClick={handleMenuItemClick}
             active={activeMenuItem === "Calendar"}
           />
-          <SidebarItem
+          {/* <SidebarItem
             icon={<MdStarHalf size={20} />}
             text="Review"
             onMenuItemClick={handleMenuItemClick}
             active={activeMenuItem === "Review"}
-          />
+          /> */}
           <SidebarItem
             icon={<GoGraph size={20} />}
             text="Analytics"
@@ -96,12 +94,13 @@ const TenantDashboard = ({ activeMenu }) => {
         } relative`}
       >
         {activeMenuItem === "editProfile" ? <UpdateProfile /> : null}
-        {activeMenuItem === "Dashboard" ? <Dashboard /> : null}
+        {/* {activeMenuItem === "Dashboard" ? <Dashboard /> : null} */}
         {activeMenuItem === "Properties" ? <PropertiesDashboard /> : null}
         {activeMenuItem === "CreateProperty" ? <CreateProperty /> : null}
         {activeMenuItem === "Reservations" ? <ReservationDashboard /> : null}
         {activeMenuItem === "Rooms" ? <RoomsDashboard /> : null}
         {activeMenuItem === "Calendar" ? <CalendarDashboard /> : null}
+        {activeMenuItem === "Analytics" ? <Analytics /> : null}
       </div>
     </div>
   );

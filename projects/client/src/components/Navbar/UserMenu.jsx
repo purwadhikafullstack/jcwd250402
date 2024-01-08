@@ -42,9 +42,7 @@ const UserMenu = ({ transparent, showType }) => {
           setProfilePicture(profilePicture);
           setUsersName(fullname);
         }
-      } catch (error) {
-        console.log(error.response.data.message);
-      }
+      } catch (error) {}
     };
     fetchUserProfile();
   });
@@ -146,7 +144,10 @@ const UserMenu = ({ transparent, showType }) => {
                 Become a Host
               </Menu.Item>
               <Menu.Divider />
-              <Menu.Item leftSection={<Avatar src={profilePictureSrc} />}>
+              <Menu.Item
+                onClick={() => navigate("/edit-profile")}
+                leftSection={<Avatar src={profilePictureSrc} />}
+              >
                 {usersName}
                 <Text size={"xs"}>Profile Settings</Text>
               </Menu.Item>

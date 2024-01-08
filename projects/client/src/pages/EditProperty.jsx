@@ -90,8 +90,7 @@ const EditProperty = () => {
       formData.append("maxGuestCount", formik.values.maxGuestCount);
       formData.append("bathroomCount", formik.values.bathroomCount);
       formData.append("propertyType", formik.values.propertyType);
-      formData.append("district", formik.values.district);
-      formData.append("city", formik.values.city);
+      formData.append("city", formik.values.city.label);
       formData.append("province", formik.values.province.label);
       formData.append("country", formik.values.country.label);
       formData.append("streetAddress", formik.values.streetAddress);
@@ -159,6 +158,7 @@ const EditProperty = () => {
   };
 
   document.title = `Edit ${propertiesData.name}`;
+  console.log(formik.values.city.label);
   return (
     <div className="px-2 py-6">
       <div className="flex flex-col bg-white">
@@ -235,21 +235,6 @@ const EditProperty = () => {
                 }
                 countryIsoCode={formik.values.country.value}
                 provinceIsoCode={formik.values.province.value}
-              />
-              <label
-                htmlFor="property_location"
-                className="text-xl font-medium"
-              >
-                District
-              </label>
-              <input
-                name="district"
-                type="text"
-                className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
-                ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
-                value={formik.values.district}
-                onChange={formik.handleChange}
-                disabled={isSubmitting}
               />
               <label
                 htmlFor="property_location"

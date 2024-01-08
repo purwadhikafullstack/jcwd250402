@@ -10,13 +10,14 @@ const {
   PropertyCategory,
   User,
   Rooms,
+  SpecialDate,
 } = require("../models");
 
 const {
   buildWhereClause,
-  parseSort,
   getPropertyIdsByType,
   getPropertyIdsByCountry,
+  sortParse,
 } = require("../utils/search");
 
 exports.createProperty = async (req, res) => {
@@ -79,6 +80,7 @@ exports.createProperty = async (req, res) => {
         coverImage: coverImage,
         userId: req.user.id,
         isActive: true,
+        viewCount: 0,
         Categories: [
           {
             propertyType,
@@ -167,11 +169,15 @@ exports.editProperty = async (req, res) => {
       country,
       city,
       province,
+      latitude,
+      longitude,
       streetAddress,
       postalCode,
       propertyRules,
       propertyAmenities,
     } = req.body;
+
+    console.log(country);
 
     const existingProperty = await Property.findByPk(propertyId, {
       include: [
@@ -221,9 +227,6 @@ exports.editProperty = async (req, res) => {
       ],
     });
 
-    console.log("PropertyId:", existingProperty.userId);
-    console.log("tenant:", tenantId);
-
     if (existingProperty.userId !== tenantId) {
       return res.status(403).json({
         ok: false,
@@ -240,19 +243,44 @@ exports.editProperty = async (req, res) => {
       });
     }
 
-    existingProperty.propertyName =
-      propertyName || existingProperty.propertyName;
-    existingProperty.description = description || existingProperty.description;
-    existingProperty.price = price || existingProperty.price;
-    existingProperty.bedCount = bedCount || existingProperty.bedCount;
-    existingProperty.bedroomCount =
-      bedroomCount || existingProperty.bedroomCount;
-    existingProperty.maxGuestCount =
-      maxGuestCount || existingProperty.maxGuestCount;
-    existingProperty.bathroomCount =
-      bathroomCount || existingProperty.bathroomCount;
+    const updateProperty = await existingProperty.update({
+      propertyName: propertyName || existingProperty.propertyName,
+      description: description || existingProperty.description,
+      price: price || existingProperty.price,
+      bedCount: bedCount || existingProperty.bedCount,
+      bedroomCount: bedroomCount || existingProperty.bedroomCount,
+      maxGuestCount: maxGuestCount || existingProperty.maxGuestCount,
+      bathroomCount: bathroomCount || existingProperty.bathroomCount,
+    });
 
-    await existingProperty.save();
+    const category = await Category.findOne({
+      where: { id: existingProperty.id },
+    });
+
+    if (
+      country ||
+      city ||
+      province ||
+      latitude ||
+      longitude ||
+      streetAddress ||
+      postalCode
+    ) {
+      await category.update({
+        propertyType:
+          propertyType || existingProperty.Categories[0].propertyType,
+        country: country || existingProperty.Categories[0].country,
+        city: city || existingProperty.Categories[0].city,
+        province: province || existingProperty.Categories[0].province,
+        latitude: latitude || existingProperty.Categories[0].latitude,
+        longitude: longitude || existingProperty.Categories[0].longitude,
+        streetAddress:
+          streetAddress || existingProperty.Categories[0].streetAddress,
+        postalCode: postalCode || existingProperty.Categories[0].postalCode,
+      });
+    }
+
+    await updateProperty.save();
 
     const images = req.files;
 
@@ -285,12 +313,7 @@ exports.editProperty = async (req, res) => {
         existingProperty.propertyImages.concat(newPropertyImages);
     }
 
-    if (req.body.coverImage) {
-      existingProperty.coverImage = req.body.coverImage;
-      await existingProperty.save();
-    }
-
-    await PropertyRules.destroy({ where: { propertyId } });
+    await PropertyRules.destroy({ where: { propertyId: propertyId } });
     if (propertyRules && propertyRules.length > 0) {
       const newPropertyRulesObjects = propertyRules.map((rule) => ({
         rule,
@@ -299,7 +322,7 @@ exports.editProperty = async (req, res) => {
       await PropertyRules.bulkCreate(newPropertyRulesObjects);
     }
 
-    await Amenity.destroy({ where: { propertyId } });
+    await Amenity.destroy({ where: { propertyId: propertyId } });
     if (propertyAmenities && propertyAmenities.length > 0) {
       const newAmenityObjects = propertyAmenities.map((amenity) => ({
         amenity,
@@ -347,7 +370,7 @@ exports.getAllProperties = async (req, res) => {
     const bedCount = req.query.bedCount;
     const bedroomCount = req.query.bedroomCount;
     const offset = (page - 1) * limit;
-    const order = parseSort(sort);
+    const order = sortParse(sort);
     const whereClause = buildWhereClause({ search, filterBy });
 
     if (propertyType) {
@@ -425,10 +448,13 @@ exports.getAllProperties = async (req, res) => {
         "coverImage",
         "userId",
         "isActive",
+        "createdAt",
       ],
       where: whereClause,
+      page: page,
       limit: limit,
       offset: offset,
+      sort: sort,
       order: order,
     });
 
@@ -812,7 +838,6 @@ exports.incrementView = async (req, res) => {
     }
 
     await property.increment("viewCount");
-    // await property.save();
 
     return res.status(200).end();
   } catch (error) {

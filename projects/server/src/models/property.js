@@ -34,7 +34,10 @@ module.exports = (sequelize, DataTypes) => {
       Property.hasMany(models.Rooms, {
         foreignKey: "propertyId",
       });
-      Property.hasMany(models.AvailableDate, {
+      Property.hasMany(models.SpecialDate, {
+        foreignKey: "propertyId",
+      });
+      Property.hasMany(models.DisabledDates, {
         foreignKey: "propertyId",
       });
       Property.hasOne(models.Booking, {

@@ -4,7 +4,7 @@ const authMiddleware = require("../middleware/auth");
 const reviewController = require("../controller/review");
 
 router.post(
-  "/create",
+  "/create/:id",
   authMiddleware.validateToken,
   reviewController.createReview
 );

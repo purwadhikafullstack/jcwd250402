@@ -51,7 +51,7 @@ const SearchModal = ({ latitude, longitude }) => {
       return onNext();
     }
 
-    let searchUrl = `?country=${countryValue.label}`;
+    let searchUrl = `search?country=${countryValue.label}`;
 
     if (dateRange.startDate) {
       const formattedStartDate = format(dateRange.startDate, "yyyy-MM-dd");

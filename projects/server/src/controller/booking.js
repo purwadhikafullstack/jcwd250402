@@ -1,5 +1,17 @@
 const { ro } = require("date-fns/locale");
-const { Booking, Property, User, Payment, Rooms } = require("../models");
+const {
+  Booking,
+  Property,
+  User,
+  Payment,
+  Rooms,
+  SpecialDate,
+
+  PropertyRules,
+} = require("../models");
+const hbs = require("handlebars");
+const fs = require("fs");
+const mailer = require("../lib/nodemailer");
 
 const isPropertyAvailable = async (propertyId, startDate, endDate, roomId) => {
   const bookings = await Booking.findAll({
@@ -54,19 +66,22 @@ exports.createBooking = async (req, res) => {
     roomId,
   } = req.body;
 
-  console.log(req.body);
-
   try {
     if (
       !renterId ||
       !tenantId ||
-      !propertyId ||
       !startDate ||
       !endDate ||
       !guestCount ||
       !totalPrice
     ) {
       return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    if (!propertyId) {
+      return res.status(400).json({
+        message: "Please select which room/property you would like to book",
+      });
     }
 
     if (!startDate && !endDate) {
@@ -289,6 +304,22 @@ exports.acceptBooking = async (req, res) => {
   const bookingId = req.params.id;
   try {
     const booking = await Booking.findByPk(bookingId);
+    const rules = await PropertyRules.findAll({
+      where: {
+        propertyId: booking.propertyId,
+      },
+    });
+    const renter = await User.findOne({
+      where: { id: booking.renterId },
+      attributes: ["fullname", "email"],
+    });
+    const property = await Property.findOne({
+      where: {
+        id: booking.propertyId,
+      },
+      attributes: ["propertyName"],
+    });
+    console.log(property);
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
@@ -303,6 +334,24 @@ exports.acceptBooking = async (req, res) => {
         .status(400)
         .json({ message: "Booking is not in pending confirmation status" });
     }
+
+    const template = fs.readFileSync(
+      __dirname + "/../email-template/propertyRules.html",
+      "utf8"
+    );
+
+    const compiledTemplate = hbs.compile(template);
+    const propertyRules = rules.map((rule) => rule.rule);
+    const emailHtml = compiledTemplate({
+      fullname: renter.fullname,
+      propertyRules: propertyRules,
+    });
+
+    await mailer({
+      email: renter.email,
+      subject: `Your Receipt for ${property.propertyName}`,
+      html: emailHtml,
+    });
 
     await booking.update({
       status: "confirmed",
@@ -382,5 +431,92 @@ exports.getPaymentData = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getEarnings = async (req, res) => {
+  const propertyId = req.params.propertyId;
+  const tenantId = req.user.id;
+
+  try {
+    const property = await Property.findOne({
+      where: {
+        id: propertyId,
+      },
+    });
+
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    if (!property) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+    if (property.userId !== tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const propertyEarnings = await Booking.findAll({
+      where: {
+        propertyId: propertyId,
+        status: "confirmed",
+      },
+      attributes: [
+        "totalPrice",
+        "id",
+        "startDate",
+        "endDate",
+        "renterId",
+        "guestCount",
+        "createdAt",
+      ],
+      include: [
+        {
+          model: User,
+          as: "renter",
+          attributes: ["fullname"],
+        },
+        {
+          model: Payment,
+          as: "payment",
+          attributes: ["paymentProof"],
+        },
+        {
+          model: Property,
+          as: "property",
+          attributes: ["propertyName", "id", "viewCount"],
+        },
+      ],
+    });
+
+    const totalEarnings = propertyEarnings.reduce((total, booking) => {
+      return total + booking.totalPrice;
+    }, 0);
+
+    const totalBookings = propertyEarnings.length;
+
+    const formattedEarnings = propertyEarnings.map((booking) => {
+      return {
+        bookingId: booking.id,
+        startDate: booking.startDate,
+        endDate: booking.endDate,
+        earnings: booking.totalPrice,
+        guestCount: booking.guestCount,
+        reservedAt: booking.createdAt,
+        renter: booking.renter.fullname,
+        paymentProof: booking.payment.paymentProof,
+        property: booking.property.propertyName,
+        propertyId: booking.property.id,
+      };
+    });
+
+    res.status(200).json({
+      message: "Success",
+      totalBookings,
+      viewCount: property.viewCount,
+      totalEarnings,
+      earnings: formattedEarnings,
+    });
+  } catch (error) {
+    console.log(error);
   }
 };

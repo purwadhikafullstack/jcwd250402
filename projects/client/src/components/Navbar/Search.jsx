@@ -76,7 +76,7 @@ const Search = ({ transparent }) => {
                 : "text-primary font-bold bg-none"
             }`}
           >
-            <BiSearch size={18} />
+            <BiSearch size={18} color="black" />
           </div>
         </div>
       </div>

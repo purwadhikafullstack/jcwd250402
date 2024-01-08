@@ -27,9 +27,7 @@ const useFavorite = ({ listingId }) => {
         setHasFavorited(
           favorites.some((favorite) => favorite.propertyId === listingId)
         );
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     };
 
     fetchFavorites();

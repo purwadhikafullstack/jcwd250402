@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "../Button";
-import DatePicker from "../inputs/Calendar";
+import Calendar from "../inputs/Calendar";
 import { differenceInCalendarDays } from "date-fns";
 
 const ListingReservation = ({
@@ -19,6 +19,7 @@ const ListingReservation = ({
   rentEntireProperty,
   selectedRoom,
   onSelectRoom,
+  propertyId,
 }) => {
   const priceFormatter = new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -162,7 +163,7 @@ const ListingReservation = ({
           </div>
         </div>
         <hr />
-        <DatePicker
+        <Calendar
           value={dateRange}
           disabledDates={disabledDates}
           onChange={(value) => onChangeDate(value.selection)}

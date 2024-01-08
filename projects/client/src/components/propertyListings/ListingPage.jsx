@@ -10,7 +10,6 @@ import { Loader } from "@mantine/core";
 import { differenceInCalendarDays } from "date-fns";
 import Container from "../Container";
 import getBookedDates from "../../actions/getBookedDates";
-import RoomSelect from "../rooms/RoomSelect";
 
 const initialDateRange = {
   startDate: new Date(),
@@ -258,6 +257,7 @@ const ListingPage = () => {
                       rentEntireProperty={rentEntireProperty}
                       selectedRoom={selectedRoom}
                       onSelectRoom={handleSelection}
+                      propertyId={property.id}
                     />
                   </div>
                 </div>

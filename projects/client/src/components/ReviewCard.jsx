@@ -20,6 +20,10 @@ const ReviewCard = ({ propertyId }) => {
     fetchReviewData();
   }, [propertyId]);
 
+  if (!reviews || reviews.length === 0) {
+    return null;
+  }
+
   return (
     <Card>
       <Title order={4}>Reviews</Title>

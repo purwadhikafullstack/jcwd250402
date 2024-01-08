@@ -9,7 +9,7 @@ const Navbar = ({ children, transparent, showType }) => {
   return (
     <div>
       <div
-        className={`fixed z-10 w-full ${
+        className={`fixed z-[999999999] w-full ${
           transparent
             ? "bg-opacity-0 transition-opacity duration-300 shadow-none"
             : "bg-white transition-all duration-300 shadow-sm"
@@ -25,7 +25,7 @@ const Navbar = ({ children, transparent, showType }) => {
                       <img
                         src={logoWhite}
                         alt="app logo"
-                        className="h-80px w-[120px]"
+                        className="h-80px w-[120px] cursor-pointer"
                       />
                     </>
                   ) : (

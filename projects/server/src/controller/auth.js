@@ -107,20 +107,21 @@ exports.tenantRegister = async (req, res) => {
     phoneNumber,
     gender,
     dateofbirth,
-    profilePicture,
-    // ktpImg,
   } = req.body;
+  console.log(req.body);
+
+  const ktpImg = req.file;
 
   const existingUser = await User.findOne({
     where: {
-      [Op.or]: [{ email }],
+      [Op.or]: [{ email }, { username }],
     },
   });
 
   if (existingUser) {
     return res.status(400).json({
       ok: false,
-      message: "Email already registered",
+      message: "Email or Username already registered",
     });
   }
 
@@ -133,11 +134,10 @@ exports.tenantRegister = async (req, res) => {
       username,
       email,
       password: hashPassword,
-      phoneNumber,
+      phoneNumber: phoneNumber,
       gender,
       dateofbirth,
-      profilePicture: req.file.filename,
-      // ktpImg,
+      ktpImg,
       role: "tenant",
     });
 

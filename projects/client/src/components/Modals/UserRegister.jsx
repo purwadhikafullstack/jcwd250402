@@ -106,43 +106,45 @@ const UseRegisterModal = () => {
         onSubmit={formik.handleSubmit}
       >
         {() => (
-          <Form>
-            <Input
-              id="fullname"
-              name="fullname"
-              label="Full Name"
-              type="text"
-              disabled={isLoading}
-              required
-              onChange={(value) => handleInputChange("fullname", value)}
-            />
-            <Input
-              id="email"
-              name="email"
-              label="Email"
-              type="email"
-              disabled={isLoading}
-              required
-              onChange={(value) => handleInputChange("email", value)}
-            />
-            <Input
-              id="password"
-              name="password"
-              label="Password"
-              type="password"
-              disabled={isLoading}
-              required
-              onChange={(value) => handleInputChange("password", value)}
-            />
-            <Input
-              id="phoneNumber"
-              name="phoneNumber"
-              label="Phone Number"
-              type="text"
-              disabled={isLoading}
-              required
-              onChange={(value) => handleInputChange("phoneNumber", value)}
-            />
+          <Form className="gap-x-2">
+            <div className="flex flex-col gap-y-2">
+              <Input
+                id="fullname"
+                name="fullname"
+                label="Full Name"
+                type="text"
+                disabled={isLoading}
+                required
+                onChange={(value) => handleInputChange("fullname", value)}
+              />
+              <Input
+                id="email"
+                name="email"
+                label="Email"
+                type="email"
+                disabled={isLoading}
+                required
+                onChange={(value) => handleInputChange("email", value)}
+              />
+              <Input
+                id="password"
+                name="password"
+                label="Password"
+                type="password"
+                disabled={isLoading}
+                required
+                onChange={(value) => handleInputChange("password", value)}
+              />
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                label="Phone Number"
+                type="text"
+                disabled={isLoading}
+                required
+                onChange={(value) => handleInputChange("phoneNumber", value)}
+              />
+            </div>
           </Form>
         )}
       </Formik>

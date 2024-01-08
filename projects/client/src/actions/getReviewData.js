@@ -7,7 +7,5 @@ export default async function getReviewData(propertyId) {
       const review = reviewData.data;
       return review;
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 }

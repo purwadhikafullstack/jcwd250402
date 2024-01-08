@@ -10,9 +10,13 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       comment: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       rating: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      bookingId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
