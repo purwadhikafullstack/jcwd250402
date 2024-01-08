@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { set } from "date-fns";
 
 const loginModalSlice = createSlice({
   name: "loginModal",
@@ -10,6 +9,35 @@ const loginModalSlice = createSlice({
     },
     closeLoginModal(state) {
       state.isOpen = false;
+    },
+  },
+});
+
+const searchModalSlice = createSlice({
+  name: "searchModal",
+  initialState: { isOpen: false },
+  reducers: {
+    openSearchModal(state) {
+      state.isOpen = true;
+    },
+    closeSearchModal(state) {
+      state.isOpen = false;
+    },
+  },
+});
+
+const reviewModalSlice = createSlice({
+  name: "reviewModal",
+  initialState: { isOpen: false },
+  reducers: {
+    openReviewModal(state) {
+      state.isOpen = true;
+    },
+    closeReviewModal(state) {
+      state.isOpen = false;
+    },
+    setBookingId(state, action) {
+      state.bookingId = action.payload;
     },
   },
 });
@@ -138,4 +166,6 @@ export {
   tenantRegisterSlice,
   userRegisterSlice,
   verifyRegisterUserSlice,
+  searchModalSlice,
+  reviewModalSlice,
 };

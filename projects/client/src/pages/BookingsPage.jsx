@@ -35,24 +35,25 @@ const BookingsPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header>
-        <Navbar />
-      </header>
-      <main className="flex-1">
-        <div className="pb-20 pt-28">
-          <Container>
-            <Heading
-              title="Bookings"
-              subtitle="These are the properties that you have booked."
-            />
-            <div className="grid grid-cols-1 gap-8 pt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 ">
-              {bookings.map((booking) => {
-                return <BookingCards key={booking.id} bookingData={booking} />;
-              })}
-            </div>
-          </Container>
-        </div>
-      </main>
+      <Navbar>
+        <main className="flex-1">
+          <div className="pb-20 pt-28">
+            <Container>
+              <Heading
+                title="Bookings"
+                subtitle="These are the properties that you have booked."
+              />
+              <div className="grid grid-cols-1 gap-8 pt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 ">
+                {bookings.map((booking) => {
+                  return (
+                    <BookingCards key={booking.id} bookingData={booking} />
+                  );
+                })}
+              </div>
+            </Container>
+          </div>
+        </main>
+      </Navbar>
     </div>
   );
 };

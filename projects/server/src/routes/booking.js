@@ -55,6 +55,13 @@ router.get(
   bookingController.getPaymentData
 );
 
+router.get(
+  "/earnings/:propertyId",
+  authMiddleware.validateToken,
+  authMiddleware.checkTenant,
+  bookingController.getEarnings
+);
+
 router.get("/booked-dates/:id", bookingController.getBookedDates);
 
 module.exports = router;

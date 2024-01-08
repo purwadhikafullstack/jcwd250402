@@ -10,7 +10,6 @@ import { Loader } from "@mantine/core";
 import { differenceInCalendarDays } from "date-fns";
 import Container from "../Container";
 import getBookedDates from "../../actions/getBookedDates";
-import RoomSelect from "../rooms/RoomSelect";
 
 const initialDateRange = {
   startDate: new Date(),
@@ -35,6 +34,7 @@ const ListingPage = () => {
 
   const [rentEntireProperty, setRentEntireProperty] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [requestSent, setRequestSent] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,12 +57,29 @@ const ListingPage = () => {
   }, [id]);
 
   useEffect(() => {
+    const incrementViewCount = async () => {
+      try {
+        if (!requestSent) {
+          await api.post(`/property/view/${id}`);
+          setRequestSent(true);
+        }
+      } catch (error) {}
+    };
+    const timeoutId = setTimeout(() => {
+      incrementViewCount();
+    }, 30000);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [id, requestSent]);
+
+  useEffect(() => {
     const fetchBookedDates = async () => {
       try {
         const dates = await getBookedDates(id);
         setBookedDates(dates.bookedDates);
       } catch (error) {
-        console.error("Error fetching booked dates:", error);
+        toast.error(error.response.data.message);
       }
     };
 
@@ -78,10 +95,8 @@ const ListingPage = () => {
     let roomPrice = 0;
 
     if (rentEntireProperty) {
-      // Logic for renting the entire property
       roomPrice = property.price;
     } else if (selectedRoom) {
-      // Logic for renting a specific room
       roomPrice = selectedRoom.price;
     }
 
@@ -93,7 +108,6 @@ const ListingPage = () => {
 
     setLoading(true);
 
-    // Common properties for both cases
     const commonData = {
       startDate: dateRange.startDate.toISOString(),
       endDate: dateRange.endDate.toISOString(),
@@ -106,10 +120,8 @@ const ListingPage = () => {
     let requestData = {};
 
     if (rentEntireProperty) {
-      // Logic for renting the entire property
       requestData = commonData;
     } else if (selectedRoom) {
-      // Logic for renting a specific room
       requestData = {
         ...commonData,
         roomId: selectedRoom.id,
@@ -185,71 +197,78 @@ const ListingPage = () => {
     );
   }
 
-  if (!property) {
-    toast.error("Property not found");
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <h1>Property not found</h1>
-      </div>
-    );
-  }
-
+  const propertyNotFound = (
+    <div className="flex items-center justify-center h-screen">
+      <h1>Property not found</h1>
+    </div>
+  );
   return (
     <main>
-      <Navbar />
-      <div className="pb-20 pt-28">
-        <Container>
-          <div className="flex flex-col gap-6">
-            <PropertyHeader
-              name={property.name}
-              coverImage={property.coverImage}
-              propertyImages={property.propertyImages}
-              city={property.categories.city}
-              province={property.categories.province}
-              country={property.categories.country}
-              id={property.id}
-            />
-            <div className="grid grid-cols-1 mt-6 md:grid-cols-7 md:gap-10">
-              <PropertyDetail
-                tenantName={property.Owner.fullname}
-                tenantImg={property.Owner.profilePicture}
-                tenantVerified={property.Owner.isVerified}
-                tenantMemberSince={property.Owner.memberSince}
-                category={property.categories}
-                propertyType={property.categories.propertyType}
-                propertyAmenity={property.propertyAmenities}
-                description={property.description}
-                roomCount={property.bedroomCount}
-                bedCount={property.bedCount}
-                guestCount={property.maxGuestCount}
-                bathroomCount={property.bathroomCount}
-                latitude={property.categories.latitude}
-                longitude={property.categories.longitude}
-              />
-              <div className="order-last mb-10 md:order-last md:col-span-3">
-                <ListingReservation
-                  price={property.price}
-                  totalPrice={totalPrice}
-                  onChangeDate={(value) => setDateRange(value)}
-                  dateRange={dateRange}
-                  onSubmit={onCreateReservation}
-                  disabled={loading}
-                  maxGuests={property.maxGuestCount}
-                  disabledDates={disabledDates}
-                  guestCount={guestCount}
-                  setGuestCount={setGuestCount}
-                  propertyData={property}
-                  roomData={property.Rooms}
-                  rentEntireProperty={rentEntireProperty}
-                  selectedRoom={selectedRoom}
-                  onSelectRoom={handleSelection}
+      <Navbar>
+        <div className="pb-20 pt-28">
+          {property ? (
+            <Container>
+              <div className="flex flex-col gap-6">
+                <PropertyHeader
+                  name={`${property.categories.propertyType
+                    .charAt(0)
+                    .toUpperCase()}${property.categories.propertyType.slice(
+                    1
+                  )} in ${property.categories.city}`}
+                  coverImage={property.coverImage}
+                  propertyImages={property.propertyImages}
+                  // city={property.categories.city}
+                  province={property.categories.province}
+                  country={property.categories.country}
+                  id={property.id}
                 />
+                <div className="grid grid-cols-1 mt-6 md:grid-cols-7 md:gap-10">
+                  <PropertyDetail
+                    tenantName={property.Owner.fullname}
+                    tenantImg={property.Owner.profilePicture}
+                    tenantVerified={property.Owner.isVerified}
+                    tenantMemberSince={property.Owner.memberSince}
+                    category={property.categories}
+                    propertyType={property.categories.propertyType}
+                    propertyAmenity={property.propertyAmenities}
+                    description={property.description}
+                    roomCount={property.bedroomCount}
+                    bedCount={property.bedCount}
+                    guestCount={property.maxGuestCount}
+                    bathroomCount={property.bathroomCount}
+                    latitude={property.categories.latitude}
+                    longitude={property.categories.longitude}
+                    propertyId={property.id}
+                  />
+                  <div className="order-last mb-10 md:order-last md:col-span-3">
+                    <ListingReservation
+                      price={property.price}
+                      totalPrice={totalPrice}
+                      onChangeDate={(value) => setDateRange(value)}
+                      dateRange={dateRange}
+                      onSubmit={onCreateReservation}
+                      disabled={loading}
+                      maxGuests={property.maxGuestCount}
+                      disabledDates={disabledDates}
+                      guestCount={guestCount}
+                      setGuestCount={setGuestCount}
+                      propertyData={property}
+                      roomData={property.Rooms}
+                      rentEntireProperty={rentEntireProperty}
+                      selectedRoom={selectedRoom}
+                      onSelectRoom={handleSelection}
+                      propertyId={property.id}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </Container>
-      </div>
-      <Footer />
+            </Container>
+          ) : (
+            propertyNotFound
+          )}
+        </div>
+        <Footer />
+      </Navbar>
     </main>
   );
 };

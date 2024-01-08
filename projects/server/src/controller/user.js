@@ -9,10 +9,19 @@ const { profile } = require("console");
 
 exports.updateProfile = async (req, res) => {
   const userId = req.user.id;
-  const { fullname, gender, phoneNumber, dateofbirth, email, username } =
-    req.body;
+  const { fullname, gender, dateofbirth, email, username } = req.body;
+
+  console.log(req.user.id);
+  console.log(req.body);
 
   try {
+    if (!userId) {
+      return res.status(400).json({
+        ok: false,
+        message: "Please login to update your profile",
+      });
+    }
+
     const user = await User.findOne({ where: { id: userId } });
 
     if (!user) {
@@ -30,19 +39,16 @@ exports.updateProfile = async (req, res) => {
     if (gender) {
       user.gender = gender;
     }
-    if (phoneNumber) {
-      user.phoneNumber = phoneNumber;
-    }
 
-    if (email) {
+    if (email !== user.email) {
+      const token = crypto.randomBytes(20).toString("hex");
+      const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+      const verifyTokenExpiry = addHours(new Date(), 1);
       user.email = email;
       user.isVerified = false;
       user.verifyToken = tokenHash;
       user.verifyTokenExpiry = verifyTokenExpiry;
 
-      const token = crypto.randomBytes(20).toString("hex");
-      const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-      const verifyTokenExpiry = addHours(new Date(), 1);
       const template = fs.readFileSync(
         __dirname + "/../email-template/verifyEmail.html",
         "utf8"
@@ -93,10 +99,10 @@ exports.updateProfile = async (req, res) => {
         email: user.email,
         username: user.username,
         gender: user.gender,
-        phoneNumber: user.phoneNumber,
       },
     });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ ok: false, message: "Internal server error", error: error });

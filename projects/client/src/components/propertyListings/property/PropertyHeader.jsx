@@ -13,7 +13,7 @@ const PropertyHeader = ({
   return (
     <>
       <div className="flex items-center justify-between">
-        <Heading title={name} subtitle={`${city}, ${province}, ${country}`} />
+        <Heading title={name} subtitle={` ${province}, ${country}`} />
         <FavoriteButton listingId={id} />
       </div>
       <div className="flex flex-col md:flex-row gap-x-1">

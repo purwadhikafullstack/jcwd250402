@@ -23,32 +23,26 @@ const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const propertyRouter = require("./routes/property");
 const bookingRouter = require("./routes/booking");
+const reviewRouter = require("./routes/review");
+const dateRouter = require("./routes/date");
 // ===========================
 // NOTE : Add your routes here
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/property", propertyRouter);
 app.use("/api/booking", bookingRouter);
-app.use("/api/profile-picture", express.static(__dirname + "/public"));
+app.use("/api/review", reviewRouter);
+app.use("/api/date", dateRouter);
+app.use("/api/profile-picture/", express.static(__dirname + "/public"));
 app.use("/api/property-asset/", express.static(__dirname + "/public"));
 app.use("/api/payment/", express.static(__dirname + "/public"));
-
-app.get("/api", (req, res) => {
-  res.send(`Hello, this is my API`);
-});
-
-app.get("/api/greetings", (req, res, next) => {
-  res.status(200).json({
-    message: "Hello, Student !",
-  });
-});
 
 // ===========================
 
 // not found
 app.use((req, res, next) => {
   if (req.path.includes("/api/")) {
-    res.status(404).send("Not found !");
+    res.status(404).send("Not found!");
   } else {
     next();
   }

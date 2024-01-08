@@ -11,6 +11,9 @@ import Button from "./Button";
 import ListingCard from "./propertyListings/ListingCard";
 import ImageUploader from "./CreateProperty/ImageUploader.jsx";
 import ImageUpload from "./ImageUpload.jsx";
+import PaymentAccordion from "./PaymentAccordion.jsx";
+import ReviewCard from "./ReviewCard.jsx";
+import Input from "./inputs/Input.jsx";
 
 export {
   Navbar,
@@ -27,4 +30,7 @@ export {
   ListingCard,
   ImageUploader,
   ImageUpload,
+  PaymentAccordion,
+  ReviewCard,
+  Input,
 };

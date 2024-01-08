@@ -34,7 +34,10 @@ module.exports = (sequelize, DataTypes) => {
       Property.hasMany(models.Rooms, {
         foreignKey: "propertyId",
       });
-      Property.hasMany(models.AvailableDate, {
+      Property.hasMany(models.SpecialDate, {
+        foreignKey: "propertyId",
+      });
+      Property.hasMany(models.DisabledDates, {
         foreignKey: "propertyId",
       });
       Property.hasOne(models.Booking, {
@@ -71,6 +74,9 @@ module.exports = (sequelize, DataTypes) => {
       price: {
         type: DataTypes.INTEGER,
         allowNull: false,
+      },
+      viewCount: {
+        type: DataTypes.INTEGER,
       },
       rating: {
         type: DataTypes.INTEGER,

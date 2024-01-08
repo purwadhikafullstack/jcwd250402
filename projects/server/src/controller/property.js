@@ -1,3 +1,5 @@
+const { where } = require("sequelize");
+const Sequelize = require("sequelize");
 const {
   Property,
   PropertyImage,
@@ -8,7 +10,15 @@ const {
   PropertyCategory,
   User,
   Rooms,
+  SpecialDate,
 } = require("../models");
+
+const {
+  buildWhereClause,
+  getPropertyIdsByType,
+  getPropertyIdsByCountry,
+  sortParse,
+} = require("../utils/search");
 
 exports.createProperty = async (req, res) => {
   try {
@@ -70,6 +80,7 @@ exports.createProperty = async (req, res) => {
         coverImage: coverImage,
         userId: req.user.id,
         isActive: true,
+        viewCount: 0,
         Categories: [
           {
             propertyType,
@@ -158,11 +169,15 @@ exports.editProperty = async (req, res) => {
       country,
       city,
       province,
+      latitude,
+      longitude,
       streetAddress,
       postalCode,
       propertyRules,
       propertyAmenities,
     } = req.body;
+
+    console.log(country);
 
     const existingProperty = await Property.findByPk(propertyId, {
       include: [
@@ -212,9 +227,6 @@ exports.editProperty = async (req, res) => {
       ],
     });
 
-    console.log("PropertyId:", existingProperty.userId);
-    console.log("tenant:", tenantId);
-
     if (existingProperty.userId !== tenantId) {
       return res.status(403).json({
         ok: false,
@@ -231,19 +243,44 @@ exports.editProperty = async (req, res) => {
       });
     }
 
-    existingProperty.propertyName =
-      propertyName || existingProperty.propertyName;
-    existingProperty.description = description || existingProperty.description;
-    existingProperty.price = price || existingProperty.price;
-    existingProperty.bedCount = bedCount || existingProperty.bedCount;
-    existingProperty.bedroomCount =
-      bedroomCount || existingProperty.bedroomCount;
-    existingProperty.maxGuestCount =
-      maxGuestCount || existingProperty.maxGuestCount;
-    existingProperty.bathroomCount =
-      bathroomCount || existingProperty.bathroomCount;
+    const updateProperty = await existingProperty.update({
+      propertyName: propertyName || existingProperty.propertyName,
+      description: description || existingProperty.description,
+      price: price || existingProperty.price,
+      bedCount: bedCount || existingProperty.bedCount,
+      bedroomCount: bedroomCount || existingProperty.bedroomCount,
+      maxGuestCount: maxGuestCount || existingProperty.maxGuestCount,
+      bathroomCount: bathroomCount || existingProperty.bathroomCount,
+    });
 
-    await existingProperty.save();
+    const category = await Category.findOne({
+      where: { id: existingProperty.id },
+    });
+
+    if (
+      country ||
+      city ||
+      province ||
+      latitude ||
+      longitude ||
+      streetAddress ||
+      postalCode
+    ) {
+      await category.update({
+        propertyType:
+          propertyType || existingProperty.Categories[0].propertyType,
+        country: country || existingProperty.Categories[0].country,
+        city: city || existingProperty.Categories[0].city,
+        province: province || existingProperty.Categories[0].province,
+        latitude: latitude || existingProperty.Categories[0].latitude,
+        longitude: longitude || existingProperty.Categories[0].longitude,
+        streetAddress:
+          streetAddress || existingProperty.Categories[0].streetAddress,
+        postalCode: postalCode || existingProperty.Categories[0].postalCode,
+      });
+    }
+
+    await updateProperty.save();
 
     const images = req.files;
 
@@ -276,12 +313,7 @@ exports.editProperty = async (req, res) => {
         existingProperty.propertyImages.concat(newPropertyImages);
     }
 
-    if (req.body.coverImage) {
-      existingProperty.coverImage = req.body.coverImage;
-      await existingProperty.save();
-    }
-
-    await PropertyRules.destroy({ where: { propertyId } });
+    await PropertyRules.destroy({ where: { propertyId: propertyId } });
     if (propertyRules && propertyRules.length > 0) {
       const newPropertyRulesObjects = propertyRules.map((rule) => ({
         rule,
@@ -290,7 +322,7 @@ exports.editProperty = async (req, res) => {
       await PropertyRules.bulkCreate(newPropertyRulesObjects);
     }
 
-    await Amenity.destroy({ where: { propertyId } });
+    await Amenity.destroy({ where: { propertyId: propertyId } });
     if (propertyAmenities && propertyAmenities.length > 0) {
       const newAmenityObjects = propertyAmenities.map((amenity) => ({
         amenity,
@@ -327,6 +359,41 @@ exports.editProperty = async (req, res) => {
 
 exports.getAllProperties = async (req, res) => {
   try {
+    const limit = parseInt(req.query.limit) || 100;
+    const page = parseInt(req.query.page) || 1;
+    const sort = req.query.sort;
+    const country = req.query.country;
+    const propertyType = req.query.propertyType;
+    const search = req.query.search;
+    const filterBy = req.query.filterBy;
+    const roomCount = req.query.roomCount;
+    const bedCount = req.query.bedCount;
+    const bedroomCount = req.query.bedroomCount;
+    const offset = (page - 1) * limit;
+    const order = sortParse(sort);
+    const whereClause = buildWhereClause({ search, filterBy });
+
+    if (propertyType) {
+      const propertyIds = await getPropertyIdsByType(propertyType);
+      whereClause.id = { [Sequelize.Op.in]: propertyIds };
+    }
+    if (country) {
+      const propertyIds = await getPropertyIdsByCountry(country);
+      whereClause.id = { [Sequelize.Op.in]: propertyIds };
+    }
+
+    if (roomCount) {
+      whereClause.bedroomCount = { [Sequelize.Op.gte]: roomCount };
+    }
+
+    if (bedCount) {
+      whereClause.bedCount = { [Sequelize.Op.gte]: bedCount };
+    }
+
+    if (bedroomCount) {
+      whereClause.bedroomCount = { [Sequelize.Op.gte]: bedroomCount };
+    }
+
     const properties = await Property.findAll({
       include: [
         {
@@ -359,6 +426,15 @@ exports.getAllProperties = async (req, res) => {
           ],
           through: { attributes: [] },
         },
+        {
+          model: Rooms,
+          include: [
+            {
+              model: RoomImage,
+              as: "roomImages",
+            },
+          ],
+        },
       ],
       attributes: [
         "id",
@@ -372,8 +448,14 @@ exports.getAllProperties = async (req, res) => {
         "coverImage",
         "userId",
         "isActive",
+        "createdAt",
       ],
-      where: {},
+      where: whereClause,
+      page: page,
+      limit: limit,
+      offset: offset,
+      sort: sort,
+      order: order,
     });
 
     if (!properties || properties.length === 0) {
@@ -418,6 +500,22 @@ exports.getAllProperties = async (req, res) => {
         propertyRules: property.PropertyRules.map((rule) => ({
           id: rule.id,
           rule: rule.rule,
+        })),
+        rooms: property.Rooms.map((room) => ({
+          id: room.id,
+          name: room.roomName,
+          description: room.description,
+          bedCount: room.bedCount,
+          bedroomCount: room.bedroomCount,
+          maxGuestCount: room.maxGuestCount,
+          bathroomCount: room.bathroomCount,
+          price: room.price,
+          propertyId: room.propertyId,
+          tenantId: room.userId,
+          roomImages: room.roomImages.map((image) => ({
+            id: image.id,
+            image: image.image,
+          })),
         })),
       };
     });
@@ -560,7 +658,7 @@ exports.getPropertiesByUserId = async (req, res) => {
   }
 };
 
-exports.getPropertyById = async (req, res) => {
+exports.getPropertyById = async (req, res, next) => {
   const propertyId = req.params.id;
 
   try {
@@ -708,11 +806,40 @@ exports.getPropertyById = async (req, res) => {
       CreatedAt: property.createdAt,
     };
 
+    next();
+
     return res.status(200).json({
       ok: true,
       status: 200,
       Property: formattedProperty,
     });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.incrementView = async (req, res) => {
+  const propertyId = req.params.id;
+
+  try {
+    const property = await Property.findByPk(propertyId);
+
+    if (!property) {
+      return res.status(404).json({
+        ok: false,
+        status: 404,
+        message: "Property not found",
+      });
+    }
+
+    await property.increment("viewCount");
+
+    return res.status(200).end();
   } catch (error) {
     console.error(error);
     return res.status(500).json({
@@ -1006,4 +1133,113 @@ exports.deleteRoom = async (req, res) => {
       message: "Internal server error",
     });
   }
+};
+
+exports.editRoom = async (req, res) => {
+  const tenantId = req.user.id;
+  const roomId = req.params.roomId;
+  const {
+    roomName,
+    description,
+    price,
+    bedCount,
+    maxGuestCount,
+    bathroomCount,
+  } = req.body;
+
+  const images = req.files.filename;
+
+  try {
+    const room = await Rooms.findOne({
+      where: {
+        id: roomId,
+      },
+
+      include: [
+        {
+          model: RoomImage,
+          as: "roomImages",
+        },
+      ],
+      attributes: [
+        "id",
+        "roomName",
+        "description",
+        "price",
+        "bedCount",
+        "maxGuestCount",
+        "bathroomCount",
+      ],
+    });
+
+    if (!room) {
+      return res.status(404).json({
+        ok: false,
+        status: 404,
+        message: "Room not found",
+      });
+    }
+
+    if (tenantId !== room.userId) {
+      res.status(403).json({
+        ok: false,
+        status: 403,
+        message: "You are not authorized to access this room",
+      });
+    }
+
+    if (roomName) {
+      room.roomName = roomName;
+    }
+
+    if (description) {
+      room.description = description;
+    }
+
+    if (price) {
+      room.price = price;
+    }
+
+    if (bedCount) {
+      room.bedCount = bedCount;
+    }
+
+    if (maxGuestCount) {
+      room.maxGuestCount = maxGuestCount;
+    }
+
+    if (bathroomCount) {
+      room.bathroomCount = bathroomCount;
+    }
+
+    if (images) {
+      const imageObjects = images.map((image) => ({
+        image: image.filename,
+      }));
+
+      const roomImages = await RoomImage.bulkCreate(imageObjects);
+      await room.addRoomImages(roomImages);
+      await room.save();
+    }
+
+    await room.save();
+
+    req.status(200).json({
+      ok: true,
+      status: 200,
+      message: "Room has been successfully updated",
+      room: {
+        id: room.id,
+        roomName: room.roomName,
+        description: room.description,
+        price: room.price,
+        bedCount: room.bedCount,
+        maxGuestCount: room.maxGuestCount,
+        bathroomCount: room.bathroomCount,
+        propertyId: room.propertyId,
+        tenantId: room.userId,
+        roomImages: room.roomImages,
+      },
+    });
+  } catch (error) {}
 };

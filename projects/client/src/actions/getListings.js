@@ -1,14 +1,13 @@
 import api from "../api";
-import { toast } from "sonner";
 
-export default async function getListings() {
+export default async function getListings(page) {
   try {
-    const listings = await api.get("/property");
+    const listings = await api.get(`/property?page=${page}&limit=${10}`);
     if (listings.status === 200) {
-      return listings.data.Properties;
+      return listings.data;
     }
   } catch (error) {
-    toast.error(error.response.data.message);
+    console.error(error);
   } finally {
   }
 }

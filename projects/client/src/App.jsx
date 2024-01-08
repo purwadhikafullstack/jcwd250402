@@ -5,7 +5,7 @@ import {
   TenantLogin,
   Home,
   TenantDashboard,
-  TenantRegisterPage,
+  TenantRegister,
   PageNotFound,
   CreateProperty,
   EditProperty,
@@ -13,22 +13,28 @@ import {
   ReservationsPage,
   CreateRoom,
   FavoritePage,
+  ListingPage,
+  VerifyUserPage,
+  ResetPassword,
+  EditProfile,
 } from "./pages";
+
 import {
   ProtectedRoute,
   ProtectedTenantRoute,
   RedirectRoute,
 } from "./utils/protectedRoute";
-import AuthModal from "./components/Modals/AuthModal";
-import PaymentModal from "./components/Modals/PaymentModal.jsx";
-import ProofImageModal from "./components/Modals/ProofImage.jsx";
-import VerifyUserPage from "./pages/VerifyUserPage";
-import { ListingPage } from "./components/propertyListings";
-import PropertyDelete from "./components/Modals/PropertyDelete";
-import RoomDelete from "./components/Modals/RoomDelete";
-import ResetPassword from "./pages/ResetPassword";
-import TenantRegisterModal from "./components/Modals/TenantRegister";
-import "@mantine/carousel/styles.css";
+
+import {
+  AuthModal,
+  TenantRegisterModal,
+  PropertyDelete,
+  RoomDelete,
+  PaymentModal,
+  ProofImageModal,
+  SearchModal,
+  ReviewModal,
+} from "./components/Modals";
 
 function App() {
   return (
@@ -40,17 +46,16 @@ function App() {
       <PaymentModal />
       <ProofImageModal />
       <RoomDelete />
+      <SearchModal />
+      <ReviewModal />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Home />} />
         <Route path="/property/:id" element={<ListingPage />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/tenant/register" element={<TenantRegisterPage />} />
+
         <Route path="/edit-property/:id" element={<EditProperty />} />
         <Route path="/verify-email" element={<VerifyUserPage />} />
-        <Route
-          path="/tenant/dashboard/:propertyId/create-room"
-          element={<CreateRoom />}
-        />
 
         {/* USER NEEDS TO BE AUTHENTICATED */}
         <Route path="/bookings" element={<ProtectedRoute />}>
@@ -63,6 +68,9 @@ function App() {
 
         <Route path="/favorites" element={<ProtectedRoute />}>
           <Route index element={<FavoritePage />} />
+        </Route>
+        <Route path="/edit-profile" element={<ProtectedRoute />}>
+          <Route index element={<EditProfile />} />
         </Route>
         {/* END OF USER NEEDS TO BE AUTHENTICATED */}
 
@@ -84,12 +92,24 @@ function App() {
         <Route path="/tenant/dashboard" element={<ProtectedTenantRoute />}>
           <Route index element={<TenantDashboard />} />
         </Route>
+
+        <Route
+          path="/tenant/dashboard/:propertyId/create-room"
+          element={<ProtectedTenantRoute />}
+        >
+          <Route index element={<CreateRoom />} />
+        </Route>
         {/* END OF PROTECTED TENANT ROUTE */}
 
         {/* IF USER IS AUTHENTICATED IT WILL REDIRECT TO '/' */}
-        <Route path="tenant" element={<RedirectRoute />}>
+        <Route path="/tenant" element={<RedirectRoute />}>
           <Route index element={<TenantLogin />} />{" "}
         </Route>
+
+        <Route path="/tenant/register" element={<RedirectRoute />}>
+          <Route index element={<TenantRegister />} />
+        </Route>
+        {/* END IF USER IS AUTHENTICATED IT WILL REDIRECT TO '/' */}
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>

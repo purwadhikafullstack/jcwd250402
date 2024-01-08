@@ -22,6 +22,8 @@ router.post(
   propertyController.createRoom
 );
 
+router.post("/view/:id", propertyController.incrementView);
+
 // PUT / PATCH
 router.patch(
   "/edit/:id",
@@ -61,7 +63,7 @@ router.get(
   propertyController.getAllRoomsAndProperties
 );
 
-router.get("rooms/:id", propertyController.getRoomById);
+router.get("/room/:id", propertyController.getRoomById);
 router.get("/:id", propertyController.getPropertyById);
 
 module.exports = router;

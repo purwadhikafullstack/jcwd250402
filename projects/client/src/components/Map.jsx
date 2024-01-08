@@ -16,7 +16,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const Map = ({ center }) => {
   return (
     <MapContainer
-      center={center || [-5, 120]}
+      center={center || [0, 0]}
       zoom={center ? 4 : 2}
       scrollWheelZoom={false}
       className="h-[35vh] rounded-lg"

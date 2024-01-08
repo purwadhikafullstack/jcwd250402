@@ -8,13 +8,22 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      SpecialDate.belongsTo(models.Property, {
+        foreignKey: "propertyId",
+        as: "specialDates",
+      });
+      SpecialDate.belongsTo(models.Rooms, {
+        foreignKey: "roomId",
+        as: "room",
+      });
     }
   }
   SpecialDate.init(
     {
-      date: DataTypes.DATE,
-      isBooked: DataTypes.BOOLEAN,
+      startDate: DataTypes.DATE,
+      endDate: DataTypes.DATE,
+      propertyId: DataTypes.INTEGER,
+      roomId: DataTypes.INTEGER,
       price: DataTypes.INTEGER,
     },
     {

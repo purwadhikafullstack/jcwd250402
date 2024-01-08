@@ -8,6 +8,7 @@ import {
 import { LuUtensils, LuWaves } from "react-icons/lu";
 import { BiSolidDryer } from "react-icons/bi";
 import { IoWaterOutline, IoWifiOutline } from "react-icons/io5";
+import { MdPets } from "react-icons/md";
 
 const amenities = [
   {
@@ -24,6 +25,11 @@ const amenities = [
     icon: <PiBroom size={25} />,
     label: "Cleaning Products",
     value: "cleaning",
+  },
+  {
+    icon: <MdPets size={25} />,
+    label: "Pet Friendly",
+    value: "petAllowed",
   },
   {
     icon: <PiCookingPot size={25} />,

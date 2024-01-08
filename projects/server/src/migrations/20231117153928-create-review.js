@@ -9,18 +9,28 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      propertyId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Properties",
-          key: "id",
-        },
-      },
       comment: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       rating: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      bookingId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      propertyId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      renterId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      tenantId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

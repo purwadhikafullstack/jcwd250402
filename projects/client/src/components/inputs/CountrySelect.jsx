@@ -7,7 +7,7 @@ const CountrySelect = ({ value, onChange, disabled }) => {
   const allCountries = useMemo(() => getAll(), [getAll]);
 
   return (
-    <div>
+    <div className="z-100">
       <Select
         required
         isDisabled={disabled}

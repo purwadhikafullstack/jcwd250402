@@ -78,7 +78,7 @@ const Modal = ({
                 "
               >
                 <button
-                  className="absolute p-1 transition border-0 hover:opacity-70 left-9"
+                  className="absolute p-2 transition border-0 hover:opacity-70 left-9"
                   onClick={handleClose}
                 >
                   <IoMdClose size={18} />

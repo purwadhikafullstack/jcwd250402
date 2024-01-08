@@ -11,6 +11,10 @@ import BookingsPage from "./BookingsPage";
 import ReservationsPage from "./ReservationsPage";
 import CreateRoom from "./CreateRoom";
 import FavoritePage from "./FavoritePage";
+import ListingPage from "../components/propertyListings/ListingPage";
+import VerifyUserPage from "./VerifyUserPage";
+import TenantRegister from "./TenantRegister";
+import EditProfile from "./EditProfile";
 
 export {
   ResetPassword,
@@ -26,4 +30,8 @@ export {
   CreateProperty,
   EditProperty,
   FavoritePage,
+  ListingPage,
+  VerifyUserPage,
+  TenantRegister,
+  EditProfile,
 };

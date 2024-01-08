@@ -9,6 +9,7 @@ import {
 import { LuUtensils, LuWaves } from "react-icons/lu";
 import { BiSolidDryer } from "react-icons/bi";
 import { IoWaterOutline, IoWifiOutline } from "react-icons/io5";
+import { MdPets } from "react-icons/md";
 
 const CreatePropertyAmenities = ({
   count,
@@ -100,6 +101,11 @@ const CreatePropertyAmenities = ({
               value: "dryer",
             },
             {
+              icon: <MdPets size={25} />,
+              label: "Pet Friendly",
+              value: "petAllowed",
+            },
+            {
               icon: <LuWaves size={25} />,
               label: "Hairdryer",
               value: "hairdryer",
@@ -138,7 +144,7 @@ const CreatePropertyAmenities = ({
               }`}
             >
               {amenity.icon}
-              <span>{amenity.label}</span>
+              <span className="mt-2">{amenity.label}</span>
             </div>
           ))}
         </div>

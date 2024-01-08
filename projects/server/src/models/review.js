@@ -11,12 +11,24 @@ module.exports = (sequelize, DataTypes) => {
       Review.belongsTo(models.Property, {
         foreignKey: "propertyId",
       });
+      Review.belongsTo(models.User, {
+        foreignKey: "renterId",
+        as: "renter",
+      });
+      Review.belongsTo(models.User, {
+        foreignKey: "tenantId",
+        as: "tenant",
+      });
     }
   }
   Review.init(
     {
-      comment: DataTypes.STRING,
-      rating: DataTypes.INTEGER,
+      comment: DataTypes.TEXT,
+      rating: { type: DataTypes.INTEGER, allowNull: false },
+      propertyId: { type: DataTypes.INTEGER, allowNull: false },
+      renterId: { type: DataTypes.INTEGER, allowNull: false },
+      tenantId: { type: DataTypes.INTEGER, allowNull: false },
+      bookingId: { type: DataTypes.INTEGER, allowNull: false },
     },
     {
       sequelize,

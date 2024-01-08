@@ -22,9 +22,6 @@ module.exports = {
       description: {
         type: Sequelize.TEXT,
       },
-      roomCount: {
-        type: Sequelize.INTEGER,
-      },
       bedCount: {
         type: Sequelize.INTEGER,
       },
@@ -37,20 +34,17 @@ module.exports = {
       bathroomCount: {
         type: Sequelize.INTEGER,
       },
-      price: {
+      viewCount: {
         type: Sequelize.INTEGER,
       },
-      address: {
-        type: Sequelize.STRING,
+      price: {
+        type: Sequelize.INTEGER,
       },
       rating: {
         type: Sequelize.INTEGER,
       },
       coverImage: {
         type: Sequelize.STRING,
-      },
-      isActive: {
-        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,

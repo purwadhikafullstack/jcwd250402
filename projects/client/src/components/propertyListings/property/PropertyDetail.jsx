@@ -5,6 +5,7 @@ import propertyTypes from "../../../constants/propertyTypes";
 import Map from "../../Map";
 import { HoverCard, Text, Group, Button } from "@mantine/core";
 import { MdVerified } from "react-icons/md";
+import { ReviewCard } from "../../";
 
 const PropertyDetail = ({
   tenantName,
@@ -20,6 +21,7 @@ const PropertyDetail = ({
   bedCount,
   tenantVerified,
   tenantMemberSince,
+  propertyId,
 }) => {
   const locationValue = [latitude, longitude];
   const [selectedIcon, setSelectedIcon] = useState(null);
@@ -140,7 +142,12 @@ const PropertyDetail = ({
           </div>
         ))}
       </div>
-      <Map center={locationValue} />
+      <div>
+        <Map center={locationValue} />
+      </div>
+      <div>
+        <ReviewCard propertyId={propertyId} />
+      </div>
     </div>
   );
 };
