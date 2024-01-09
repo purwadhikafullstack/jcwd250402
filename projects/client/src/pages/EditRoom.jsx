@@ -3,7 +3,7 @@ import api from "../api";
 import { toast } from "sonner";
 import { Formik, Form, useFormik } from "formik";
 import Input from "../components/inputs/Input";
-import { ImageUploader } from "../components/CreateProperty";
+import { UploadPhoto } from "../components";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,9 +12,47 @@ import { Loader } from "@mantine/core";
 const CreateRoom = () => {
   document.title = "Create New Property";
   const navigate = useNavigate();
-  const [images] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { propertyId } = useParams();
+  const { id } = useParams();
+  const [roomData, setRoomData] = useState([]);
+
+  const fetchRoomData = async () => {
+    setIsSubmitting(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.get(`property/room/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        setIsSubmitting(false);
+        const data = await response.data;
+        setRoomData(data.room);
+      }
+    } catch (error) {
+      setIsSubmitting(false);
+      toast.error("error fetching room data");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoomData();
+  }, []);
+
+  useEffect(() => {
+    formik.setValues({
+      roomName: roomData.roomName || "",
+      description: roomData.description || "",
+      price: roomData.price || 0,
+      bedCount: roomData.bedCount || 0,
+      maxGuestCount: roomData.maxGuestCount || 0,
+      bathroomCount: roomData.bathroomCount || 0,
+      image: roomData.roomImages || "",
+    });
+  }, [roomData]);
 
   const validationSchema = yup.object({
     roomName: yup.string().required("Property name is required"),
@@ -23,7 +61,6 @@ const CreateRoom = () => {
     bedCount: yup.number().required("Bed count is required"),
     maxGuestCount: yup.number().required("Max guest count is required"),
     bathroomCount: yup.number().required("Bathroom count is required"),
-    images: yup.array().required("Images are required"),
   });
 
   const formik = useFormik({
@@ -34,7 +71,7 @@ const CreateRoom = () => {
       bedCount: 0,
       maxGuestCount: 0,
       bathroomCount: 0,
-      images: [[]],
+      image: null,
     },
     validationSchema: validationSchema,
 
@@ -52,12 +89,10 @@ const CreateRoom = () => {
       formData.append("bedCount", formik.values.bedCount);
       formData.append("maxGuestCount", formik.values.maxGuestCount);
       formData.append("bathroomCount", formik.values.bathroomCount);
-      formik.values.images.forEach((image) => {
-        formData.append(`images`, image);
-      });
+      formData.append("image", formik.values.image);
       try {
-        const response = await api.post(
-          `/property/${propertyId}/room/create`,
+        const response = await api.patch(
+          `/property/edit/room/${id}`,
           formData,
           {
             headers: {
@@ -67,7 +102,7 @@ const CreateRoom = () => {
           }
         );
         setIsSubmitting(true);
-        if (response.status === 201) {
+        if (response.status === 200) {
           setIsSubmitting(false);
           toast.success("Rooms created successfully");
           navigate("/tenant/dashboard");
@@ -100,10 +135,6 @@ const CreateRoom = () => {
     }
   };
 
-  const handleImageUpdate = (updatedImages) => {
-    formik.setFieldValue("images", updatedImages);
-  };
-
   const handleIncrement = (property) => {
     formik.setFieldValue(property, formik.values[property] + 1);
   };
@@ -112,6 +143,7 @@ const CreateRoom = () => {
     formik.setFieldValue(property, Math.max(formik.values[property] - 1, 0));
   };
 
+  console.log(formik.values.image);
   return (
     <div className="px-2 py-6">
       <div className="flex flex-col bg-white">
@@ -142,15 +174,20 @@ const CreateRoom = () => {
               ) : null}
             </div>
             {/* PROPERTY IMAGES */}
-            <div className="p-9">
-              <ImageUploader
-                images={images}
-                disabled={isSubmitting}
-                onUpdateFormData={handleImageUpdate}
+            <div className="p-9 md:w-[25%] w-full">
+              <UploadPhoto
+                id="image"
+                name="image"
+                formik={formik}
+                field="image"
+                value={formik.values.image}
+                onChange={(value) => {
+                  formik.setFieldValue("image", value);
+                }}
               />
-              {formik.touched.images && formik.errors.images ? (
+              {formik.touched.image && formik.errors.image ? (
                 <div className="text-sm text-red-600">
-                  {formik.errors.images}
+                  {formik.errors.image}
                 </div>
               ) : null}
             </div>
@@ -251,6 +288,7 @@ const CreateRoom = () => {
                 name="price"
                 label="Price /night (IDR)"
                 type="number"
+                value={formik.values.price}
                 onChange={(value) => handleInputChange("price", value)}
               />
               {formik.touched.price && formik.errors.price ? (

@@ -1,5 +1,8 @@
+require("dotenv").config({
+  path: (__dirname, "../.env"),
+});
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const jwt = require("jsonwebtoken");
-const JWT_SECRET_KEY = "ini_JWT_loh";
 
 exports.validateToken = (req, res, next) => {
   let token = req.headers.authorization;

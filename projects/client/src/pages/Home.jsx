@@ -19,8 +19,19 @@ export default function Home() {
   const [transparentNavbar, setTransparentNavbar] = useState(true);
   const location = useLocation();
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortOption, setSortOption] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [limit, setLimit] = useState(18);
+  const [sort, setSort] = useState("");
+
+  useEffect(() => {
+    const handleResize = () => {
+      setLimit(window.innerWidth <= 1366 ? 12 : 18);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +45,6 @@ export default function Home() {
         const roomCount = params.get("roomCount");
         const bathroomCount = params.get("bathroomCount");
         const page = currentPage;
-        const sortParams = `sort=${sortOption}_${sortOrder}`;
 
         let listings;
         if (country) {
@@ -44,7 +54,7 @@ export default function Home() {
 
           listings = searchResults.data;
         } else {
-          listings = await getListings(page);
+          listings = await getListings(limit, page, sort);
         }
 
         setPropertyListings(listings.Properties);
@@ -59,7 +69,7 @@ export default function Home() {
     };
 
     fetchData();
-  }, [location, currentPage, sortOption, sortOrder]);
+  }, [location, currentPage, limit, sort]);
 
   const prevScrollY = useRef(0);
 
@@ -83,14 +93,6 @@ export default function Home() {
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-  };
-
-  const handleSortOptionChange = (option) => {
-    setSortOption(option);
-  };
-
-  const handleSortOrderChange = (order) => {
-    setSortOrder(order);
   };
 
   if (!propertyListings || propertyListings.length === 0) {
@@ -146,33 +148,20 @@ export default function Home() {
 
                       <Menu.Dropdown>
                         <Menu.Label>Sort By</Menu.Label>
-                        <Menu.Item
-                          onClick={() => handleSortOptionChange("price")}
-                        >
-                          Price
+                        <Menu.Item onClick={() => setSort("price_asc")}>
+                          Lowest Price
                         </Menu.Item>
-                        <Menu.Item
-                          onClick={() => handleSortOptionChange("rating")}
-                        >
-                          Rating
+                        <Menu.Item onClick={() => setSort("price_desc")}>
+                          Highest Price
                         </Menu.Item>
-                        <Menu.Item
-                          onClick={() => handleSortOptionChange("date_added")}
-                        >
-                          Date Added
+                        <Menu.Item onClick={() => setSort("date_created_desc")}>
+                          Newest
+                        </Menu.Item>
+                        <Menu.Item onClick={() => setSort("date_created_asc")}>
+                          Oldest
                         </Menu.Item>
                         <Menu.Divider />
-                        <Menu.Label>Order</Menu.Label>
-                        <Menu.Item onClick={() => handleSortOrderChange("asc")}>
-                          Ascending
-                        </Menu.Item>
-                        <Menu.Item
-                          onClick={() => handleSortOrderChange("desc")}
-                        >
-                          Descending
-                        </Menu.Item>
-                        <Menu.Divider />
-                        <Menu.Item>
+                        <Menu.Item onClick={() => setSort("")}>
                           <Text className="font-semibold text-md text-neutral-500">
                             Reset
                           </Text>

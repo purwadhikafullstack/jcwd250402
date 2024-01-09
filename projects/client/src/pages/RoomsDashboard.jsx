@@ -116,7 +116,10 @@ const PropertiesDashboard = () => {
                       </Menu.Target>
                       <Menu.Dropdown>
                         <Menu.Item>
-                          <Link to={`/edit-room/${room.id}`}>Edit Room</Link>
+                          <Link to={`/tenant/dashboard/edit-room/${room.id}`}>
+                            {" "}
+                            Edit Room
+                          </Link>
                         </Menu.Item>
                         <Menu.Item
                           color="red"
