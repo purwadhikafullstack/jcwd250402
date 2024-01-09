@@ -51,6 +51,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<Home />} />
+        <Route path="/sort" element={<Home />} />
         <Route path="/property/:id" element={<ListingPage />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 

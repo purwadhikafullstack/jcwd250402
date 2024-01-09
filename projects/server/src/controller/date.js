@@ -152,7 +152,7 @@ exports.setDateUnavailable = async (req, res) => {
   const tenantId = req.user.id;
   const propertyId = req.params.propertyId;
   const roomId = req.params.roomId;
-  const { startDate, endDate, price } = req.body;
+  const { startDate, endDate } = req.body;
 
   try {
     const property = await Property.findOne({

@@ -6,7 +6,7 @@ const {
   Payment,
   Rooms,
   SpecialDate,
-
+  DisabledDates,
   PropertyRules,
 } = require("../models");
 const hbs = require("handlebars");
@@ -106,6 +106,31 @@ exports.createBooking = async (req, res) => {
       endDate,
       roomId
     );
+
+    const checkDisabledDates = await DisabledDates.findAll({
+      where: {
+        propertyId,
+      },
+      attributes: ["startDate", "endDate"],
+    });
+
+    if (checkDisabledDates.length > 0) {
+      const disabledDates = checkDisabledDates.map((disabledDate) => {
+        return {
+          startDate: disabledDate.startDate,
+          endDate: disabledDate.endDate,
+        };
+      });
+
+      if (
+        disabledDates.startDate >= startDate &&
+        disabledDates.endDate <= endDate
+      ) {
+        return res.status(400).json({
+          message: "Property is not available for the selected dates",
+        });
+      }
+    }
 
     if (!isAvailable) {
       return res
@@ -330,9 +355,7 @@ exports.acceptBooking = async (req, res) => {
     }
 
     if (booking.status !== "pending confirmation") {
-      return res
-        .status(400)
-        .json({ message: "Booking is not in pending confirmation status" });
+      return res.status(400).json({ message: "Booking is not yet paid" });
     }
 
     const template = fs.readFileSync(
@@ -341,10 +364,13 @@ exports.acceptBooking = async (req, res) => {
     );
 
     const compiledTemplate = hbs.compile(template);
-    const propertyRules = rules.map((rule) => rule.rule);
+    const propertyRules = rules
+      .map((rule) => `<li>${rule.rule}</li>`)
+      .join(" ");
+
     const emailHtml = compiledTemplate({
       fullname: renter.fullname,
-      propertyRules: propertyRules,
+      propertyRules: rules.map((rule) => rule.rule),
     });
 
     await mailer({

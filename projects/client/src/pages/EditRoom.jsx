@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../api";
 import { toast } from "sonner";
 import { Formik, Form, useFormik } from "formik";
@@ -6,7 +6,7 @@ import Input from "../components/inputs/Input";
 import { ImageUploader } from "../components/CreateProperty";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "@mantine/core";
 
 const CreateRoom = () => {
@@ -14,47 +14,26 @@ const CreateRoom = () => {
   const navigate = useNavigate();
   const [images] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { propertyId } = useParams();
 
   const validationSchema = yup.object({
-    // propertyName: yup.string().required("Property name is required"),
-    // description: yup.string().required("Description is required"),
-    // price: yup.number().required("Price is required"),
-    // bedCount: yup.number().required("Bed count is required"),
-    // bedroomCount: yup.number().required("Bedroom count is required"),
-    // maxGuestCount: yup.number().required("Max guest count is required"),
-    // bathroomCount: yup.number().required("Bathroom count is required"),
-    // propertyType: yup.string().required("Property type is required"),
-    // district: yup.string().required("District is required"),
-    // city: yup.object().required("City is required"),
-    // province: yup.object().required("Province is required"),
-    // country: yup.object().required("Country is required"),
-    // streetAddress: yup.string().required("Street address is required"),
-    // postalCode: yup.number().required("Postal code is required"),
-    // propertyAmenities: yup.array().required("Property amenities is required"),
-    // propertyRules: yup.array().required("Property rules is required"),
-    // images: yup.array().required("Images are required"),
+    roomName: yup.string().required("Property name is required"),
+    description: yup.string().required("Description is required"),
+    price: yup.number().required("Price is required"),
+    bedCount: yup.number().required("Bed count is required"),
+    maxGuestCount: yup.number().required("Max guest count is required"),
+    bathroomCount: yup.number().required("Bathroom count is required"),
+    images: yup.array().required("Images are required"),
   });
 
   const formik = useFormik({
     initialValues: {
-      propertyName: "",
+      roomName: "",
       description: "",
       price: 0,
       bedCount: 0,
-      bedroomCount: 0,
       maxGuestCount: 0,
       bathroomCount: 0,
-      propertyType: "",
-      district: "",
-      city: "",
-      province: "",
-      country: "",
-      streetAddress: "",
-      latitude: 0,
-      longitude: 0,
-      postalCode: 0,
-      propertyAmenities: [],
-      propertyRules: [],
       images: [[]],
     },
     validationSchema: validationSchema,
@@ -67,7 +46,7 @@ const CreateRoom = () => {
         return;
       }
       const formData = new FormData();
-      formData.append("propertyName", formik.values.propertyName);
+      formData.append("roomName", formik.values.roomName);
       formData.append("description", formik.values.description);
       formData.append("price", formik.values.price);
       formData.append("bedCount", formik.values.bedCount);
@@ -77,27 +56,25 @@ const CreateRoom = () => {
         formData.append(`images`, image);
       });
       try {
-        const response = await api.post("/property/create", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await api.post(
+          `/property/${propertyId}/room/create`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setIsSubmitting(true);
         if (response.status === 201) {
           setIsSubmitting(false);
-          toast.success("Property created successfully");
-          setIsSubmitting(false);
+          toast.success("Rooms created successfully");
           navigate("/tenant/dashboard");
         }
       } catch (error) {
         setIsSubmitting(false);
         toast.error(error.response.data.message);
-        if (error.status === 400) {
-          toast.error(error.message);
-        } else {
-          toast.error(error.message);
-        }
       } finally {
         setIsSubmitting(false);
       }
@@ -123,10 +100,6 @@ const CreateRoom = () => {
     }
   };
 
-  const handleAmenitiesChange = (updatedAmenities) => {
-    formik.setFieldValue("propertyAmenities", updatedAmenities);
-  };
-
   const handleImageUpdate = (updatedImages) => {
     formik.setFieldValue("images", updatedImages);
   };
@@ -150,21 +123,21 @@ const CreateRoom = () => {
             {/* PROPERTY NAME */}
             <div className="flex flex-col border-b-2 p-9 gap-y-3">
               <label htmlFor="property_name" className="text-xl font-medium">
-                What's your property name?
+                What's the name of the room?
               </label>
               <input
-                name="propertyName"
+                name="roomName"
                 type="text"
-                placeholder="eg. Hotel in Shinjuku near station"
+                placeholder="Room A, Room B, etc..."
                 className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
                 ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
-                value={formik.values.propertyName}
+                value={formik.values.roomName}
                 onChange={formik.handleChange}
                 disabled={isSubmitting}
               />
-              {formik.touched.propertyName && formik.errors.propertyName ? (
+              {formik.touched.roomName && formik.errors.roomName ? (
                 <div className="text-sm text-red-600">
-                  {formik.errors.propertyName}
+                  {formik.errors.roomName}
                 </div>
               ) : null}
             </div>
@@ -184,7 +157,7 @@ const CreateRoom = () => {
             {/* PROPERTY COUNT */}
             <div className="p-9">
               <h1 className="mb-2 text-lg font-medium">
-                How many guests can stay here?
+                How many guests can stay in the room?
               </h1>
               <div className="flex flex-col gap-5 md:flex-row">
                 <div className="flex flex-row justify-between w-full p-3 border-2 rounded-md">
@@ -251,7 +224,7 @@ const CreateRoom = () => {
             {/* PROPERTY DESCRIPTION */}
             <div className="flex flex-col border-b-2 p-9">
               <label htmlFor="DESCRIPTION" className="text-lg font-medium">
-                Tell us more about your property
+                Tell us more about the room
               </label>
               <textarea
                 name="description"

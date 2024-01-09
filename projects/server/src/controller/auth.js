@@ -19,8 +19,6 @@ exports.userRegister = async (req, res) => {
     phoneNumber,
     gender,
     dateofbirth,
-    profilePicture,
-    ktpImg,
   } = req.body;
 
   const existingUser = await User.findOne({
@@ -48,8 +46,6 @@ exports.userRegister = async (req, res) => {
       phoneNumber,
       gender,
       dateofbirth,
-      profilePicture: req.file.filename,
-      ktpImg,
       role: "user",
     });
 
@@ -108,9 +104,9 @@ exports.tenantRegister = async (req, res) => {
     gender,
     dateofbirth,
   } = req.body;
-  console.log(req.body);
 
-  const ktpImg = req.file;
+  const ktpImg = req.file.filename;
+  console.log(ktpImg);
 
   const existingUser = await User.findOne({
     where: {
@@ -312,9 +308,8 @@ exports.resendVerificationEmail = async (req, res) => {
 };
 
 exports.loginHandler = async (req, res) => {
-  const { user_identity, password } = req.body;
-
   try {
+    const { user_identity, password } = req.body;
     const user = await User.findOne({
       where: {
         [Op.or]: [{ email: user_identity }, { username: user_identity }],

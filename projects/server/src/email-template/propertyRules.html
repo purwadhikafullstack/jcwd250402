@@ -531,7 +531,9 @@
                                 <tr>
                                   <td align="center">
                                     <ul>
-                                      <li>{{propertyRules}}</li>
+                                      {{#each propertyRules}}
+                                      <li>{{this}}</li>
+                                      {{/each}}
                                       <li>
                                         Any damage to the property will be the
                                         responsible of the renter

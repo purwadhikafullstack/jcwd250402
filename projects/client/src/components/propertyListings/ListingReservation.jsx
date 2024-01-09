@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Button from "../Button";
 import Calendar from "../inputs/Calendar";
 import { differenceInCalendarDays } from "date-fns";
+import { useEffect } from "react";
+import api from "../../api";
 
 const ListingReservation = ({
   price,
@@ -21,12 +23,42 @@ const ListingReservation = ({
   onSelectRoom,
   propertyId,
 }) => {
+  const [specialPriceDate, setSpecialPriceDate] = useState([]);
+  const [unavailableDate, setUnavailableDate] = useState({});
   const priceFormatter = new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+
+  useEffect(() => {
+    const getSpecialPriceDate = async () => {
+      try {
+        const response = await api.get(`/date/special/${propertyId}`);
+        if (response.status === 200) {
+          setSpecialPriceDate(response.data.specialDates);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getSpecialPriceDate();
+  }, [propertyId]);
+
+  useEffect(() => {
+    const getDisabledDate = async () => {
+      try {
+        const response = await api.get(`/date/disabled/${propertyId}`);
+        if (response.status === 200) {
+          setUnavailableDate(response.data.disabledDates);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getDisabledDate();
+  }, [propertyId]);
 
   price = priceFormatter.format(price);
   totalPrice = priceFormatter.format(totalPrice);
@@ -51,6 +83,27 @@ const ListingReservation = ({
     roomPricePerNight = priceFormatter.format(roomPricePerNight);
     roomPriceTotal = priceFormatter.format(roomPriceTotal);
   }
+
+  const combinedDisabledDates = [
+    ...disabledDates,
+    ...(unavailableDate
+      ? Object.values(unavailableDate).flatMap((dateRange) => {
+          const startDate = new Date(dateRange.startDate);
+          const endDate = new Date(dateRange.endDate);
+          const datesInRange = [];
+
+          for (
+            let current = startDate;
+            current <= endDate;
+            current.setDate(current.getDate() + 1)
+          ) {
+            datesInRange.push(new Date(current));
+          }
+
+          return datesInRange;
+        })
+      : []),
+  ];
 
   return (
     <section className="my-4 md:my-0 ">
@@ -165,8 +218,9 @@ const ListingReservation = ({
         <hr />
         <Calendar
           value={dateRange}
-          disabledDates={disabledDates}
+          disabledDates={combinedDisabledDates}
           onChange={(value) => onChangeDate(value.selection)}
+          specialDates={specialPriceDate}
         />
         <hr />
         <div className="p-4">
