@@ -1,3 +1,7 @@
+require("dotenv").config({
+  path: (__dirname, "../.env"),
+});
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { User } = require("../models");
@@ -7,7 +11,6 @@ const fs = require("fs");
 const mailer = require("../lib/nodemailer");
 const crypto = require("crypto");
 const { addHours } = require("date-fns");
-const JWT_SECRET_KEY = "ini_JWT_loh";
 
 //* Speccifically for registering as a user role
 exports.userRegister = async (req, res) => {
