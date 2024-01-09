@@ -126,8 +126,6 @@ export default function UpdateProfile() {
     fetchUserProfile();
   }, [userId, formik.setValues, token]);
 
-  console.log(formik.values.gender);
-
   return (
     <section className="flex flex-col items-center justify-center w-[70%] min-h-screen bg-white rounded-md">
       <div className="w-full p-8 bg-white rounded-md shadow-lg">

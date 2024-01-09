@@ -69,9 +69,7 @@ const ReviewModal = () => {
         if (response.status === 200) {
           setProfile(response.data.userInfo);
         }
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     };
     getProfile();
   }, [token]);
