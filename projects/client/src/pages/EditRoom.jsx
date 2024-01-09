@@ -143,7 +143,6 @@ const CreateRoom = () => {
     formik.setFieldValue(property, Math.max(formik.values[property] - 1, 0));
   };
 
-  console.log(formik.values.image);
   return (
     <div className="px-2 py-6">
       <div className="flex flex-col bg-white">

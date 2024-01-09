@@ -6,7 +6,7 @@ const Hero = () => {
   return (
     <div
       id="hero_section"
-      className="relative flex flex-col items-center justify-center w-full bg-center h-[50vh] md:justify-center md:flex md:flex-col md:h-[50vh] md:bg-cover md:bg-center md:bg-no-repeat"
+      className="relative flex flex-col items-center justify-center w-full bg-center bg-cover h-[50vh] md:justify-center md:flex md:flex-col md:h-[50vh] md:bg-cover md:bg-center md:bg-no-repeat"
       style={{ backgroundImage: `url(${bg})` }}
     >
       <div className="z-10 flex flex-col mx-8 text-center text-white md:text-left md:mx-0 md:w-1/2 md:pl-8">
