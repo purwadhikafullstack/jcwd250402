@@ -128,7 +128,7 @@ export default function Analytics() {
   };
 
   const data = {
-    labels,
+    // labels,
     datasets: [
       {
         label: `Total Earnings of ${selectedPropertyName} (IDR)`,

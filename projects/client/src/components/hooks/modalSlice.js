@@ -133,6 +133,26 @@ const propertyDeleteSlice = createSlice({
   },
 });
 
+const resetCalendarSlice = createSlice({
+  name: "resetCalendar",
+  initialState: {
+    isOpen: false,
+    propertyId: null,
+  },
+  reducers: {
+    openResetCalendar(state) {
+      state.isOpen = true;
+    },
+    closeResetCalendar(state) {
+      state.isOpen = false;
+      state.propertyId = null;
+    },
+    setPropertyId(state, action) {
+      state.propertyId = action.payload;
+    },
+  },
+});
+
 const roomDeleteSlice = createSlice({
   name: "roomDelete",
   initialState: {
@@ -168,4 +188,5 @@ export {
   verifyRegisterUserSlice,
   searchModalSlice,
   reviewModalSlice,
+  resetCalendarSlice,
 };

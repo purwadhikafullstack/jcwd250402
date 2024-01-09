@@ -11,9 +11,6 @@ exports.updateProfile = async (req, res) => {
   const userId = req.user.id;
   const { fullname, gender, dateofbirth, email, username } = req.body;
 
-  console.log(req.user.id);
-  console.log(req.body);
-
   try {
     if (!userId) {
       return res.status(400).json({

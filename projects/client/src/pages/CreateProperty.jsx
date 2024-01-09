@@ -26,23 +26,32 @@ const CreateProperty = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validationSchema = yup.object({
-    // propertyName: yup.string().required("Property name is required"),
-    // description: yup.string().required("Description is required"),
-    // price: yup.number().required("Price is required"),
-    // bedCount: yup.number().required("Bed count is required"),
-    // bedroomCount: yup.number().required("Bedroom count is required"),
-    // maxGuestCount: yup.number().required("Max guest count is required"),
-    // bathroomCount: yup.number().required("Bathroom count is required"),
-    // propertyType: yup.string().required("Property type is required"),
-    // district: yup.string().required("District is required"),
-    // city: yup.object().required("City is required"),
-    // province: yup.object().required("Province is required"),
-    // country: yup.object().required("Country is required"),
-    // streetAddress: yup.string().required("Street address is required"),
-    // postalCode: yup.number().required("Postal code is required"),
-    // propertyAmenities: yup.array().required("Property amenities is required"),
-    // propertyRules: yup.array().required("Property rules is required"),
-    // images: yup.array().required("Images are required"),
+    propertyName: yup.string().required("Property name is required"),
+    description: yup.string().required("Description is required"),
+    price: yup.number().required("Price is required"),
+    bedCount: yup.number().required("Bed count is required"),
+    bedroomCount: yup.number().required("Bedroom count is required"),
+    maxGuestCount: yup.number().required("Max guest count is required"),
+    bathroomCount: yup.number().required("Bathroom count is required"),
+    propertyType: yup.string().required("Property type is required"),
+    city: yup.object().required("City is required"),
+    province: yup.object().required("Province is required"),
+    country: yup.object().required("Country is required"),
+    streetAddress: yup.string().required("Street address is required"),
+    postalCode: yup.number().required("Postal code is required"),
+    images: yup.mixed().required("Image for property is required"),
+    // .test("fileSize", "File is too large", (value) => {
+    //   return !value || (value && value.size >= 1024 * 1024);
+    // })
+    // .test("fileType", "Invalid file type", (value) => {
+    //   return (
+    //     !value ||
+    //     (value &&
+    //       ["image/gif", "image/png", "image/jpg", "image/jpeg"].includes(
+    //         value.type
+    //       ))
+    //   );
+    // }),
   });
 
   const formik = useFormik({

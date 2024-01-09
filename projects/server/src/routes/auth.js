@@ -18,8 +18,6 @@ router.post(
 
 router.post(
   "/tenant-register",
-  // authValidator.tenantRegisterRules,
-  // authValidator.applyRegisterValidation,
   multerUpload.single("ktpImg"),
   authController.tenantRegister
 );
