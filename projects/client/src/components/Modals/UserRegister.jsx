@@ -10,7 +10,8 @@ import Heading from "../Heading";
 import Input from "../inputs/Input";
 import Modal from "./Modal";
 import api from "../../api";
-import LoginModal from "./LoginModal"; // Login Component
+import DatePicker from "react-datepicker";
+import { Select, LoadingOverlay, Box } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 yupPassword(Yup);
 
@@ -20,44 +21,16 @@ const UseRegisterModal = () => {
   const UseLoginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(true);
-  const [formData, setFormData] = useState({
-    fullname: "",
-    email: "",
-    password: "",
-    phoneNumber: "",
-    role: "user",
-  });
 
   const registerSchema = Yup.object({
     fullname: Yup.string().required("Fullname is required"),
     email: Yup.string().required("Email is required"),
     password: Yup.string().required("Password is required"),
     phoneNumber: Yup.string().required("phoneNumber is required"),
+    dateofbirth: Yup.date().required("Date of Birth is required"),
+    gender: Yup.string().required("Gender is required"),
   });
 
-  const registerUser = async (fullname, email, password, phoneNumber, role) => {
-    setIsLoading(true);
-    try {
-      const response = await api.post("/auth/register", {
-        fullname,
-        email,
-        password,
-        phoneNumber,
-        role: "user",
-      });
-
-      if (response.status === 200) {
-        setIsLoading(false);
-        toast.success("You're Registered Successfully as a User");
-        UseRegisterModal.onClose();
-        navigate("/");
-      }
-    } catch (err) {
-      setIsLoading(false);
-      toast.error("Register failed. Please check your credentials.");
-      console.error("Error:", err);
-    }
-  };
   const formik = useFormik({
     initialValues: {
       fullname: "",
@@ -65,36 +38,38 @@ const UseRegisterModal = () => {
       password: "",
       phoneNumber: "",
       role: "user",
+      gender: "",
+      dateofbirth: "",
     },
     validationSchema: registerSchema,
-    onSubmit: (values) => {
-      const { fullname, email, password, phoneNumber, role } = values;
-      registerUser(fullname, email, password, phoneNumber, role);
+    onSubmit: async () => {
+      setIsLoading(true);
+      try {
+        const response = await api.post("auth/register", formik.values, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.status === 200) {
+          toast.success(
+            "Registration successful. Please check your email to verify your account"
+          );
+          setIsLoading(false);
+        }
+      } catch (error) {
+        toast.error(error.response.data.message);
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
-
-  const handleInputChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleRegister = () => {
-    registerUser(
-      formData.fullname,
-      formData.email,
-      formData.password,
-      formData.phoneNumber
-    );
-  };
 
   const loginButton = () => {
     setIsRegistering(false);
     UseRegisterModal.onClose();
     UseLoginModal.onOpen();
-  };
-
-  const submitAction = () => {
-    handleRegister();
-    navigate("/");
   };
 
   const bodyContent = (
@@ -115,7 +90,7 @@ const UseRegisterModal = () => {
                 type="text"
                 disabled={isLoading}
                 required
-                onChange={(value) => handleInputChange("fullname", value)}
+                onChange={(value) => formik.setFIeldValue("fullname", value)}
               />
               <Input
                 id="email"
@@ -124,7 +99,7 @@ const UseRegisterModal = () => {
                 type="email"
                 disabled={isLoading}
                 required
-                onChange={(value) => handleInputChange("email", value)}
+                onChange={(value) => formik.setFieldValue("email", value)}
               />
               <Input
                 id="password"
@@ -133,7 +108,7 @@ const UseRegisterModal = () => {
                 type="password"
                 disabled={isLoading}
                 required
-                onChange={(value) => handleInputChange("password", value)}
+                onChange={(value) => formik.setFieldValue("password", value)}
               />
               <Input
                 id="phoneNumber"
@@ -142,8 +117,26 @@ const UseRegisterModal = () => {
                 type="text"
                 disabled={isLoading}
                 required
-                onChange={(value) => handleInputChange("phoneNumber", value)}
+                onChange={(value) => formik.setFieldValue("phoneNumber", value)}
               />
+              <div className="flex flex-row ">
+                <DatePicker
+                  selected={formik.values.dateofbirth}
+                  onChange={(date) => formik.setFieldValue("dateofbirth", date)}
+                  disabled={isLoading}
+                  placeholderText="Date of Birth"
+                  className="w-full p-2 border-2 border-gray-400 rounded-md"
+                />
+                <Select
+                  value={formik.values.gender}
+                  onChange={(values) => formik.setFieldValue("gender", values)}
+                  disabled={isLoading}
+                  data={["Male", "Female", "Rather not say"]}
+                  className="w-full p-2 rounded-md"
+                  placeholder="Gender"
+                  style={{ padding: "0.5rem" }}
+                />
+              </div>
             </div>
           </Form>
         )}
@@ -168,9 +161,6 @@ const UseRegisterModal = () => {
       </div>
     </div>
   );
-  // const openLoginModal = UseLoginModal.onOpen();
-
-  // const modalBodyContent = isRegistering ? bodyContent ;
 
   return (
     <Modal
@@ -185,7 +175,7 @@ const UseRegisterModal = () => {
       }}
       title="User Registration"
       actionLabel={isRegistering ? "Sign Up" : "Sign In"}
-      onSubmit={submitAction}
+      onSubmit={formik.handleSubmit}
       body={bodyContent}
     />
   );

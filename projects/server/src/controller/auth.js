@@ -1,3 +1,7 @@
+require("dotenv").config({
+  path: (__dirname, "../.env"),
+});
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { User } = require("../models");
@@ -7,7 +11,6 @@ const fs = require("fs");
 const mailer = require("../lib/nodemailer");
 const crypto = require("crypto");
 const { addHours } = require("date-fns");
-const JWT_SECRET_KEY = "ini_JWT_loh";
 
 //* Speccifically for registering as a user role
 exports.userRegister = async (req, res) => {
@@ -19,8 +22,6 @@ exports.userRegister = async (req, res) => {
     phoneNumber,
     gender,
     dateofbirth,
-    profilePicture,
-    ktpImg,
   } = req.body;
 
   const existingUser = await User.findOne({
@@ -48,8 +49,6 @@ exports.userRegister = async (req, res) => {
       phoneNumber,
       gender,
       dateofbirth,
-      profilePicture: req.file.filename,
-      ktpImg,
       role: "user",
     });
 
@@ -108,9 +107,9 @@ exports.tenantRegister = async (req, res) => {
     gender,
     dateofbirth,
   } = req.body;
-  console.log(req.body);
 
-  const ktpImg = req.file;
+  const ktpImg = req.file.filename;
+  console.log(ktpImg);
 
   const existingUser = await User.findOne({
     where: {
@@ -312,9 +311,8 @@ exports.resendVerificationEmail = async (req, res) => {
 };
 
 exports.loginHandler = async (req, res) => {
-  const { user_identity, password } = req.body;
-
   try {
+    const { user_identity, password } = req.body;
     const user = await User.findOne({
       where: {
         [Op.or]: [{ email: user_identity }, { username: user_identity }],

@@ -158,7 +158,6 @@ const EditProperty = () => {
   };
 
   document.title = `Edit ${propertiesData.name}`;
-  console.log(formik.values.city.label);
   return (
     <div className="px-2 py-6">
       <div className="flex flex-col bg-white">
@@ -275,19 +274,6 @@ const EditProperty = () => {
             </label>
             <div className="flex flex-row items-center justify-center border-b-2">
               <div className="flex flex-row items-center justify-center overflow-y-scroll gap-x-2">
-                {propertiesData.propertyImages &&
-                  propertiesData.propertyImages.map((imageObj, index) => (
-                    <div
-                      key={index}
-                      className="col-span-5 row-span-1 overflow-y-scroll bg-gray-200 md:col-span-3 md:row-span-2 lg:col-span-3 lg:row-span-2 xl:col-span-3 xl:row-span-2 2xl:col-span-3 2xl:row-span-2 "
-                    >
-                      <img
-                        src={`http://localhost:8000/api/property-asset/${imageObj.image}`}
-                        alt={`Property ${index + 1}`}
-                        className="object-cover w-full h-full "
-                      />
-                    </div>
-                  ))}
                 <ImageUploader
                   images={images}
                   disabled={isSubmitting}

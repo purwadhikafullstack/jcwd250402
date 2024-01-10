@@ -128,7 +128,7 @@ const CreateRoom = () => {
               <input
                 name="roomName"
                 type="text"
-                placeholder="eg. Hotel in Shinjuku near station"
+                placeholder="Room A, Room B, etc..."
                 className={`w-full p-4 text-xl border border-gray-400 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary
                 ${isSubmitting ? "bg-gray-200" : "bg-white"}}`}
                 value={formik.values.roomName}

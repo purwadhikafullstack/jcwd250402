@@ -15,6 +15,7 @@ import ListingPage from "../components/propertyListings/ListingPage";
 import VerifyUserPage from "./VerifyUserPage";
 import TenantRegister from "./TenantRegister";
 import EditProfile from "./EditProfile";
+import EditRoom from "./EditRoom";
 
 export {
   ResetPassword,
@@ -34,4 +35,5 @@ export {
   VerifyUserPage,
   TenantRegister,
   EditProfile,
+  EditRoom,
 };

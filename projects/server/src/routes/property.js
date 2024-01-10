@@ -16,7 +16,7 @@ router.post(
 
 router.post(
   "/:propertyId/room/create",
-  multerUpload.array("images", 5),
+  multerUpload.single("image"),
   authMiddleware.validateToken,
   authMiddleware.checkTenant,
   propertyController.createRoom
@@ -31,6 +31,14 @@ router.patch(
   authMiddleware.validateToken,
   authMiddleware.checkTenant,
   propertyController.editProperty
+);
+
+router.patch(
+  "/edit/room/:roomId",
+  multerUpload.single("image"),
+  authMiddleware.validateToken,
+  authMiddleware.checkTenant,
+  propertyController.editRoom
 );
 
 // DELETE

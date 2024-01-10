@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useFormik, Formik, Form } from "formik";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
@@ -12,6 +13,7 @@ import { UploadPhoto, ChangePassword, Navbar } from "../components/";
 export default function EditProfile() {
   document.title = "Update Profile";
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address"),
@@ -70,7 +72,7 @@ export default function EditProfile() {
           onAutoClose: () => {
             resetForm();
             setIsLoading(false);
-            window.location.reload();
+            navigate("/");
           },
         });
       }

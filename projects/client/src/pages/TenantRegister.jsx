@@ -76,7 +76,7 @@ export default function TenantRegister() {
           formik.values,
           {
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "multipart/form-data",
             },
           }
         );
@@ -85,7 +85,7 @@ export default function TenantRegister() {
           setIsSubmitting(false);
           navigate("/");
           toast.success(
-            "Registration Successful. Please confirm your email address"
+            "Registration successful. Please check your email to verify your account"
           );
         }
       } catch (error) {
@@ -97,7 +97,6 @@ export default function TenantRegister() {
     },
   });
 
-  console.log(formik.values.dateOfBirth);
   return (
     <Box className="flex flex-col w-[100vw] h-screen ">
       <LoadingOverlay visible={isSubmitting} zIndex={1000} />

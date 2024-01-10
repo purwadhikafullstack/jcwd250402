@@ -11,6 +11,7 @@ const {
   User,
   Rooms,
   SpecialDate,
+  RoomImages,
 } = require("../models");
 
 const {
@@ -280,38 +281,25 @@ exports.editProperty = async (req, res) => {
       });
     }
 
-    await updateProperty.save();
-
     const images = req.files;
 
     if (images && images.length > 0) {
-      const newImageObjects = images.map((image) => ({
-        image: image.filename,
-        propertyId,
-      }));
-
-      for (const newImageObject of newImageObjects) {
-        const existingImage = await PropertyImage.findOne({
-          where: {
-            propertyId: newImageObject.propertyId,
-            image: newImageObject.image,
-          },
-        });
-
-        if (existingImage) {
-          await PropertyImage.destroy({
-            where: {
-              propertyId: newImageObject.propertyId,
-              image: newImageObject.image,
-            },
-          });
-        }
-      }
-
-      const newPropertyImages = await PropertyImage.bulkCreate(newImageObjects);
-      existingProperty.propertyImages =
-        existingProperty.propertyImages.concat(newPropertyImages);
+      await PropertyImage.destroy({
+        where: {
+          propertyId: existingProperty.id,
+        },
+      });
+      const imageObjects = images.map((image) => {
+        return {
+          propertyId: existingProperty.id,
+          image: image.filename,
+        };
+      });
+      const propertyImages = await PropertyImage.bulkCreate(imageObjects);
+      existingProperty.coverImage = propertyImages[0].image;
     }
+
+    await updateProperty.save();
 
     await PropertyRules.destroy({ where: { propertyId: propertyId } });
     if (propertyRules && propertyRules.length > 0) {
@@ -359,7 +347,7 @@ exports.editProperty = async (req, res) => {
 
 exports.getAllProperties = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 100;
+    const limit = parseInt(req.query.limit) || 18;
     const page = parseInt(req.query.page) || 1;
     const sort = req.query.sort;
     const country = req.query.country;
@@ -1147,14 +1135,15 @@ exports.editRoom = async (req, res) => {
     bathroomCount,
   } = req.body;
 
-  const images = req.files.filename;
+  const image = req.file;
+  console.log(image);
 
   try {
+    // Find the room
     const room = await Rooms.findOne({
       where: {
         id: roomId,
       },
-
       include: [
         {
           model: RoomImage,
@@ -1169,62 +1158,55 @@ exports.editRoom = async (req, res) => {
         "bedCount",
         "maxGuestCount",
         "bathroomCount",
+        "userId", // Include userId to compare with tenantId
       ],
     });
 
-    if (!room) {
-      return res.status(404).json({
+    // Check tenant authorization again after finding the room
+    if (tenantId != room.userId) {
+      return res.status(401).json({
         ok: false,
-        status: 404,
-        message: "Room not found",
+        status: 401,
+        message: "You are not authorized to access this property",
       });
     }
 
-    if (tenantId !== room.userId) {
-      res.status(403).json({
-        ok: false,
-        status: 403,
-        message: "You are not authorized to access this room",
-      });
-    }
-
+    // Update room properties
     if (roomName) {
       room.roomName = roomName;
     }
-
     if (description) {
       room.description = description;
     }
-
     if (price) {
       room.price = price;
     }
-
     if (bedCount) {
       room.bedCount = bedCount;
     }
-
     if (maxGuestCount) {
       room.maxGuestCount = maxGuestCount;
     }
-
     if (bathroomCount) {
       room.bathroomCount = bathroomCount;
     }
 
-    if (images) {
-      const imageObjects = images.map((image) => ({
-        image: image.filename,
-      }));
-
-      const roomImages = await RoomImage.bulkCreate(imageObjects);
-      await room.addRoomImages(roomImages);
-      await room.save();
+    if (image) {
+      const existingImage = await RoomImage.destroy({
+        where: {
+          roomId: room.id,
+        },
+      });
+      const updateImage = await RoomImage.create({
+        roomId,
+        image: req.file.filename,
+      });
     }
 
     await room.save();
 
-    req.status(200).json({
+    // Send the success response
+    res.status(200).json({
       ok: true,
       status: 200,
       message: "Room has been successfully updated",
@@ -1241,5 +1223,11 @@ exports.editRoom = async (req, res) => {
         roomImages: room.roomImages,
       },
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      ok: false,
+      message: "Internal server error",
+    });
+  }
 };

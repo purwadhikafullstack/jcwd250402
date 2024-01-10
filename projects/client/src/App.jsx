@@ -17,6 +17,7 @@ import {
   VerifyUserPage,
   ResetPassword,
   EditProfile,
+  EditRoom,
 } from "./pages";
 
 import {
@@ -51,6 +52,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<Home />} />
+        <Route path="/sort" element={<Home />} />
         <Route path="/property/:id" element={<ListingPage />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
@@ -80,6 +82,12 @@ function App() {
           element={<ProtectedTenantRoute />}
         >
           <Route index element={<EditProperty />} />
+        </Route>
+        <Route
+          path="/tenant/dashboard/edit-room/:id"
+          element={<ProtectedTenantRoute />}
+        >
+          <Route index element={<EditRoom />} />
         </Route>
 
         <Route
