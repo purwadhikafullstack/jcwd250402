@@ -9,7 +9,7 @@ const Navbar = ({ children, transparent, showType }) => {
   return (
     <div>
       <div
-        className={`fixed z-[999999999] w-full ${
+        className={`fixed z-[10] w-full ${
           transparent
             ? "bg-opacity-0 transition-opacity duration-300 shadow-none"
             : "bg-white transition-all duration-300 shadow-sm"

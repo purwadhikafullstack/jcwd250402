@@ -82,7 +82,7 @@ export default function Analytics() {
           setTotalBookings(response.data.totalBookings);
         }
       } catch (error) {
-        console.log(error.response.data.message);
+        console.error(error);
       } finally {
         setLoading(false);
       }

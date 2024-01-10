@@ -55,6 +55,7 @@ const CreateRoom = () => {
       formik.values.images.forEach((image) => {
         formData.append(`images`, image);
       });
+      console.log(formData.images);
       try {
         const response = await api.post(
           `/property/${propertyId}/room/create`,
