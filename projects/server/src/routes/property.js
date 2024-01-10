@@ -16,7 +16,7 @@ router.post(
 
 router.post(
   "/:propertyId/room/create",
-  multerUpload.single("image"),
+  multerUpload.array("images", 5),
   authMiddleware.validateToken,
   authMiddleware.checkTenant,
   propertyController.createRoom

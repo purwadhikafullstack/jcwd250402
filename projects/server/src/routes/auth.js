@@ -39,7 +39,14 @@ router.patch(
   authController.changePassword
 );
 
-router.post("/verify-account", authController.handleVerifyEmail);
+router.patch(
+  "/upgrade-account",
+  multerUpload.single("ktpImg"),
+  authMiddleware.validateToken,
+  authController.upgradeAccount
+);
+
+router.post("/verify-account/:token", authController.handleVerifyEmail);
 
 router.post("/resend-verify-account", authController.resendVerificationEmail);
 

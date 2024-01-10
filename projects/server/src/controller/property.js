@@ -844,7 +844,7 @@ exports.deletePropertyHandler = async (req, res) => {
   try {
     const property = await Property.findOne({
       where: { id: propertyId },
-      attributes: ["id"],
+      attributes: ["id", "userId"],
     });
 
     if (tenantId !== property.userId) {

@@ -109,7 +109,6 @@ exports.tenantRegister = async (req, res) => {
   } = req.body;
 
   const ktpImg = req.file.filename;
-  console.log(ktpImg);
 
   const existingUser = await User.findOne({
     where: {
@@ -186,12 +185,14 @@ exports.tenantRegister = async (req, res) => {
 };
 
 exports.handleVerifyEmail = async (req, res) => {
-  // bring token from exports.handleRegister
-  const { token } = req.body;
-  // const { token } = req.query;
-  console.log(token);
-  // const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const token = req.params.token;
   try {
+    if (!token) {
+      return res.status(400).json({
+        ok: false,
+        message: "Missing Token",
+      });
+    }
     const user = await User.findOne({
       where: {
         verifyToken: token,
@@ -201,7 +202,6 @@ exports.handleVerifyEmail = async (req, res) => {
         isVerified: null,
       },
     });
-    console.log(user);
     if (!user) {
       return res.status(400).json({
         ok: false,
@@ -358,10 +358,12 @@ exports.loginHandler = async (req, res) => {
 };
 
 exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  console.log(req.body);
   try {
     const user = await User.findOne({
       where: {
-        email: req.body.email,
+        email: email,
       },
     });
 
@@ -516,5 +518,43 @@ exports.changePassword = async (req, res) => {
       ok: false,
       message: "Internal Server Error",
     });
+  }
+};
+
+exports.upgradeAccount = async (req, res) => {
+  const userId = req.user.id;
+  const ktpImg = req.file.filename;
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(400).json({
+        ok: false,
+        message: "User not found",
+      });
+    }
+    if (user.role === "tenant") {
+      return res.status(400).json({
+        ok: false,
+        message: "User already a tenant",
+      });
+    }
+    if (!ktpImg) {
+      return res.status(400).json({
+        ok: false,
+        message: "Please provide your government-issued ID",
+      });
+    }
+    user.ktpImg = ktpImg;
+    user.role = "tenant";
+
+    await user.save();
+
+    res.status(200).json({
+      ok: true,
+      message: "Account upgraded successfully",
+    });
+  } catch (error) {
+    console.log(error);
   }
 };

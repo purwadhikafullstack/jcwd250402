@@ -5,6 +5,7 @@ const mailer = require("../lib/nodemailer");
 const hbs = require("handlebars");
 const fs = require("fs");
 const crypto = require("crypto");
+const { addHours } = require("date-fns");
 const { profile } = require("console");
 
 exports.updateProfile = async (req, res) => {
@@ -53,12 +54,12 @@ exports.updateProfile = async (req, res) => {
       const compiledTemplate = hbs.compile(template);
       const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
       const emailHtml = compiledTemplate({
-        fullname: result.fullname,
+        fullname: user.fullname,
         verifyLink,
       });
       await mailer({
         email: user.email,
-        subject: "Verify your Nginapp Email",
+        subject: "Verify your new Email",
         html: emailHtml,
       });
     }

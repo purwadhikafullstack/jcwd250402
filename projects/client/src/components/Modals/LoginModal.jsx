@@ -19,7 +19,6 @@ yupPassword(Yup);
 
 const LoginModal = () => {
   const dispatch = useDispatch();
-  const [visible, { toggle }] = useDisclosure(false);
   const navigate = useNavigate();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -47,13 +46,46 @@ const LoginModal = () => {
       .required("Username/Email can't be empty")
       .min(6, "Minimum characters is 6"),
     password: Yup.string().required("Password can't be empty"),
-    email: Yup.string().email("Please enter a valid email address"),
   });
 
   const formik = useFormik({
-    onSubmit: (values) => {
-      const { user_identity, password } = values;
-      loginUser(user_identity, password);
+    initialValues: {
+      user_identity: "",
+      password: "",
+    },
+    validationSchema: loginSchema,
+    onSubmit: async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.post("/auth/login", formik.values, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.status === 200) {
+          toast.info("Welcome back! Successfully logged in!");
+          const userData = response.data;
+          const token = userData.token;
+          const role = userData.role;
+
+          if (role === "tenant") {
+            dispatch(tenantLogin({ token: token, id: userData.id }));
+            window.location.reload();
+            loginModal.onClose();
+          }
+          if (role === "user") {
+            dispatch(login({ token: token, id: userData.id }));
+            window.location.reload();
+            loginModal.onClose();
+          }
+        }
+      } catch (error) {
+        toast.error(error.response.data.message);
+        console.error("Error:", error);
+      } finally {
+        setIsLoading(false);
+        loginModal.onClose();
+      }
     },
   });
 
@@ -61,71 +93,38 @@ const LoginModal = () => {
     initialValues: {
       email: "",
     },
-    validationSchema: loginSchema,
-    onSubmit: (values) => {
-      const { email } = values;
-      loginUser(email);
+    validationSchema: Yup.object({
+      email: Yup.string().email("Invalid email").required("Email is required"),
+    }),
+    onSubmit: async () => {
+      setIsLoading(true);
+      try {
+        const response = await api.post(
+          "/auth/forgot-password",
+          formikReset.values,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.status === 200) {
+          toast.success("Reset password link has been sent to your email.");
+          setIsForgotPassword(false);
+        }
+      } catch (error) {
+        toast.error("Failed to send reset password link.");
+        console.error("Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
-
-  const loginUser = async (user_identity, password) => {
-    try {
-      setIsLoading(true);
-      const response = await api.post("/auth/login", {
-        user_identity,
-        password,
-      });
-      if (response.status === 200) {
-        toast.info("Welcome back! Successfully logged in!");
-        setIsLoading(false);
-        const userData = response.data;
-        const token = userData.token;
-        const role = userData.role;
-
-        if (role === "tenant") {
-          dispatch(tenantLogin({ token: token, id: userData.id }));
-          window.location.reload();
-          loginModal.onClose();
-        }
-        if (role === "user") {
-          dispatch(login({ token: token, id: userData.id }));
-          window.location.reload();
-          loginModal.onClose();
-        }
-      }
-    } catch (error) {
-      toast.error(error.response.data.message);
-      console.error("Error:", error);
-    } finally {
-      setIsLoading(false);
-      navigate("/");
-    }
-  };
-
-  const handleForgotPassword = async (email) => {
-    setIsLoading(true);
-    try {
-      const response = await api.post("/auth/forgot-password", {
-        email,
-      });
-      if (response.status === 200) {
-        toast.success("Reset password link has been sent to your email.");
-        setIsLoading(false);
-        setIsForgotPassword(false);
-      }
-    } catch (error) {
-      setIsLoading(false);
-      toast.error("Failed to send reset password link.");
-      console.error("Error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const bodyContent = (
     <Box pos={"relative"}>
       <LoadingOverlay
-        visible={visible}
+        visible={isLoading}
         zIndex={1000}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
@@ -139,28 +138,38 @@ const LoginModal = () => {
           validationSchema={loginSchema}
           onSubmit={formik.handleSubmit}
         >
-          {({ errors, touched }) => (
-            <Form className="space-y-4 md:space-y-2">
-              <Input
-                id="user_identity"
-                name="user_identity"
-                label="Username or Email"
-                type="text"
-                disabled={isLoading}
-                required={true}
-                onChange={(value) => handleInputChange("user_identity", value)}
-              />
-              <Input
-                id="password"
-                name="password"
-                label="Password"
-                type="password"
-                disabled={isLoading}
-                required={true}
-                onChange={(value) => handleInputChange("password", value)}
-              />
-            </Form>
-          )}
+          <Form className="space-y-4 md:space-y-2">
+            <Input
+              id="user_identity"
+              name="user_identity"
+              label="Username or Email"
+              type="text"
+              disabled={isLoading}
+              required={true}
+              value={formik.values.user_identity}
+              onChange={(value) => formik.setFieldValue("user_identity", value)}
+            />
+            {formik.errors.user_identity && formik.touched.user_identity ? (
+              <div className="text-xs text-red-500">
+                {formik.errors.user_identity}
+              </div>
+            ) : null}
+            <Input
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              disabled={isLoading}
+              required={true}
+              value={formik.values.password}
+              onChange={(value) => formik.setFieldValue("password", value)}
+            />
+            {formik.errors.password && formik.touched.password ? (
+              <div className="text-xs text-red-500">
+                {formik.errors.password}
+              </div>
+            ) : null}
+          </Form>
         </Formik>
 
         <div>
@@ -178,7 +187,7 @@ const LoginModal = () => {
   const forgotPasswordBody = (
     <Box pos={"relative"}>
       <LoadingOverlay
-        visible={visible}
+        visible={isLoading}
         zIndex={1000}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
@@ -186,22 +195,24 @@ const LoginModal = () => {
         <Heading subtitle="Uh-oh it seems you have a problem signing-in" />
         <Formik
           initialValues={formikReset.initialValues}
-          validationSchema={loginSchema}
+          validationSchema={formikReset.validationSchema}
           onSubmit={formikReset.handleSubmit}
         >
-          {() => (
-            <Form>
-              <Input
-                id="email"
-                name="email"
-                label="Email"
-                type="email"
-                disabled={isLoading}
-                required
-                onChange={(value) => handleInputChange("email", value)}
-              />
-            </Form>
-          )}
+          <Form>
+            <Input
+              id="email"
+              name="email"
+              label="Email"
+              type="email"
+              disabled={isLoading}
+              required
+              value={formikReset.values.email}
+              onChange={(value) => formikReset.setFieldValue("email", value)}
+            />
+            {formikReset.touched.email && formikReset.errors.email ? (
+              <div className="text-red-500">{formikReset.errors.email}</div>
+            ) : null}
+          </Form>
         </Formik>
         <div>
           <button
@@ -216,10 +227,11 @@ const LoginModal = () => {
   );
 
   const modalBody = isForgotPassword ? forgotPasswordBody : bodyContent;
-  const submitAction = isForgotPassword
-    ? () => handleForgotPassword(formData.email)
-    : () => loginUser(formData.user_identity, formData.password);
+  // const submitAction = isForgotPassword
+  //   ? () => formikReset.handleSubmit
+  //   : () => formik.handleSubmit;
 
+  console.log(formikReset.values);
   return (
     <>
       <Modal
@@ -232,10 +244,9 @@ const LoginModal = () => {
         title={isForgotPassword ? "Forgot Password" : "Login"}
         actionLabel={isForgotPassword ? "Send Reset Password Link" : "Sign In"}
         body={modalBody}
-        onSubmit={() => {
-          submitAction();
-          toggle();
-        }}
+        onSubmit={
+          isForgotPassword ? formikReset.handleSubmit : formik.handleSubmit
+        }
       />
     </>
   );

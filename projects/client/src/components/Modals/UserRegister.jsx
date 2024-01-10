@@ -11,7 +11,8 @@ import Input from "../inputs/Input";
 import Modal from "./Modal";
 import api from "../../api";
 import DatePicker from "react-datepicker";
-import { Select, LoadingOverlay, Box } from "@mantine/core";
+import { Select } from "@mantine/core";
+// import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 yupPassword(Yup);
 
@@ -28,7 +29,6 @@ const UseRegisterModal = () => {
     password: Yup.string().required("Password is required"),
     phoneNumber: Yup.string().required("phoneNumber is required"),
     dateofbirth: Yup.date().required("Date of Birth is required"),
-    gender: Yup.string().required("Gender is required"),
   });
 
   const formik = useFormik({
@@ -38,7 +38,6 @@ const UseRegisterModal = () => {
       password: "",
       phoneNumber: "",
       role: "user",
-      gender: "",
       dateofbirth: "",
     },
     validationSchema: registerSchema,
@@ -62,6 +61,7 @@ const UseRegisterModal = () => {
         setIsLoading(false);
       } finally {
         setIsLoading(false);
+        UseRegisterModal.onClose();
       }
     },
   });
@@ -90,8 +90,11 @@ const UseRegisterModal = () => {
                 type="text"
                 disabled={isLoading}
                 required
-                onChange={(value) => formik.setFIeldValue("fullname", value)}
+                onChange={(value) => formik.setFieldValue("fullname", value)}
               />
+              {formik.touched.fullname && formik.errors.fullname ? (
+                <div className="text-red-500">{formik.errors.fullname}</div>
+              ) : null}
               <Input
                 id="email"
                 name="email"
@@ -101,6 +104,9 @@ const UseRegisterModal = () => {
                 required
                 onChange={(value) => formik.setFieldValue("email", value)}
               />
+              {formik.touched.email && formik.errors.email ? (
+                <div className="text-red-500">{formik.errors.email}</div>
+              ) : null}
               <Input
                 id="password"
                 name="password"
@@ -110,6 +116,9 @@ const UseRegisterModal = () => {
                 required
                 onChange={(value) => formik.setFieldValue("password", value)}
               />
+              {formik.touched.password && formik.errors.password ? (
+                <div className="text-red-500">{formik.errors.password}</div>
+              ) : null}
               <Input
                 id="phoneNumber"
                 name="phoneNumber"
@@ -119,23 +128,23 @@ const UseRegisterModal = () => {
                 required
                 onChange={(value) => formik.setFieldValue("phoneNumber", value)}
               />
-              <div className="flex flex-row ">
+              {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
+                <div className="text-red-500">{formik.errors.phoneNumber}</div>
+              ) : null}
+              <div className="flex flex-row w-[100vw]">
                 <DatePicker
                   selected={formik.values.dateofbirth}
                   onChange={(date) => formik.setFieldValue("dateofbirth", date)}
                   disabled={isLoading}
+                  width="200px"
                   placeholderText="Date of Birth"
-                  className="w-full p-2 border-2 border-gray-400 rounded-md"
+                  className="w-[37.2vw] p-2 border-2 border-gray-400 rounded-md "
                 />
-                <Select
-                  value={formik.values.gender}
-                  onChange={(values) => formik.setFieldValue("gender", values)}
-                  disabled={isLoading}
-                  data={["Male", "Female", "Rather not say"]}
-                  className="w-full p-2 rounded-md"
-                  placeholder="Gender"
-                  style={{ padding: "0.5rem" }}
-                />
+                {formik.touched.dateofbirth && formik.errors.dateofbirth ? (
+                  <div className="text-red-500">
+                    {formik.errors.dateofbirth}
+                  </div>
+                ) : null}
               </div>
             </div>
           </Form>
@@ -170,7 +179,6 @@ const UseRegisterModal = () => {
       onClose={() => {
         setIsRegistering(true);
         UseLoginModal.onClose();
-        // window.location.reload();
         UseRegisterModal.onClose();
       }}
       title="User Registration"

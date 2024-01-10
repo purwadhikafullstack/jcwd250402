@@ -342,9 +342,9 @@ exports.acceptBooking = async (req, res) => {
       where: {
         id: booking.propertyId,
       },
-      attributes: ["propertyName"],
+      attributes: ["propertyName", "userId"],
+      include: [{ model: User, as: "Tenant", attributes: ["fullname"] }],
     });
-    console.log(property);
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
@@ -371,6 +371,8 @@ exports.acceptBooking = async (req, res) => {
     const emailHtml = compiledTemplate({
       fullname: renter.fullname,
       propertyRules: rules.map((rule) => rule.rule),
+      propertyName: property.propertyName,
+      tenant: property.Tenant.fullname,
     });
 
     await mailer({
