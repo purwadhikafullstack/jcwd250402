@@ -35,7 +35,7 @@ const ListingReservation = ({
           setSpecialPriceDate(response.data.specialDates);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     getSpecialPriceDate();
@@ -49,7 +49,7 @@ const ListingReservation = ({
           setUnavailableDate(response.data.disabledDates);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     getDisabledDate();

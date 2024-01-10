@@ -17,16 +17,16 @@ const BookingCards = ({
   actionId,
 }) => {
   const navigate = useNavigate();
-  const token =
-    useSelector((state) => state.auth.token) || localStorage.getItem("token");
   const paymentModal = usePaymentModal();
   const reviewModal = useReviewModal();
 
   const onCancelBooking = async (e) => {
     e.stopPropagation();
     try {
+      const token = localStorage.getItem("token");
       const cancelBooking = await api.patch(
         `/booking/cancel/${bookingData.id}`,
+        null, // Body of the request, in this case, it's null since it's a PATCH request
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,6 +39,7 @@ const BookingCards = ({
       }
     } catch (error) {
       toast.error(error.response.data.message);
+      console.log(error.response.data);
     }
   };
 

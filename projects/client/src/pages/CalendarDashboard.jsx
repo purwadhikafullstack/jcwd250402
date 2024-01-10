@@ -56,7 +56,7 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
       }
     } catch (error) {
       toast.error(error.response.data.message);
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -133,7 +133,7 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
           setSpecialPriceDate(response.data.specialDates);
         }
       } catch (error) {
-        console.log(error.response.data.message);
+        console.error(error.response.data.message);
       }
     };
     getSpecialData();
@@ -148,7 +148,7 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
           setDisabledDate(response.data.disabledDates);
         }
       } catch (error) {
-        console.log(error.response.data.message);
+        console.error(error.response.data.message);
       }
     };
     getDisabledDates();

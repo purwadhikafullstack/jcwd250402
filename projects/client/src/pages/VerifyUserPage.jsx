@@ -8,28 +8,25 @@ import { useDisclosure } from "@mantine/hooks";
 import { LoadingOverlay, Box } from "@mantine/core";
 
 function VerifyUserPage() {
-  let searchParams = useSearchParams();
+  // const { token } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [verificationStatus, setVerificationStatus] = useState("verifying");
   const [userEmail, setUserEmail] = useState("");
 
   const handleVerification = async () => {
-    setIsLoading(true);
+    const token = searchParams.get("token");
     try {
-      const token = searchParams.get("token");
-      const response = await api.post("/auth/verify-account", {
-        token: token,
-      });
+      setIsLoading(true);
+      const response = await api.post(`/auth/verify-account/${token}`);
       if (response.status === 200) {
-        toast.success("Your Account is Verified");
+        toast.success("Successfully verified account");
         navigate("/");
         setIsLoading(false);
       }
     } catch (error) {
       setIsLoading(false);
       toast.error(error.response.data.message);
-      setVerificationStatus("failed");
     } finally {
       setIsLoading(false);
     }
@@ -53,32 +50,15 @@ function VerifyUserPage() {
     }
     setIsLoading(false);
   };
-
-  let message;
-  switch (verificationStatus) {
-    case "verifying":
-      message = "Verify Your Account!";
-      break;
-    case "verified":
-      message = "Account verified successfully!";
-      break;
-    case "failed":
-      message =
-        "Failed to verify your account. Please try again or contact support.";
-      break;
-    default:
-      message = "verify your account";
-  }
-
   return (
-    <Box pos={"relative"}>
-      <LoadingOverlay
-        visible={isLoading}
-        zIndex={1000}
-        overlayProps={{ radius: "sm", blur: 2 }}
-      />
-      <section className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="flex flex-col items-center justify-center w-1/2 bg-white border-2 rounded-lg shadow-xl p-14 ">
+    <section className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex flex-col items-center justify-center w-1/2 bg-white border-2 rounded-lg shadow-xl p-14 ">
+        <Box pos={"relative"}>
+          <LoadingOverlay
+            visible={isLoading}
+            zIndex={1000}
+            overlayProps={{ radius: "sm", blur: 2 }}
+          />
           <div className="">
             <img
               src={logo}
@@ -89,9 +69,7 @@ function VerifyUserPage() {
           <form className="space-y-4 md:space-y-6">
             <div className="w-full">
               <input
-                type="password"
-                id="newPassword"
-                name="newPassword"
+                type="text"
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block max-w-full p-2.5"
                 placeholder="Enter your email"
                 required
@@ -101,8 +79,7 @@ function VerifyUserPage() {
             </div>
 
             <button
-              type="submit"
-              disabled={isLoading}
+              type="button"
               onClick={handleVerification}
               className="w-full text-[#FAFAFA] bg-primary hover:bg-primary/70 hover-bg-opacity-[80%] focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center border border-1"
             >
@@ -121,9 +98,9 @@ function VerifyUserPage() {
               Resend Confirmation Email
             </button>
           </div>
-        </div>
-      </section>
-    </Box>
+        </Box>
+      </div>
+    </section>
   );
 }
 

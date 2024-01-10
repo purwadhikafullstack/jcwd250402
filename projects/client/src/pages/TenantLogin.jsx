@@ -4,7 +4,8 @@ import { useFormik, Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { login, tenantLogin } from "../components/slice/authSlices.js";
+import { ImageUpload } from "../components";
+import { login, logout, tenantLogin } from "../components/slice/authSlices.js";
 
 import useTenantRegister from "../components/hooks/useTenantRegister.js";
 import { Button } from "../components";
@@ -19,79 +20,50 @@ const TenantLogin = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const isTenant = useSelector((state) => state.auth.isTenant);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUpgradeAccount, setIsUpgradeAccount] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
-  const [formData, setFormData] = useState({
-    user_identity: "",
-    password: "",
-    email: "",
-  });
-
-  const loginSchema = Yup.object().shape({
-    user_identity: Yup.string()
-      .required("Username/Email can't be empty")
-      .min(6, "Minimum characters is 6"),
-    password: Yup.string().required("Password can't be empty"),
-    email: Yup.string().email("Please enter a valid email address"),
-  });
-
-  const handleInputChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const loginHandler = async (user_identity, password) => {
-    try {
-      const response = await api.post("/auth/login", {
-        user_identity,
-        password,
-      });
-      if (response.status === 200) {
-        const userData = response.data;
-        const token = userData.token;
-        const role = userData.role;
-
-        if (role === "user") {
-          toast.error("Sorry this page is for tenants only.");
-          dispatch(login({ token: token, isLoggedIn: true, isTenant: false }));
-          navigate({ pathname: "/" });
-          return;
-        } else if (role === "tenant") {
-          dispatch(
-            tenantLogin({ token: token, isLoggedIn: true, isTenant: true })
-          );
-          toast.success("Log in successful! Welcome back!");
-          navigate("/tenant/dashboard");
-          setIsLoading(false);
-        }
-      }
-    } catch (error) {
-      setIsLoading(false);
-      toast.error("Invalid Username/Email or Password.");
-      console.error("Error:", error);
-    }
-  };
-
-  const handleForgotPassword = async (email) => {
-    setIsLoading(true);
-    try {
-      const response = await api.post("/user/forgot-password", {
-        email,
-      });
-      if (response.status === 200) {
-        toast.success("Reset password link has been sent to your email.");
-      }
-    } catch (error) {
-      setIsLoading(false);
-      toast.error("Failed to send reset password link.");
-      console.error("Error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [ktpImg, setKtpImg] = useState(null);
 
   const formik = useFormik({
-    onSubmit: (values) => {
-      const { user_identity, password } = values;
-      loginHandler(user_identity, password);
+    initialValues: {
+      user_identity: "",
+      password: "",
+    },
+    validationSchemaa: Yup.object().shape({
+      user_identity: Yup.string()
+        .required("Username/Email can't be empty")
+        .min(6, "Minimum characters is 6"),
+      password: Yup.string().required("Password can't be empty"),
+    }),
+
+    onSubmit: async () => {
+      try {
+        const response = await api.post("/auth/login", formik.values);
+        if (response.status === 200) {
+          const userData = response.data;
+          const token = userData.token;
+          const role = userData.role;
+
+          if (role === "user") {
+            toast.error("Sorry this page is for tenants only.");
+            dispatch(
+              login({ token: token, isLoggedIn: true, isTenant: false })
+            );
+            navigate({ pathname: "/" });
+            return;
+          } else if (role === "tenant") {
+            dispatch(
+              tenantLogin({ token: token, isLoggedIn: true, isTenant: true })
+            );
+            toast.success("Log in successful! Welcome back!");
+            navigate("/tenant/dashboard");
+          }
+        }
+      } catch (error) {
+        toast.error(error.response.data.message);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
 
@@ -99,12 +71,59 @@ const TenantLogin = () => {
     initialValues: {
       email: "",
     },
-    validationSchema: loginSchema,
-    onSubmit: (values) => {
-      const { email } = values;
-      handleForgotPassword(email);
+    validationSchema: Yup.object({
+      email: Yup.string().email("Invalid email").required("Email is required"),
+    }),
+    onSubmit: async (email) => {
+      setIsLoading(true);
+      try {
+        const response = await api.post("/user/forgot-password", {
+          email,
+        });
+        if (response.status === 200) {
+          toast.success("Reset password link has been sent to your email.");
+        }
+      } catch (error) {
+        setIsLoading(false);
+        toast.error("Failed to send reset password link.");
+        console.error("Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
+
+  const handleUpgradeAccount = async () => {
+    try {
+      const response = await api.patch(
+        "/auth/upgrade-account",
+        {
+          ktpImg,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.status === 200) {
+        setIsUpgradeAccount(false);
+        toast.success("Upgrade account successful! Please login again.", {
+          duration: 5000,
+          onClose: () => {
+            navigate("/");
+          },
+        });
+        dispatch(logout());
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+      console.error("Error:", error.response.data);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="overflow-hidden h-[100vh] w-full bg-no-repeat bg-cover bg-login flex flex-row justify-between z-0">
@@ -137,7 +156,10 @@ const TenantLogin = () => {
                     type="email"
                     disabled={isLoading}
                     required
-                    onChange={(value) => handleInputChange("email", value)}
+                    value={formikReset.values.email}
+                    onChange={(value) =>
+                      formikReset.setFieldValue("email", value)
+                    }
                   />
                   <button
                     onClick={() => setIsForgot(false)}
@@ -150,19 +172,48 @@ const TenantLogin = () => {
             ) : (
               <section>
                 {isLoggedIn && !isTenant ? (
-                  <>
-                    <Button label={"Become a Host"} onClick={() => {}} />
-                  </>
+                  isUpgradeAccount ? (
+                    <div className="flex flex-col ">
+                      <div className="flex flex-col items-center justify-center p-3 gap-y-3">
+                        <span className="font-semibold text-md ">
+                          Please provide a valid government issued ID
+                        </span>
+                        <ImageUpload
+                          onChange={(file) => {
+                            setKtpImg(file);
+                          }}
+                          onDelete={() => {
+                            setKtpImg(null);
+                          }}
+                          value={ktpImg}
+                        />
+                        <button
+                          className=" text-white bg-primary hover:bg-primary/70 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
+                          onClick={handleUpgradeAccount}
+                        >
+                          Upgrade
+                        </button>
+                      </div>
+                      <div
+                        className="text-sm font-light cursor-pointer text-neutral-400 ml-14"
+                        onClick={() => setIsUpgradeAccount(false)}
+                      >
+                        Cancel
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <Button
+                        label="Become a Host"
+                        onClick={() => {
+                          setIsUpgradeAccount(true);
+                        }}
+                      />
+                    </>
+                  )
                 ) : (
                   <>
-                    <Formik
-                      initialValues={{
-                        user_identity: "",
-                        password: "",
-                      }}
-                      validationSchema={loginSchema}
-                      onSubmit={formik.handleSubmit}
-                    >
+                    <Formik onSubmit={formik.handleSubmit}>
                       <Form className="space-y-4 md:space-y-4">
                         <Input
                           id="user_identity"
@@ -172,7 +223,7 @@ const TenantLogin = () => {
                           disabled={isLoading}
                           required={true}
                           onChange={(value) =>
-                            handleInputChange("user_identity", value)
+                            formik.setFieldValue("user_identity", value)
                           }
                         />
                         <Input
@@ -183,7 +234,7 @@ const TenantLogin = () => {
                           disabled={isLoading}
                           required={true}
                           onChange={(value) =>
-                            handleInputChange("password", value)
+                            formik.setFieldValue("password", value)
                           }
                         />
                       </Form>
@@ -220,20 +271,14 @@ const TenantLogin = () => {
             )}
             {isLoggedIn && !isTenant ? null : isForgot ? (
               <button
-                onClick={() => {
-                  handleForgotPassword(formData.email);
-                  setIsLoading(true);
-                }}
+                onClick={formikReset.handleSubmit}
                 className="w-full text-white bg-primary hover:bg-primary/70 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
               >
                 Send Reset Password Link
               </button>
             ) : (
               <button
-                onClick={() => {
-                  loginHandler(formData.user_identity, formData.password);
-                  setIsLoading(true);
-                }}
+                onClick={formik.handleSubmit}
                 className="w-full text-white bg-primary hover:bg-primary/70 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
               >
                 Sign in

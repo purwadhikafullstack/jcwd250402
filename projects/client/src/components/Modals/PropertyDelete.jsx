@@ -31,8 +31,8 @@ const PropertyDelete = () => {
         window.location.reload();
       }
     } catch (error) {
-      console.error("Error deleting property:", error.message);
-      toast.error("Error deleting property");
+      console.error("Error deleting property:", error.response.data);
+      toast.error(error.response.data.message);
     }
     setIsLoading(false);
   };
