@@ -65,7 +65,7 @@ exports.userRegister = async (req, res) => {
       "utf8"
     );
     const compiledTemplate = hbs.compile(template);
-    const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
+    const verifyLink = `https://jcwd250402.purwadhikabootcamp.com/verify-email?token=${tokenHash}`;
     const emailHtml = compiledTemplate({
       fullname: result.fullname,
       verifyLink,
@@ -153,7 +153,7 @@ exports.tenantRegister = async (req, res) => {
       "utf8"
     );
     const compiledTemplate = hbs.compile(template);
-    const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
+    const verifyLink = `https://jcwd250402.purwadhikabootcamp.com/verify-email?token=${tokenHash}`;
     const emailHtml = compiledTemplate({
       fullname: result.fullname,
       verifyLink,
@@ -284,7 +284,7 @@ exports.resendVerificationEmail = async (req, res) => {
       "utf8"
     );
     const compiledTemplate = hbs.compile(template);
-    const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
+    const verifyLink = `https://jcwd250402.purwadhikabootcamp.com/verify-email?token=${tokenHash}`;
     const emailHtml = compiledTemplate({
       fullname: user.fullname,
       verifyLink,
@@ -398,7 +398,7 @@ exports.forgotPassword = async (req, res) => {
       "utf8"
     );
     const compiledTemplate = hbs.compile(template);
-    const resetLink = `${req.protocol}://localhost:3000/reset-password/${resetTokenHash}`;
+    const resetLink = `https://jcwd250402.purwadhikabootcamp.com/reset-password/${resetTokenHash}`;
     const emailHtml = compiledTemplate({
       fullname: user.fullname,
       resetLink: resetLink,

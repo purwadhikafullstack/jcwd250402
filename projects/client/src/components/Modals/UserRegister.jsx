@@ -2,7 +2,7 @@ import { useState } from "react";
 import * as Yup from "yup";
 import yupPassword from "yup-password";
 import { toast } from "sonner";
-import { Form, Formik, useFormik } from "formik";
+import { Form, Formik, useFormik, Field } from "formik";
 
 import useUserRegister from "../hooks/useUserRegister"; // Register Slice
 import useLoginModal from "../hooks/useLoginModal"; // Login Slice
@@ -11,8 +11,8 @@ import Input from "../inputs/Input";
 import Modal from "./Modal";
 import api from "../../api";
 import DatePicker from "react-datepicker";
-import { Select } from "@mantine/core";
-// import Select from "react-select";
+import { Box, LoadingOverlay } from "@mantine/core";
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
 yupPassword(Yup);
 
@@ -24,18 +24,32 @@ const UseRegisterModal = () => {
   const [isRegistering, setIsRegistering] = useState(true);
 
   const registerSchema = Yup.object({
-    fullname: Yup.string().required("Fullname is required"),
-    email: Yup.string().required("Email is required"),
+    fullname: Yup.string()
+      .min(6, "Minimum characters is 6")
+      .required("Fullname is required"),
+    username: Yup.string()
+      .min(3, "username need at least 6 characters")
+      .required("Username is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
     password: Yup.string().required("Password is required"),
+    gender: Yup.string().required("Gender is required"),
     phoneNumber: Yup.string().required("phoneNumber is required"),
-    dateofbirth: Yup.date().required("Date of Birth is required"),
+    dateofbirth: Yup.date()
+      .required("Date of birth is required")
+      .test("is-adult", "You must be at least 18 years old", (value) => {
+        return moment().diff(moment(value), "years") >= 18;
+      }),
   });
 
   const formik = useFormik({
     initialValues: {
       fullname: "",
       email: "",
+      username: "",
       password: "",
+      gender: "",
       phoneNumber: "",
       role: "user",
       dateofbirth: "",
@@ -73,7 +87,8 @@ const UseRegisterModal = () => {
   };
 
   const bodyContent = (
-    <div className="flex flex-col gap-4">
+    <Box className="flex flex-col gap-4">
+      <LoadingOverlay visible={isLoading} zIndex={100000000000000000} />
       <Heading title="Welcome to Nginapp" subtitle="Lets create your account" />
       <Formik
         initialValues={formik.initialValues}
@@ -108,6 +123,18 @@ const UseRegisterModal = () => {
                 <div className="text-red-500">{formik.errors.email}</div>
               ) : null}
               <Input
+                id="username"
+                name="username"
+                label="Username"
+                type="username"
+                disabled={isLoading}
+                required
+                onChange={(value) => formik.setFieldValue("username", value)}
+              />
+              {formik.touched.username && formik.errors.username ? (
+                <div className="text-red-500">{formik.errors.username}</div>
+              ) : null}
+              <Input
                 id="password"
                 name="password"
                 label="Password"
@@ -131,20 +158,41 @@ const UseRegisterModal = () => {
               {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
                 <div className="text-red-500">{formik.errors.phoneNumber}</div>
               ) : null}
-              <div className="flex flex-row w-[100vw]">
-                <DatePicker
-                  selected={formik.values.dateofbirth}
-                  onChange={(date) => formik.setFieldValue("dateofbirth", date)}
-                  disabled={isLoading}
-                  width="200px"
-                  placeholderText="Date of Birth"
-                  className="w-[37.2vw] p-2 border-2 border-gray-400 rounded-md "
-                />
-                {formik.touched.dateofbirth && formik.errors.dateofbirth ? (
-                  <div className="text-red-500">
-                    {formik.errors.dateofbirth}
-                  </div>
-                ) : null}
+              <div className="flex flex-row w-[100%] gap-x-2">
+                <div className="flex flex-col w-full">
+                  <DatePicker
+                    selected={formik.values.dateofbirth}
+                    onChange={(date) =>
+                      formik.setFieldValue("dateofbirth", date)
+                    }
+                    disabled={isLoading}
+                    width="200px"
+                    placeholderText="Date of Birth"
+                    className="w-full p-2 border-2 border-gray-400 rounded-md "
+                  />
+                  {formik.touched.dateofbirth && formik.errors.dateofbirth ? (
+                    <div className="text-red-500">
+                      {formik.errors.dateofbirth}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="flex flex-col w-full">
+                  <Field
+                    className="w-full p-3 border-2 rounded-md"
+                    as="select"
+                    onChange={(e) =>
+                      formik.setFieldValue("gender", e.target.value)
+                    }
+                    value={formik.values.gender}
+                  >
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Rather Not Say</option>
+                  </Field>
+                  {formik.touched.gender && formik.errors.gender ? (
+                    <div className="text-red-500">{formik.errors.gender}</div>
+                  ) : null}
+                </div>
               </div>
             </div>
           </Form>
@@ -168,9 +216,10 @@ const UseRegisterModal = () => {
           <span>Become a Host? Sign Up here</span>
         </button>
       </div>
-    </div>
+    </Box>
   );
 
+  console.log(formik.values.gender);
   return (
     <Modal
       disabled={isLoading}

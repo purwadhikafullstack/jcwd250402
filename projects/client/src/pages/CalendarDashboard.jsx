@@ -9,7 +9,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "sonner";
 import api from "../api";
-import { Tabs, Select } from "@mantine/core";
+import { Tabs, Select, Box, LoadingOverlay } from "@mantine/core";
 import getRoomsAndPropertiesData from "../actions/getRoomsAndPropertiesData.js";
 
 const locales = {
@@ -31,6 +31,7 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
   const [propertiesData, setPropertiesData] = useState([]);
   const [selectedPropertyName, setSelectedPropertyName] = useState("");
   const [selectedPropertyId, setSelectedPropertyId] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAddDisabledDate = async () => {
     const token = localStorage.getItem("token");
@@ -38,6 +39,7 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
       toast.error("Please fill in all fields");
       return;
     }
+    setIsLoading(true);
     try {
       const response = await api.post(
         `/date/disabled/create/${selectedPropertyId}`,
@@ -56,7 +58,8 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
       }
     } catch (error) {
       toast.error(error.response.data.message);
-      console.error(error);
+    } finally {
+      setIsLoading(true);
     }
   };
 
@@ -71,6 +74,7 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
       toast.error("Please fill in all fields");
       return;
     }
+    setIsLoading(true);
     try {
       const response = await api.post(
         `/date/special/create/${selectedPropertyId}`,
@@ -91,11 +95,14 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
       }
     } catch (error) {
       toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const properties = await getRoomsAndPropertiesData();
         setPropertiesData(properties.Property);
@@ -104,6 +111,8 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
         }
       } catch (error) {
         toast.error(error.response.data.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -134,10 +143,11 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
         }
       } catch (error) {
         console.error(error.response.data.message);
+      } finally {
       }
     };
     getSpecialData();
-  }, [selectedPropertyId]);
+  }, [selectedPropertyId, specialPriceDate]);
 
   useEffect(() => {
     const getDisabledDates = async () => {
@@ -152,7 +162,7 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
       }
     };
     getDisabledDates();
-  }, [selectedPropertyId]);
+  }, [selectedPropertyId, disabledDate]);
 
   const specialEvents = specialPriceDate
     ? specialPriceDate.map((specialDate) => ({
@@ -196,106 +206,109 @@ const TenantCalendar = ({ value, onChange, disabledDates }) => {
   };
 
   return (
-    <div className="w-full ml-8">
-      <h1 className="w-full mb-4 text-2xl font-semibold">Calendar</h1>
-      <div>
-        <Select
-          label="Select Property"
-          data={uniquePropertyNames}
-          searchable
-          value={selectedPropertyName}
-          onChange={handleSelectChange}
-          className="w-1/4 mb-4"
-        />
-      </div>
-      <Tabs defaultValue="setPrice">
-        <Tabs.List>
-          <Tabs.Tab value="setPrice">Set Price by Date</Tabs.Tab>
-          <Tabs.Tab value="disableDate">Set Date Unavailable</Tabs.Tab>
-        </Tabs.List>
+    <Box>
+      <LoadingOverlay visible={isLoading} zIndex={100000000000000000} />
+      <div className="w-full ml-8">
+        <h1 className="w-full mb-4 text-2xl font-semibold">Calendar</h1>
+        <div>
+          <Select
+            label="Select Property"
+            data={uniquePropertyNames}
+            searchable
+            value={selectedPropertyName}
+            onChange={handleSelectChange}
+            className="w-1/4 mb-4"
+          />
+        </div>
+        <Tabs defaultValue="setPrice">
+          <Tabs.List>
+            <Tabs.Tab value="setPrice">Set Price by Date</Tabs.Tab>
+            <Tabs.Tab value="disableDate">Set Date Unavailable</Tabs.Tab>
+          </Tabs.List>
 
-        <Tabs.Panel value="setPrice">
-          <div className="flex flex-row items-center justify-center w-full p-2 mt-2 gap-x-4">
-            <div className="flex flex-col">
-              <label htmlFor="">Price in IDR /Night</label>
-              <input
-                type="number"
-                placeholder="Price in IDR"
-                value={newEvent.price}
-                onChange={(e) =>
-                  setNewEvent({ ...newEvent, price: e.target.value })
-                }
-                className="p-2 border-2 border-gray-300 rounded-md"
-              />
+          <Tabs.Panel value="setPrice">
+            <div className="flex flex-row items-center justify-center w-full p-2 mt-2 gap-x-4">
+              <div className="flex flex-col">
+                <label htmlFor="">Price in IDR /Night</label>
+                <input
+                  type="number"
+                  placeholder="Price in IDR"
+                  value={newEvent.price}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, price: e.target.value })
+                  }
+                  className="p-2 border-2 border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="">Start Date</label>
+                <DatePicker
+                  style={{ marginRight: "10px" }}
+                  selected={newEvent.start}
+                  placeholderText="Start Date"
+                  onChange={(start) => setNewEvent({ ...newEvent, start })}
+                  className="p-2 border-2 border-gray-300 rounded-md z-[5]"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="">End Date</label>
+                <DatePicker
+                  placeholderText="End Date"
+                  selected={newEvent.end}
+                  onChange={(end) => setNewEvent({ ...newEvent, end })}
+                  className="p-2 border-2 border-gray-300 rounded-md"
+                />
+              </div>
+              <button
+                stlye={{ marginTop: "10px" }}
+                className="py-1.5 px-4 border rounded-md mt-5 bg-primary text-white"
+                onClick={handleAddSpecialDate}
+              >
+                Set Price
+              </button>
             </div>
-            <div className="flex flex-col">
-              <label htmlFor="">Start Date</label>
+          </Tabs.Panel>
+          <Tabs.Panel value="disableDate">
+            <div className="flex flex-row items-center justify-center p-2 mt-2 gap-x-4">
               <DatePicker
+                placeholderText="Start Date"
                 style={{ marginRight: "10px" }}
                 selected={newEvent.start}
-                placeholderText="Start Date"
                 onChange={(start) => setNewEvent({ ...newEvent, start })}
-                className="p-2 border-2 border-gray-300 rounded-md z-[5]"
+                className="p-2 border-2 border-gray-300 rounded-md"
               />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="">End Date</label>
               <DatePicker
                 placeholderText="End Date"
                 selected={newEvent.end}
                 onChange={(end) => setNewEvent({ ...newEvent, end })}
                 className="p-2 border-2 border-gray-300 rounded-md"
               />
+              <button
+                stlye={{ marginTop: "10px" }}
+                className="py-1.5 px-2 border rounded-md bg-primary text-white"
+                onClick={handleAddDisabledDate}
+              >
+                Set Unavailable
+              </button>
             </div>
-            <button
-              stlye={{ marginTop: "10px" }}
-              className="py-1.5 px-4 border rounded-md mt-5 bg-primary text-white"
-              onClick={handleAddSpecialDate}
-            >
-              Set Price
-            </button>
-          </div>
-        </Tabs.Panel>
-        <Tabs.Panel value="disableDate">
-          <div className="flex flex-row items-center justify-center p-2 mt-2 gap-x-4">
-            <DatePicker
-              placeholderText="Start Date"
-              style={{ marginRight: "10px" }}
-              selected={newEvent.start}
-              onChange={(start) => setNewEvent({ ...newEvent, start })}
-              className="p-2 border-2 border-gray-300 rounded-md"
-            />
-            <DatePicker
-              placeholderText="End Date"
-              selected={newEvent.end}
-              onChange={(end) => setNewEvent({ ...newEvent, end })}
-              className="p-2 border-2 border-gray-300 rounded-md"
-            />
-            <button
-              stlye={{ marginTop: "10px" }}
-              className="py-1.5 px-2 border rounded-md bg-primary text-white"
-              onClick={handleAddDisabledDate}
-            >
-              Set Unavailable
-            </button>
-          </div>
-        </Tabs.Panel>
-      </Tabs>
-      <Calendar
-        style={{
-          height: "85vh",
-          margin: "50px",
-          zIndex: 0,
-          cursor: "pointer",
-        }}
-        localizer={localizer}
-        events={combinedEvents}
-        startAccessor="start"
-        endAccessor="end"
-        view={["month"]}
-        eventPropGetter={getEventStyle}
-      />
-    </div>
+          </Tabs.Panel>
+        </Tabs>
+        <Calendar
+          style={{
+            height: "85vh",
+            margin: "50px",
+            zIndex: 0,
+            cursor: "pointer",
+          }}
+          localizer={localizer}
+          events={combinedEvents}
+          startAccessor="start"
+          endAccessor="end"
+          view={["month"]}
+          eventPropGetter={getEventStyle}
+        />
+      </div>
+    </Box>
   );
 };
 

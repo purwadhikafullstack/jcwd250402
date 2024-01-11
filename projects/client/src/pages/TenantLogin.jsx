@@ -43,26 +43,24 @@ const TenantLogin = () => {
           const userData = response.data;
           const token = userData.token;
           const role = userData.role;
+          navigate("/tenant/dashboard");
 
           if (role === "user") {
             toast.error("Sorry this page is for tenants only.");
             dispatch(
               login({ token: token, isLoggedIn: true, isTenant: false })
             );
-            navigate({ pathname: "/" });
             return;
-          } else if (role === "tenant") {
+          } else {
+            navigate("/tenant/dashboard");
             dispatch(
               tenantLogin({ token: token, isLoggedIn: true, isTenant: true })
             );
             toast.success("Log in successful! Welcome back!");
-            navigate("/tenant/dashboard");
           }
         }
       } catch (error) {
         toast.error(error.response.data.message);
-      } finally {
-        setIsLoading(false);
       }
     },
   });
@@ -111,9 +109,6 @@ const TenantLogin = () => {
         setIsUpgradeAccount(false);
         toast.success("Upgrade account successful! Please login again.", {
           duration: 5000,
-          onClose: () => {
-            navigate("/");
-          },
         });
         dispatch(logout());
       }

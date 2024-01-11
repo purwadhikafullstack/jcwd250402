@@ -191,6 +191,7 @@ exports.editProperty = async (req, res) => {
           model: Category,
           as: "Categories",
           attributes: [
+            "id",
             "propertyType",
             "country",
             "city",
@@ -254,9 +255,7 @@ exports.editProperty = async (req, res) => {
       bathroomCount: bathroomCount || existingProperty.bathroomCount,
     });
 
-    const category = await Category.findOne({
-      where: { id: existingProperty.id },
-    });
+    const category = existingProperty.Categories[0];
 
     if (
       country ||
@@ -267,18 +266,23 @@ exports.editProperty = async (req, res) => {
       streetAddress ||
       postalCode
     ) {
-      await category.update({
-        propertyType:
-          propertyType || existingProperty.Categories[0].propertyType,
-        country: country || existingProperty.Categories[0].country,
-        city: city || existingProperty.Categories[0].city,
-        province: province || existingProperty.Categories[0].province,
-        latitude: latitude || existingProperty.Categories[0].latitude,
-        longitude: longitude || existingProperty.Categories[0].longitude,
-        streetAddress:
-          streetAddress || existingProperty.Categories[0].streetAddress,
-        postalCode: postalCode || existingProperty.Categories[0].postalCode,
-      });
+      await category.update(
+        {
+          propertyType: propertyType || category.propertyType,
+          country: country || category.country,
+          city: city || category.city,
+          province: province || category.province,
+          latitude: latitude || category.latitude,
+          longitude: longitude || category.longitude,
+          streetAddress: streetAddress || category.streetAddress,
+          postalCode: postalCode || ecategory.postalCode,
+        },
+        {
+          where: {
+            id: propertyId,
+          },
+        }
+      );
     }
 
     const images = req.files;

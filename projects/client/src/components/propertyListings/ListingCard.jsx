@@ -13,7 +13,7 @@ const ListingCard = ({ data }) => {
       <div className="flex flex-col w-full gap-0">
         <div className="relative w-full overflow-hidden aspect-square rounded-xl">
           <img
-            src={`http://localhost:8000/api/property-asset/${data.coverImage}`}
+            src={`https://jcwd250402.purwadhikabootcamp.com/api/property-asset/${data.coverImage}`}
             alt="listings"
             className="object-cover w-full h-full transition group-hover:scale-110 "
           />

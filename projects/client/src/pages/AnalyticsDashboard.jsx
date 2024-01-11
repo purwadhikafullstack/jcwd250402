@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import api from "../api";
-import { Select, Loader, Tabs } from "@mantine/core";
+import { Select, Loader, LoadingOverlay, Box } from "@mantine/core";
 import getRoomsAndPropertiesData from "../actions/getRoomsAndPropertiesData.js";
 import { PiCoinsLight } from "react-icons/pi";
 import { toast } from "sonner";
@@ -58,8 +58,8 @@ export default function Analytics() {
 
   useEffect(() => {
     const getEarningsData = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
         const response = await api.get(
           `booking/earnings/${selectedPropertyId}`,
           {
@@ -166,7 +166,8 @@ export default function Analytics() {
   };
 
   return (
-    <div>
+    <Box>
+      <LoadingOverlay visible={loading} zIndex={100000000000} />
       <div className="flex flex-col w-full p-4 gap-y-4">
         <div className="flex justify-between mb-8">
           <h1 className="ml-2 text-3xl font-normal ">Reports</h1>
@@ -293,6 +294,6 @@ export default function Analytics() {
           </tbody>
         </table>
       )}
-    </div>
+    </Box>
   );
 }
