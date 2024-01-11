@@ -19,7 +19,7 @@ const PropertyHeader = ({
       <div className="flex flex-col md:flex-row gap-x-1">
         <div className="relative w-full h-full overflow-hidden rounded-lg md:w-1/2">
           <img
-            src={`http://localhost:8000/api/property-asset/${coverImage}`}
+            src={`https://jcwd250402.purwadhikabootcamp.com/api/property-asset/${coverImage}`}
             className="object-cover w-full h-full"
             alt="listing"
           />
@@ -30,7 +30,7 @@ const PropertyHeader = ({
               {propertyImages.slice(0, 4).map((imageObject, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:8000/api/property-asset/${imageObject.image}`}
+                  src={`https://jcwd250402.purwadhikabootcamp.com/api/property-asset/${imageObject.image}`}
                   className="object-cover w-full h-full rounded-lg"
                   alt="listing"
                 />

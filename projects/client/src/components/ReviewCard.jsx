@@ -4,6 +4,8 @@ import getReviewData from "../actions/getReviewData";
 import ReactStars from "react-rating-stars-component";
 import { formatDistanceToNow } from "date-fns";
 
+// ... (previous imports)
+
 const ReviewCard = ({ propertyId }) => {
   const [reviews, setReviews] = useState([]);
 
@@ -32,9 +34,9 @@ const ReviewCard = ({ propertyId }) => {
           <div className="" key={review.id}>
             <div className="flex flex-row gap-x-3">
               <div className="rounded-full">
-                {review.renter.profilePicture ? (
+                {review.renter && review.renter.profilePicture ? (
                   <Image
-                    src={`http://localhost:8000/api/profile-picture/${review.renter.profilePicture}`}
+                    src={`https://jcwd250402.purwadhikabootcamp.com/api/profile-picture/${review.renter.profilePicture}`}
                     alt={review.renter.fullname}
                     radius={"xl"}
                     w={20}
@@ -48,7 +50,9 @@ const ReviewCard = ({ propertyId }) => {
                   />
                 )}
               </div>
-              <div>{review.renter.fullname}</div>
+              <div>
+                {review.renter ? review.renter.fullname : "Unknown Renter"}
+              </div>
             </div>
             <div className="flex flex-row items-center justify-center gap-x-2">
               <ReactStars

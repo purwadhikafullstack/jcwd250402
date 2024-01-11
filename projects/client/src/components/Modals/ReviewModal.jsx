@@ -75,7 +75,7 @@ const ReviewModal = () => {
   }, [token]);
 
   const profilePictureSource = profile.profilePicture
-    ? `http://localhost:8000/api/profile-picture/${profile.profilePicture}`
+    ? `https://jcwd250402.purwadhikabootcamp.com/api/profile-picture/${profile.profilePicture}`
     : "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
 
   const bodyContent = (

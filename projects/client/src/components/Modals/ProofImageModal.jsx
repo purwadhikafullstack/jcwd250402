@@ -13,7 +13,9 @@ const ProofImageModal = () => {
       <div className="flex flex-col items-center justify-center">
         <div className="flex flex-col items-center justify-center"></div>
         <div className="flex flex-col items-center justify-center">
-          <Image src={`http://localhost:8000/api/payment/${imageUrl}`} />
+          <Image
+            src={`https://jcwd250402.purwadhikabootcamp.com/api/payment/${imageUrl}`}
+          />
         </div>
       </div>
     </div>

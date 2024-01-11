@@ -3,17 +3,26 @@ import EmptyState from "../components/EmptyState";
 import getBookingData from "../actions/getBookingData";
 import BookingCards from "../components/bookings/BookingCards";
 import { Navbar, Footer, Heading, Container } from "../components";
+import { LoadingOverlay, Box } from "@mantine/core";
 
 const BookingsPage = () => {
   document.title = "Bookings";
   const bookingData = getBookingData();
   const [bookings, setBookings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchData = async () => {
-      const data = await bookingData;
-      if (data) {
-        setBookings(data);
+      try {
+        const data = await bookingData;
+        if (data) {
+          setBookings(data);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -34,7 +43,8 @@ const BookingsPage = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <Box className="flex flex-col min-h-screen">
+      <LoadingOverlay visible={isLoading} zIndex={1000000} />
       <Navbar>
         <main className="flex-1">
           <div className="pb-20 pt-28">
@@ -54,7 +64,7 @@ const BookingsPage = () => {
           </div>
         </main>
       </Navbar>
-    </div>
+    </Box>
   );
 };
 

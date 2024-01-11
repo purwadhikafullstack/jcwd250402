@@ -61,7 +61,7 @@ export function Sidebar({
   }, [token]);
 
   const checkProfilePicture = (picture) => {
-    const imageUrl = `http://localhost:8000/api/profile-picture/${picture}`;
+    const imageUrl = `https://jcwd250402.purwadhikabootcamp.com/api/profile-picture/${picture}`;
     api
       .get(imageUrl)
       .then(() => {

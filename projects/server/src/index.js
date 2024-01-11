@@ -14,7 +14,7 @@ const app = express();
 //     ],
 //   })
 // );
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors());
 app.use(express.json());
 
 //#region API ROUTES
@@ -39,10 +39,14 @@ app.use("/api/payment/", express.static(__dirname + "/public"));
 
 // ===========================
 
+app.get("/api", (req, res) => {
+  res.send(`Nginapp API: ${req.protocol}://${req.get("host")}`);
+});
+
 // not found
 app.use((req, res, next) => {
   if (req.path.includes("/api/")) {
-    res.status(404).send("Not found!");
+    res.status(404).send("Route Not found");
   } else {
     next();
   }
@@ -75,6 +79,6 @@ app.listen(PORT, (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {
-    console.log(`☁  Nginapp Server is Running at http://localhost:${PORT}`);
+    console.log(`☁  Nginapp Server is Running`);
   }
 });

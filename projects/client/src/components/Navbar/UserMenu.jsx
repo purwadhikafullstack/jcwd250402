@@ -74,7 +74,7 @@ const UserMenu = ({ transparent, showType }) => {
   };
 
   const profilePictureSrc = profilePicture
-    ? `http://localhost:8000/api/profile-picture/${profilePicture}`
+    ? `https://jcwd250402.purwadhikabootcamp.com/api/profile-picture/${profilePicture}`
     : "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pessoa_Neutra.svg";
   return (
     <div className="relative">

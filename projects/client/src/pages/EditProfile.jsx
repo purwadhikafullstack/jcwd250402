@@ -20,10 +20,7 @@ export default function EditProfile() {
     dateofbirth: Yup.date()
       .required("Date of birth is required")
       .test("is-adult", "You must be at least 18 years old", (value) => {
-        return (
-          moment().diff(moment(value), "years") >= 18 ||
-          toast.error("You must be at least 18 years old")
-        );
+        return moment().diff(moment(value), "years") >= 18;
       }),
     gender: Yup.string().oneOf(
       ["male", "female", "other"],
@@ -233,8 +230,10 @@ export default function EditProfile() {
                   dateFormat="dd/MM/yyyy"
                 />
 
-                {formik.touched.birthDate && formik.errors.birthDate ? (
-                  <div className="error">{formik.errors.birthDate}</div>
+                {formik.touched.dateofbirth && formik.errors.dateofbirth ? (
+                  <div className="text-red-500">
+                    {formik.errors.dateofbirth}
+                  </div>
                 ) : null}
               </div>
 
@@ -262,8 +261,8 @@ export default function EditProfile() {
                   <option value="other">Rather not say</option>
                 </select>
 
-                {formik.touched.birthDate && formik.errors.birthDate ? (
-                  <div className="error">{formik.errors.birthDate}</div>
+                {formik.touched.gender && formik.errors.gender ? (
+                  <div className="error">{formik.errors.gender}</div>
                 ) : null}
               </div>
 
