@@ -199,7 +199,7 @@ const ListingReservation = ({
             <div className="flex flex-row items-center gap-3">
               <div className="w-12 h-12 bg-gray-200 rounded-full">
                 <img
-                  src={`http://localhost:8000/api/property-asset/${room.roomImages[0].image}`}
+                  src={`https://jcwd250402.purwadhikabootcamp.com/api/property-asset/${room.roomImages[0].image}`}
                   alt=""
                   className="object-cover w-full h-full rounded-full"
                 />
@@ -229,7 +229,7 @@ const ListingReservation = ({
           <div className="flex flex-row items-center gap-3 pt-2">
             <div className="w-12 h-12 bg-gray-200 rounded-full">
               <img
-                src={`http://localhost:8000/api/property-asset/${propertyData.coverImage}`}
+                src={`https://jcwd250402.purwadhikabootcamp.com/api/property-asset/${propertyData.coverImage}`}
                 alt=""
                 className="object-cover w-full h-full rounded-full"
               />

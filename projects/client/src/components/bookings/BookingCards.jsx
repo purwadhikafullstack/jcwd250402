@@ -63,7 +63,7 @@ const BookingCards = ({
       <div className="flex flex-col w-full gap-2">
         <div className="relative w-full overflow-hidden aspect-square rounded-xl">
           <img
-            src={`http://localhost:8000/api/property-asset/${bookingData.property.coverImage}`}
+            src={`https://jcwd250402.purwadhikabootcamp.com/api/property-asset/${bookingData.property.coverImage}`}
             alt="listings"
             className="object-cover w-full h-full transition group-hover:scale-110 "
           />

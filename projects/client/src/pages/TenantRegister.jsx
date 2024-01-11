@@ -8,6 +8,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { Select, LoadingOverlay, Box } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import moment from "moment";
 
 export default function TenantRegister() {
   const navigate = useNavigate();
@@ -41,30 +42,12 @@ export default function TenantRegister() {
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Confirm Password is required"),
       phoneNumber: Yup.string().required("Phone Number is required"),
-      ktpImg: Yup.mixed()
-        .required("Image is required")
-        .test("fileSize", "File size must be 1MB or less", (value) => {
-          if (value && value.length) {
-            return value[0].size <= 1000000; // 1MB in bytes
-          }
-          return true;
-        })
-        .test(
-          "fileType",
-          "Only JPG, JPEG, GIF, and PNG are allowed",
-          (value) => {
-            if (value && value.length) {
-              return [
-                "image/jpeg",
-                "image/jpg",
-                "image/png",
-                "image/gif",
-              ].includes(value[0].type);
-            }
-            return true;
-          }
-        ),
-      dateofbirth: Yup.string().required("Date of Birth is required"),
+      ktpImg: Yup.mixed().required("Image is required"),
+      dateofbirth: Yup.date()
+        .required("Date of birth is required")
+        .test("is-adult", "You must be at least 18 years old", (value) => {
+          return moment().diff(moment(value), "years") >= 18;
+        }),
       gender: Yup.string().required("Gender is required"),
     }),
 

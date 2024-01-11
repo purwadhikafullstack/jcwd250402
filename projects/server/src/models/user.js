@@ -33,15 +33,18 @@ module.exports = (sequelize, DataTypes) => {
   User.init(
     {
       fullname: { type: DataTypes.STRING, allowNull: false },
-      gender: DataTypes.ENUM("male", "female", "other"),
-      dateofbirth: { type: DataTypes.DATE },
-      username: { type: DataTypes.STRING },
-      email: { type: DataTypes.STRING },
+      gender: {
+        type: DataTypes.ENUM("male", "female", "other"),
+        allowNull: false,
+      },
+      dateofbirth: { type: DataTypes.DATE, allowNull: false },
+      username: { type: DataTypes.STRING, allowNull: false },
+      email: { type: DataTypes.STRING, allowNull: false },
       password: { type: DataTypes.STRING, allowNull: false },
       phoneNumber: { type: DataTypes.STRING, allowNull: false },
       profilePicture: DataTypes.STRING,
       isVerified: DataTypes.BOOLEAN,
-      role: DataTypes.ENUM("user", "tenant"),
+      role: { type: DataTypes.ENUM("user", "tenant"), allowNull: false },
       ktpImg: DataTypes.STRING,
       verifyToken: DataTypes.STRING,
       verifyTokenExpiry: DataTypes.DATE,

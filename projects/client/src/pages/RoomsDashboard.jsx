@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Menu, Button, Select } from "@mantine/core";
+import { Menu, Button, Select, Box, LoadingOverlay } from "@mantine/core";
 import getRoomsAndPropertiesData from "../actions/getRoomsAndPropertiesData.js";
 import useRoomDeleteModal from "../components/hooks/useRoomDeleteModal";
 
-const PropertiesDashboard = () => {
+const RoomsDashboard = () => {
   const [propertiesData, setPropertiesData] = useState([]);
   const roomDeleteModal = useRoomDeleteModal();
   const [selectedPropertyName, setSelectedPropertyName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const properties = await getRoomsAndPropertiesData();
         setPropertiesData(properties.Property);
@@ -19,7 +21,9 @@ const PropertiesDashboard = () => {
           setSelectedPropertyName(properties.Property[0].propertyName);
         }
       } catch (error) {
-        toast.error(error.response.data.message);
+        console.error(error.response.data.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -55,93 +59,96 @@ const PropertiesDashboard = () => {
   });
 
   return (
-    <div className="ml-5">
-      <div className="flex justify-between mb-8">
-        <h1 className="mb-4 text-3xl font-normal">Rooms</h1>
-      </div>
-      <Select
-        label="Select Property"
-        data={uniquePropertyNames}
-        searchable
-        value={selectedPropertyName}
-        onChange={handleSelectChange}
-        className="w-1/4 mb-4"
-      />
-      {filteredProperties.length > 0 && (
-        <button className="px-3 py-1.5 text-white rounded bg-primary hover:opacity-80">
-          <Link
-            to={`/tenant/dashboard/${filteredProperties[0].id}/create-room`}
-          >
-            Create Room
-          </Link>
-        </button>
-      )}
-      <table className="w-full">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 border-gray-200">Room Name</th>
-            <th className="px-4 py-2 border-gray-200">Bed</th>
-            <th className="px-4 py-2 border-gray-200">Price</th>
-            <th className="px-4 py-2 border-gray-200">Actions</th>
-          </tr>
-        </thead>
+    <Box>
+      <LoadingOverlay visible={isLoading} zIndex={1000000000} />
+      <div className="ml-5">
+        <div className="flex justify-between mb-8">
+          <h1 className="mb-4 text-3xl font-normal">Rooms</h1>
+        </div>
+        <Select
+          label="Select Property"
+          data={uniquePropertyNames}
+          searchable
+          value={selectedPropertyName}
+          onChange={handleSelectChange}
+          className="w-1/4 mb-4"
+        />
+        {filteredProperties.length > 0 && (
+          <button className="px-3 py-1.5 text-white rounded bg-primary hover:opacity-80">
+            <Link
+              to={`/tenant/dashboard/${filteredProperties[0].id}/create-room`}
+            >
+              Create Room
+            </Link>
+          </button>
+        )}
+        <table className="w-full">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 border-gray-200">Room Name</th>
+              <th className="px-4 py-2 border-gray-200">Bed</th>
+              <th className="px-4 py-2 border-gray-200">Price</th>
+              <th className="px-4 py-2 border-gray-200">Actions</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {filteredProperties.map((property) =>
-            property.Rooms.map((room) => (
-              <tr key={room.id} className="border-b hover:bg-primary/10">
-                <td className="items-center justify-center px-4 py-2 border-gray-200">
-                  <div className="flex items-start justify-start ml-2 gap-x-4">
-                    <img
-                      className="object-fill w-10 h-10 rounded-lg"
-                      src={`http://localhost:8000/api/property-asset/${room.roomImages[0]?.image}`}
-                      alt="property"
-                    />
-                    <div className="cursor-pointer hover:text-primary">
-                      {room.roomName}
+          <tbody>
+            {filteredProperties.map((property) =>
+              property.Rooms.map((room) => (
+                <tr key={room.id} className="border-b hover:bg-primary/10">
+                  <td className="items-center justify-center px-4 py-2 border-gray-200">
+                    <div className="flex items-start justify-start ml-2 gap-x-4">
+                      <img
+                        className="object-fill w-10 h-10 rounded-lg"
+                        src={`https://jcwd250402.purwadhikabootcamp.com/api/property-asset/${room.roomImages[0]?.image}`}
+                        alt="property"
+                      />
+                      <div className="cursor-pointer hover:text-primary">
+                        {room.roomName}
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="flex flex-row items-center justify-center px-4 py-2 border-gray-200">
-                  {room.maxGuestCount}
-                </td>
-                <td className="items-center justify-center px-4 py-2 text-center border-gray-200">
-                  {priceFormatter.format(room.price)}
-                </td>
-                <td className="flex flex-row items-center justify-center px-4 py-2 border-gray-200">
-                  <div className="">
-                    <Menu shadow="md" width={200} color="#0256EE" radius={""}>
-                      <Menu.Target>
-                        <Button>Manage</Button>
-                      </Menu.Target>
-                      <Menu.Dropdown>
-                        <Menu.Item>
-                          <Link to={`/tenant/dashboard/edit-room/${room.id}`}>
-                            {" "}
-                            Edit Room
-                          </Link>
-                        </Menu.Item>
-                        <Menu.Item
-                          color="red"
-                          onClick={() => {
-                            roomDeleteModal.setPropertyId(property.id);
-                            roomDeleteModal.setRoomId(room.id);
-                            roomDeleteModal.onOpen();
-                          }}
-                        >
-                          Delete Room
-                        </Menu.Item>
-                      </Menu.Dropdown>
-                    </Menu>
-                  </div>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+                  </td>
+                  <td className="flex flex-row items-center justify-center px-4 py-2 border-gray-200">
+                    {room.maxGuestCount}
+                  </td>
+                  <td className="items-center justify-center px-4 py-2 text-center border-gray-200">
+                    {priceFormatter.format(room.price)}
+                  </td>
+                  <td className="flex flex-row items-center justify-center px-4 py-2 border-gray-200">
+                    <div className="">
+                      <Menu shadow="md" width={200} color="#0256EE" radius={""}>
+                        <Menu.Target>
+                          <Button>Manage</Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item>
+                            <Link to={`/tenant/dashboard/edit-room/${room.id}`}>
+                              {" "}
+                              Edit Room
+                            </Link>
+                          </Menu.Item>
+                          <Menu.Item
+                            color="red"
+                            onClick={() => {
+                              roomDeleteModal.setPropertyId(property.id);
+                              roomDeleteModal.setRoomId(room.id);
+                              roomDeleteModal.onOpen();
+                            }}
+                          >
+                            Delete Room
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </Box>
   );
 };
 
-export default PropertiesDashboard;
+export default RoomsDashboard;

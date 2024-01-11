@@ -52,7 +52,7 @@ exports.updateProfile = async (req, res) => {
         "utf8"
       );
       const compiledTemplate = hbs.compile(template);
-      const verifyLink = `http://localhost:3000/verify-email?token=${tokenHash}`;
+      const verifyLink = `https://jcwd250402.purwadhikabootcamp.com/verify-email?token=${tokenHash}`;
       const emailHtml = compiledTemplate({
         fullname: user.fullname,
         verifyLink,

@@ -58,7 +58,7 @@ const PropertyDetail = ({
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-6 mb-3 text-xl font-semibold ">
           <img
-            src={`http://localhost:8000/api/profile-picture/${tenantImg}`}
+            src={`https://jcwd250402.purwadhikabootcamp.com/api/profile-picture/${tenantImg}`}
             alt=""
             className="rounded-full w-14 h-14"
           />
